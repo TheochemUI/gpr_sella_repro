@@ -1,0 +1,147 @@
+{% block neb %}
+
+%neb
+{% set neb = config.blocks.neb %} {# Access NebBlock instance #}
+{# TODO(rg): There are more kinds of product specification, e.g. pdb #}
+   neb_end_xyzfile  "{{ neb.end_xyz }}"
+    nimages  {{ neb.nimgs }}
+    convtype  {{ neb.convtype }}
+    printlevel  {{ neb.printlevel }}
+    neb_ts  {{ neb.neb_ts | lower }}
+    ci  {{ neb.neb_ci | lower }}
+    quatern  {{ neb.quatern }}
+    climbingimage  {{ neb.climbingimage | lower }}
+    CheckSCFConv {{ neb.check_scf_conv }}
+    {# TODO(rg): Add the pdbfile variants #}
+    PreOpt {{ neb.preopt }}
+    NSteps_FoundIntermediate {{ neb.nsteps_foundintermediate }}
+    AbortIf_FoundIntermediate {{ neb.abortif_foundintermediate }}
+    npts_interpol {{ neb.npts_interpol }}
+    interpolation  {{ neb.interpolation }}
+    tangent  {{ neb.tangent }}
+
+
+{% if neb.tsguess_settings %}
+    {# TS Guess sub-block #}
+    {% if neb.tsguess_settings.xyz_struct %}
+    TS "{{ neb.tsguess_settings.xyz_struct }}"
+    {% endif %}
+    {% if neb.tsguess_settings.pdb_struct %}
+    TS_PDBFile "{{ neb.tsguess_settings.pdb_struct }}"
+    {% endif %}
+    NEB_TS_Image {{ neb.tsguess_settings.ts_img }}
+{% endif %}
+
+
+{% if neb.fix_center_settings %}
+    {# Fixed center sub-block #}
+    Fix_center  {{ neb.fix_center_settings.active | lower }}
+    Remove_extern_force  {{ neb.fix_center_settings.remove_extern_force | lower }}
+{% endif %}
+
+
+{% if neb.restart_settings %}
+    {# Restart sub-block #}
+    {% if neb.restart_settings.allxyz %}
+    Restart_ALLXYZFile "{{ neb.restart_settings.allxyz }}"
+    {% endif %}
+    {% if neb.restart_settings.gbw_basename %}
+    Restart_GBW_BaseName "{{ neb.restart_settings.gbw_basename }}"
+    {% endif %}
+{% endif %}
+
+
+{% if neb.spring_settings %}
+    {# Spring sub-block #}
+    springtype {{ neb.spring_settings.spring_kind }}
+    springconst  {{ neb.spring_settings.const1 }}
+    springconst2  {{ neb.spring_settings.const2 }}
+    energy_weighted {{ neb.spring_settings.energy_weighted }}
+    perpspring {{ neb.spring_settings.perpspring }}
+    llt_cos {{ neb.spring_settings.llt_cos }}
+{% endif %}
+
+
+{% if neb.free_end_settings %}
+    {# Free end sub-block #}
+    free_end {{ neb.free_end_settings.use }}
+    free_end_type  {{ neb.free_end_settings.opt_type }}
+    free_end_ec {{ neb.free_end_settings.ec }}
+    free_end_ec_end {{ neb.free_end_settings.ec_end }}
+    free_end_kappa {{ neb.free_end_settings.kappa }}
+{% endif %}
+
+
+{% if neb.convtol_settings %}
+    {# Convergence tolerances sub-block #}
+    tol_maxfp_i  {{ neb.convtol_settings.maxfp_i }}
+    tol_rmsfp_i  {{ neb.convtol_settings.rmsfp_i }}
+    tol_maxf_ci  {{ neb.convtol_settings.maxf_ci }}
+    tol_rmsf_ci  {{ neb.convtol_settings.rmsf_ci }}
+    tol_turn_on_ci  {{ neb.convtol_settings.turn_on_ci }}
+    tol_scale  {{ neb.convtol_settings.scale }}
+{% endif %}
+
+
+{% if neb.reparam_settings %}
+    {# Reparam sub-block #}
+    reparam_type  {{ neb.reparam_settings.interp | lower  }}
+    reparam {{ neb.reparam_settings.every }}
+    tol_reparam {{ neb.reparam_settings.tol }}
+{% endif %}
+
+
+{% if neb.optim_settings %}
+    {# Optimizer sub-block #}
+    opt_method  {{ neb.optim_settings.method }}
+    maxmove  {{ neb.optim_settings.maxmove }}
+    stepsize  {{ neb.optim_settings.stepsize }}
+    maxiter  {{ neb.optim_settings.maxiter }}
+    local  {{ neb.optim_settings.local | lower }}
+{% endif %}
+
+
+{% if neb.lbfgs_settings %}
+    {# LBFGS sub-block #}
+    lbfgs_memory  {{ neb.lbfgs_settings.memory }}
+    lbfgs_dr  {{ neb.lbfgs_settings.dr }}
+    lbfgs_restart_on_maxmove  {{ neb.lbfgs_settings.restart_on_maxmove | lower }}
+    lbfgs_reparam_on_restart  {{ neb.lbfgs_settings.reparam_on_restart | lower }}
+    lbfgs_precondition  {{ neb.lbfgs_settings.precondition | lower }}
+{% endif %}
+
+
+{% if neb.fire_settings %}
+    {# FIRE sub-block #}
+    fire_initial_damp  {{ neb.fire_settings.init_damp }}
+    fire_damp_decr  {{ neb.fire_settings.damp_decr }}
+    fire_step_incr  {{ neb.fire_settings.step_incr }}
+    fire_step_decr  {{ neb.fire_settings.step_decr }}
+    fire_max_step  {{ neb.fire_settings.max_step }}
+    fire_retention  {{ neb.fire_settings.retention }}
+{% endif %}
+
+
+{% if neb.zoom_settings %}
+    {# Zoom sub-block #}
+    tol_turn_on_zoom  {{ neb.zoom_settings.tol_turn_on }}
+    zoom_offset  {{ neb.zoom_settings.offset }}
+    zoom_auto  {{ neb.zoom_settings.auto | lower }}
+    zoom_alpha  {{ neb.zoom_settings.alpha }}
+    zoom_interpolation  {{ neb.zoom_settings.interpolation }}
+    zoom_printfulltrj  {{ neb.zoom_settings.printfulltrj | lower }}
+{% endif %}
+
+
+{% if neb.idpp_settings %}
+    {# IDPP sub-block #}
+    idpp_nmax  {{ neb.idpp_settings.nmax }}
+    idpp_tol_maxf  {{ neb.idpp_settings.tol_maxf }}
+    idpp_ksp  {{ neb.idpp_settings.ksp }}
+    idpp_alpha  {{ neb.idpp_settings.alpha }}
+    idpp_maxmove  {{ neb.idpp_settings.maxmove }}
+    idpp_debug  {{ neb.idpp_settings.debug | lower }}
+    idpp_quatern  {{ neb.idpp_settings.quatern | lower }}
+{% endif %}
+end
+{% endblock neb %}
