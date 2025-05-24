@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:TheochemUI/gpr_optim.git
+	branch = main
+	commit = a7554976fecaa9cb31914c55ca16e7113b68057c
+	parent = 9dffd6e333b687ad99efd9ff76ada6e5c518d262
+	method = merge
+	cmdver = 0.4.9

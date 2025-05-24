@@ -1,0 +1,50 @@
+name: "Build GPRD API Docs"
+# TODO: Include master once merged
+on:
+  pull_request:
+    branches: [docs, master]
+jobs:
+  build_apidocs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2.3.4
+    - name: Get external tags
+      run: |
+        mkdir -p apidocs/tags
+        cd apidocs/tags
+        curl https://upload.cppreference.com/mwiki/images/f/f8/cppreference-doxygen-web.tag.xml -o cppreference-doxygen-web.tag.xml
+        cd ../../
+    - name: Get Theme
+      run: |
+        cd apidocs/
+        wget https://github.com/HaoZeke/doxyYoda/releases/download/0.0.2/doxyYoda_0.0.2.tar.gz
+        tar xf doxyYoda_0.0.2.tar.gz
+        cd ../
+
+    - name: Cache micromamba
+      id: cache-mmamba
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/conda_pkgs_dir
+          ~/.cache/pip
+          ~/micromamba/envs
+        key: ${{ runner.os }}-conda
+
+    - name: Install Micromamba
+      if: steps.cache-mmamba.outputs.cache-hit != 'true'
+      uses: mamba-org/provision-with-micromamba@main
+      with:
+        environment-file: environment.yml
+        extra-specs: |
+          doxygen==1.9.1
+
+    - name: Build
+      shell: bash -l {0}
+      run: doxygen apidocs/Doxygen-prj.cfg
+
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./html

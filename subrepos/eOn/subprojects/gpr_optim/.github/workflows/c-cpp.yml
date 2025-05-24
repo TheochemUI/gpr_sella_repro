@@ -1,0 +1,60 @@
+name: GPR-dimer CI
+
+on:
+  push:
+    branches: [master, refactoring]
+  pull_request:
+    branches: [master, refactoring]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+    #   max-parallel: 4
+      matrix:
+        os: [ubuntu-latest]
+    #     cpp-version: [g++-9 , g++-10, clang++]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: get_subm
+        env:
+          SSHK: ${{ secrets.SUBMODULE_PRIVATE }}
+        run: |
+          rm -rf googletest && mkdir -p $HOME/.ssh
+          echo "$SSHK" > $HOME/.ssh/ssh.key
+          chmod 600 $HOME/.ssh/ssh.key
+          export GIT_SSH_COMMAND="ssh -i $HOME/.ssh/ssh.key"
+          git submodule update --init --recursive
+      - name: update
+        if: startsWith(matrix.os, 'ubuntu')
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install make autoconf
+      - name: Cache micromamba
+        id: cache-mmamba
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/conda_pkgs_dir
+            ~/.cache/pip
+            ~/micromamba/envs
+          key: ${{ runner.os }}-conda
+      - name: Install Micromamba
+        uses: mamba-org/provision-with-micromamba@main
+        with:
+          environment-file: environment.yml
+      - name: Build
+        shell: bash -l {0}
+        run: |
+          micromamba info
+          mkdir subprojects
+          meson wrap install gtest
+          meson setup builddir
+          meson compile -C builddir
+      - name: Run
+        shell: bash -l {0}
+        run: |
+          cd builddir
+          ./gprd
