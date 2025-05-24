@@ -1,0 +1,56 @@
+* Benchmark runs
+
+** Running
+
+*** Syncing
+
+** Generating data
+To get the output of runs for analysis the ~calc-rundata.py~ CLI is used.
+#+begin_src bash
+# Sella
+python calc_rundata.py \
+    --base_path sella \
+    --scf_thresh "1e8m" \
+    --run_dir "final_sella" \
+    --code sella \
+    --output "rundata/data_sella.csv" \
+    --min_dir "eon/runs/1e8m/min/hpc_min"
+
+# LBFGS rotations and translations
+python calc_rundata.py \
+    --base_path eon \
+    --scf_thresh "1e8m" \
+    --run_dir "idimer/final_lbfgsrot_lbfgs" \
+    --code eon \
+    --output "rundata/data_idimer_lbfgsrot_lbfgs.csv" \
+    --min_dir "eon/runs/1e8m/min/hpc_min"
+
+# LBFGS translations CG rotations
+python calc_rundata.py \
+    --base_path eon \
+    --scf_thresh "1e8m" \
+    --run_dir "idimer/final_cgrot_lbfgs_dimer" \
+    --code eon \
+    --output "rundata/data_idimer_cgrot_lbfgs.csv" \
+    --min_dir "eon/runs/1e8m/min/hpc_min"
+
+# GP-Dimer (LBFGS+LBFGS)
+python calc_rundata.py \
+    --base_path eon \
+    --scf_thresh "1e8m" \
+    --run_dir "gprd/final_gprd_wparam" \
+    --code eon \
+    --output "rundata/data_gprd.csv" \
+    --min_dir "eon/runs/1e8m/min/hpc_min"
+#+end_src
+
+Each one generates a 501 line (500 systems + 1 header) ~csv~ for further
+analysis.
+
+** Similarity measures
+We use ~sella~ trajectories to quickly compare energies and then the Hausdorff
+distance via IRA.
+
+#+begin_src bash :eval never
+python check_sim.py --base_path sella --run_dir "final_sella" --tolerance 0.1
+#+end_src
