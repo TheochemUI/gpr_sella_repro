@@ -11,5 +11,7 @@ A more accessible form of the same publication is:
 #+begin_quote
 [1] R. Goswami, M. Masterov, S. Kamath, A. Peña-Torres, and H. Jónsson, “Efficient implementation of gaussian process regression accelerated saddle point searches with application to molecular reactions,” May 18, 2025, arXiv: arXiv:2505.12519. doi: 10.48550/arXiv.2505.12519.
 #+end_quote
+* Usage
+Remember to inflate the data using the Zenodo source.
 * License
 MIT. Sub-packages have their own licenses.
