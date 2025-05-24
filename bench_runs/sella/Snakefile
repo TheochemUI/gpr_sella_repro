@@ -1,0 +1,131 @@
+envvars:
+    "NWCHEM_COMMAND",
+    "IS_HPC",
+    "RUN_NAME",
+    "MIN_DIR",
+    "MIN_DUPS",
+    "NWCHEM_MPI"
+
+import csv
+from rgpycrumbs._aux import get_gitroot
+
+SINGLET_IDS = [f"{x:003d}" for x in range(265)]
+DOUBLET_IDS = [f"{x:003d}" for x in range(235)]
+SCF_THRESH = ['1e8m']
+RUN_DIR = [os.environ['RUN_NAME']]
+MIN_DIR = os.environ['MIN_DIR']
+
+SELLA_OUT = ['.log', '.traj']
+
+SELLA_SI = get_gitroot() / "data" / "sella_si_data.zip"
+
+if "min_" in RUN_DIR[0]:
+    def find_unique_ids(singlet_ids, doublet_ids, duplicates_csv):
+        """
+        Filters out duplicate molecule IDs based on a CSV file.
+
+        Args:
+            singlet_ids: A list of singlet molecule IDs (strings).
+            doublet_ids: A list of doublet molecule IDs (strings).
+            duplicates_csv: The path to the CSV file containing duplicate information.
+                             Should have columns: mol_id1, spin1, mol_id2, spin2.
+
+        Returns:
+            A tuple containing two lists:
+            - unique_singlet_ids: Singlet IDs not found as duplicates.
+            - unique_doublet_ids: Doublet IDs not found as duplicates.
+        """
+
+        duplicates = set()
+        try:
+            with open(duplicates_csv, 'r', newline='') as csvfile:
+                reader = csv.reader(csvfile)
+                next(reader, None)  # Skip the header row (if it exists)
+
+                for row in reader:
+                    mol_id1, spin1, mol_id2, spin2 = row
+                    # Add both pairs to the duplicates set.  We add them in a consistent order
+                    # to avoid (id1, id2) and (id2, id1) both being considered unique.
+                    if spin1 == "singlets":
+                        id1 = (mol_id1, "singlets")
+                    else:
+                      id1 = (mol_id1, "doublets")
+
+                    if spin2 == "singlets":
+                        id2 = (mol_id2, "singlets")
+                    else:
+                      id2 = (mol_id2, "doublets")
+
+                    # Ensure consistent order
+                    duplicates.add(tuple(sorted((id1,id2))))
+
+
+        except FileNotFoundError:
+            print(f"Warning: Duplicates CSV file not found: {duplicates_csv}")
+            # Return all IDs as unique if the file doesn't exist.
+            return singlet_ids, doublet_ids
+        except Exception as e:
+          print(f"Error reading the csv: {e}")
+          return singlet_ids, doublet_ids
+
+        unique_singlet_ids = []
+        for mol_id in singlet_ids:
+            is_duplicate = False
+            for dup_pair in duplicates:
+              if (mol_id, "singlets") in dup_pair:
+                is_duplicate = True
+                break
+            if not is_duplicate:
+                unique_singlet_ids.append(mol_id)
+
+        unique_doublet_ids = []
+        for mol_id in doublet_ids:
+            is_duplicate = False
+            for dup_pair in duplicates:
+                if (mol_id, "doublets") in dup_pair:
+                    is_duplicate = True
+                    break
+            if not is_duplicate:
+                unique_doublet_ids.append(mol_id)
+
+
+        return unique_singlet_ids, unique_doublet_ids
+
+    SINGLET_IDS, DOUBLET_IDS =find_unique_ids(SINGLET_IDS, DOUBLET_IDS, os.environ['MIN_DUPS'])
+
+
+rule all:
+  """Run all calculations for different indices and spin states."""
+  input:
+    expand("runs/{scf_thresh}/sella/{rundir}/{spin}/{index}/{spin}_{index}{outidx}", scf_thresh = SCF_THRESH, rundir = RUN_DIR, index=DOUBLET_IDS, spin="doublets", outidx=SELLA_OUT),
+    expand("runs/{scf_thresh}/sella/{rundir}/{spin}/{index}/npes.txt", scf_thresh = SCF_THRESH, rundir = RUN_DIR, index=DOUBLET_IDS, spin="doublets"),
+    expand("runs/{scf_thresh}/sella/{rundir}/{spin}/{index}/{spin}_{index}{outidx}", scf_thresh = SCF_THRESH, rundir = RUN_DIR, index=SINGLET_IDS, spin="singlets", outidx=SELLA_OUT),
+    expand("runs/{scf_thresh}/sella/{rundir}/{spin}/{index}/npes.txt", scf_thresh = SCF_THRESH, rundir = RUN_DIR, index=SINGLET_IDS, spin="singlets"),
+
+
+rule run_sella:
+  """Run sella for a specific index and spin state."""
+  output:
+      "runs/{scf_thresh}/sella/{rundir}/{spin}/{index}/{spin}_{index}.log",
+      "runs/{scf_thresh}/sella/{rundir}/{spin}/{index}/{spin}_{index}.traj",
+      "runs/{scf_thresh}/sella/{rundir}/{spin}/{index}/npes.txt",
+  threads: int(os.environ['NWCHEM_MPI'])
+  resources:
+      nodes=1,
+      ntasks_per_node=int(os.environ['NWCHEM_MPI']),
+      slurm_partition="s-normal",
+      runtime="43200", # 12 hours
+      mem_mb="3000",
+      slurm_account="chem-ui",
+      slurm_out=lambda wc: f"runs/{wc.scf_thresh}/sella/{wc.rundir}/{wc.spin}/{wc.index}/slurm-%j.out",
+      slurm_err=lambda wc: f"runs/{wc.scf_thresh}/sella/{wc.rundir}/{wc.spin}/{wc.index}/slurm-%j.err",
+  shell:
+    """
+    export SCF_THRESH={wildcards.scf_thresh}
+    export RUNDIR={wildcards.rundir}
+    export SPIN={wildcards.spin}
+    export INDEX={wildcards.index}
+    export DATZIP={SELLA_SI}
+    export MIN_DIR={MIN_DIR}
+    ./scripts/run_sella.sh
+    """

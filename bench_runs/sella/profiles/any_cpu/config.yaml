@@ -1,0 +1,13 @@
+# -*- yaml -*-
+keep-going: true
+scheduler: "greedy"
+executor: "slurm"
+jobs: 16
+default-resoruces:
+  slurm_partition: "any_cpu"
+  slurm_account: "rog32"
+
+# TODO(rg): document and setup with YTE
+set-resources:
+  all:
+    runtime: "43200" # 12 hours
