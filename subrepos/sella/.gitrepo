@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:HaoZeke/sella.git
+	branch = gprd_sella_bench
+	commit = 29e059e5230e4576fe45aa100fbee6a5b7187071
+	parent = 0b9064cb3a51720fe136de5d52bc3fab23cfb1e7
+	method = merge
+	cmdver = 0.4.9
