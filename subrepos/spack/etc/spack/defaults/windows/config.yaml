@@ -1,0 +1,5 @@
+config:
+  locks: false
+  build_stage::
+    - '$spack/.staging'
+  stage_name: '{name}-{version}-{hash:7}'

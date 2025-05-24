@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:HaoZeke/spack
+	branch = gprd_sella_bench
+	commit = 36fd547b40c6d7c546f7bea55d53b6d614e7449a
+	parent = fc27dad15825f2fca764683ae22d1249067604d2
+	method = merge
+	cmdver = 0.4.9
