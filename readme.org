@@ -12,6 +12,17 @@ A more accessible form of the same publication is:
 [1] R. Goswami, M. Masterov, S. Kamath, A. Peña-Torres, and H. Jónsson, “Efficient implementation of gaussian process regression accelerated saddle point searches with application to molecular reactions,” May 18, 2025, arXiv: arXiv:2505.12519. doi: 10.48550/arXiv.2505.12519.
 #+end_quote
 * Usage
-Remember to inflate the data using the Zenodo source.
+Remember to inflate the data using the Zenodo source before using the scripts in the repository. This can be done by running the following--assuming that the ~.xz~ files are in the repository root:
+#+begin_src bash
+# CGrot + LBFGS Dimer
+mv cg_dimer.tar.xz bench_runs/eon/runs/1e8m/idimer/final_cgrot_lbfgs_dimer
+tar -xf cg_dimer.tar.xz && rm -rf cg_dimer.tar.xz
+# GPR Dimer
+mv final_gprd_wparam.tar.xz bench_runs/eon/runs/1e8m/gprd
+tar -xf final_gprd_wparam.tar.xz && rm -rf final_gprd_wparam.tar.xz
+# Sella
+mv sella.tar.xz bench_runs/sella
+tar -xf sella.tar.xz && rm -rf sella.tar.xz
+#+end_src
 * License
 MIT. Sub-packages have their own licenses.

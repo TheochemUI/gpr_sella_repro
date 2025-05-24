@@ -1,0 +1,167 @@
+import csv
+
+localrules: prepare_files
+
+envvars:
+    "NWCHEM_COMMAND",
+    "IS_HPC",
+    "RUN_NAME",
+    "NWCHEM_MPI",
+    "MIN_DIR",
+    "MIN_DUPS",
+    "RUN_TYPE"
+
+# For fresh runs
+SINGLET_IDS = [f"{x:003d}" for x in range(265)]
+DOUBLET_IDS = [f"{x:003d}" for x in range(235)]
+SCF_THRESH = ['1e8m']
+RUN_DIR = [os.environ['RUN_NAME']]
+match os.environ['RUN_TYPE']:
+    case "min":
+        RUN_TYPE = ["min"]
+    case "gprd":
+        RUN_TYPE = ["gprd"]
+    case "idimer":
+        RUN_TYPE = ["idimer"]
+    case "min_gprd":
+        RUN_TYPE = ["min_gprd"]
+    case "min_idimer":
+        RUN_TYPE = ["min_idimer"]
+    case "both":
+        RUN_TYPE = ["idimer", "gprd"]
+    case _: # Won't reach here anyway, envvars are enforced in Snakemake
+        pass
+
+eon_saddle_out = [
+    "results.dat",
+    "saddle.con",
+]
+
+if "min_" in RUN_TYPE[0]:
+    RUN_TYPE = RUN_TYPE[0].split('min_')[-1]
+    def find_unique_ids(singlet_ids, doublet_ids, duplicates_csv):
+        """
+        Filters out duplicate molecule IDs based on a CSV file.
+
+        Args:
+            singlet_ids: A list of singlet molecule IDs (strings).
+            doublet_ids: A list of doublet molecule IDs (strings).
+            duplicates_csv: The path to the CSV file containing duplicate information.
+                             Should have columns: mol_id1, spin1, mol_id2, spin2.
+
+        Returns:
+            A tuple containing two lists:
+            - unique_singlet_ids: Singlet IDs not found as duplicates.
+            - unique_doublet_ids: Doublet IDs not found as duplicates.
+        """
+
+        duplicates = set()
+        try:
+            with open(duplicates_csv, 'r', newline='') as csvfile:
+                reader = csv.reader(csvfile)
+                next(reader, None)  # Skip the header row (if it exists)
+
+                for row in reader:
+                    mol_id1, spin1, mol_id2, spin2 = row
+                    # Add both pairs to the duplicates set.  We add them in a consistent order
+                    # to avoid (id1, id2) and (id2, id1) both being considered unique.
+                    if spin1 == "singlets":
+                        id1 = (mol_id1, "singlets")
+                    else:
+                      id1 = (mol_id1, "doublets")
+
+                    if spin2 == "singlets":
+                        id2 = (mol_id2, "singlets")
+                    else:
+                      id2 = (mol_id2, "doublets")
+
+                    # Ensure consistent order
+                    duplicates.add(tuple(sorted((id1,id2))))
+
+
+        except FileNotFoundError:
+            print(f"Warning: Duplicates CSV file not found: {duplicates_csv}")
+            # Return all IDs as unique if the file doesn't exist.
+            return singlet_ids, doublet_ids
+        except Exception as e:
+          print(f"Error reading the csv: {e}")
+          return singlet_ids, doublet_ids
+
+        unique_singlet_ids = []
+        for mol_id in singlet_ids:
+            is_duplicate = False
+            for dup_pair in duplicates:
+              if (mol_id, "singlets") in dup_pair:
+                is_duplicate = True
+                break
+            if not is_duplicate:
+                unique_singlet_ids.append(mol_id)
+
+        unique_doublet_ids = []
+        for mol_id in doublet_ids:
+            is_duplicate = False
+            for dup_pair in duplicates:
+                if (mol_id, "doublets") in dup_pair:
+                    is_duplicate = True
+                    break
+            if not is_duplicate:
+                unique_doublet_ids.append(mol_id)
+
+
+        return unique_singlet_ids, unique_doublet_ids
+
+    SINGLET_IDS, DOUBLET_IDS =find_unique_ids(SINGLET_IDS, DOUBLET_IDS, os.environ['MIN_DUPS'])
+
+
+rule all:
+  """Run all calculations for different indices and spin states."""
+  input:
+    expand("runs/{scf_thresh}/{rtype}/{rundir}/{spin}/{index}/results.dat", index=SINGLET_IDS, spin="singlets", scf_thresh = SCF_THRESH, rundir = RUN_DIR, rtype = RUN_TYPE),
+    expand("runs/{scf_thresh}/{rtype}/{rundir}/{spin}/{index}/results.dat", index=DOUBLET_IDS, spin="doublets", scf_thresh = SCF_THRESH, rundir = RUN_DIR, rtype = RUN_TYPE),
+    expand("runs/{scf_thresh}/{rtype}/{rundir}/{spin}/{index}/saddle.con", index=SINGLET_IDS, spin="singlets", scf_thresh = SCF_THRESH, rundir = RUN_DIR, rtype = RUN_TYPE) if 'min' not in RUN_TYPE else [],
+    expand("runs/{scf_thresh}/{rtype}/{rundir}/{spin}/{index}/saddle.con", index=DOUBLET_IDS, spin="doublets", scf_thresh = SCF_THRESH, rundir = RUN_DIR, rtype = RUN_TYPE) if 'min' not in RUN_TYPE else [],
+    expand("runs/{scf_thresh}/{rtype}/{rundir}/{spin}/{index}/min.con", index=SINGLET_IDS, spin="singlets", scf_thresh = SCF_THRESH, rundir = RUN_DIR, rtype = RUN_TYPE) if 'min' in RUN_TYPE else [],
+    expand("runs/{scf_thresh}/{rtype}/{rundir}/{spin}/{index}/min.con", index=DOUBLET_IDS, spin="doublets", scf_thresh = SCF_THRESH, rundir = RUN_DIR, rtype = RUN_TYPE) if 'min' in RUN_TYPE else [],
+
+rule prepare_files:
+    output:
+        "runs/{scf_thresh}/{rtype}/{rundir}/{spin}/{index}/config.ini",
+        "runs/{scf_thresh}/{rtype}/{rundir}/{spin}/{index}/direction.dat",
+        "runs/{scf_thresh}/{rtype}/{rundir}/{spin}/{index}/displacement.con",
+        "runs/{scf_thresh}/{rtype}/{rundir}/{spin}/{index}/pos.con"
+    shell:
+        """
+        pixi run python run_eon.py {wildcards.index} \
+            --spin {wildcards.spin} --scfthresh {wildcards.scf_thresh} \
+            --rdir {wildcards.rundir} --config-type {wildcards.rtype} \
+            $(if [ -n "$MIN_DIR" ]; then echo "--min_dir '$MIN_DIR'"; fi)
+        """
+
+rule run_eon:
+  """Run blessed eOn for a specific index and spin state."""
+  input: rules.prepare_files.output
+  output:
+      "runs/{scf_thresh}/{rtype}/{rundir}/{spin}/{index}/results.dat",
+      "runs/{scf_thresh}/{rtype}/{rundir}/{spin}/{index}/saddle.con" if 'min' not in RUN_TYPE else [],
+      "runs/{scf_thresh}/{rtype}/{rundir}/{spin}/{index}/min.con" if 'min' in RUN_TYPE else [],
+      "runs/{scf_thresh}/{rtype}/{rundir}/{spin}/{index}/gpr_optim_out.h5" if 'gprd' in RUN_TYPE else [],
+      "runs/{scf_thresh}/{rtype}/{rundir}/{spin}/{index}/mode.dat" if 'min' not in RUN_TYPE else [],
+  threads: int(os.environ['NWCHEM_MPI'])
+  resources:
+      nodes=1,
+      ntasks_per_node=int(os.environ['NWCHEM_MPI']),
+      slurm_partition="s-normal",
+      runtime="43200", # 12 hours
+      mem_mb="3000",
+      slurm_account="chem-ui",
+      slurm_out=lambda wc: f"runs/{wc.scf_thresh}/{wc.rtype}/{wc.rundir}/{wc.spin}/{wc.index}/slurm-%j.out",
+      slurm_err=lambda wc: f"runs/{wc.scf_thresh}/{wc.rtype}/{wc.rundir}/{wc.spin}/{wc.index}/slurm-%j.err",
+  shell:
+        """
+        export SCF_THRESH={wildcards.scf_thresh}
+        export RTYPE={wildcards.rtype}
+        export RUNDIR={wildcards.rundir}
+        export SPIN={wildcards.spin}
+        export INDEX={wildcards.index}
+        ./scripts/run_eon.sh
+        """

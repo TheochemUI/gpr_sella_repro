@@ -1,0 +1,31 @@
+localrules: prepare_files, final_ef_saddles
+
+envvars:
+    "NWCHEM_COMMAND"
+
+# For fresh runs
+SINGLET_IDS = [f"{x:003d}" for x in range(265) if Path(f"runs/improved_dimer/singlets/{x:003d}/results.dat").exists()]
+DOUBLET_IDS = [f"{x:003d}" for x in range(235) if Path(f"runs/improved_dimer/doublets/{x:003d}/results.dat").exists()]
+
+rule all:
+  """Run all calculations for different indices and spin states."""
+  input:
+    expand("runs/improved_dimer/{spin}/{index}/ef_saddle.txt", index=SINGLET_IDS, spin="singlets"),
+    expand("runs/improved_dimer/{spin}/{index}/ef_saddle.txt", index=DOUBLET_IDS, spin="doublets"),
+
+rule final_ef_saddles:
+  input:
+    "runs/improved_dimer/{spin}/{index}/saddle.con"
+  output:
+    "runs/improved_dimer/{spin}/{index}/ef_saddle.txt"
+  shell:
+    """
+    cd runs/improved_dimer/{wildcards.spin}/{wildcards.index}/
+    mkdir -p ef_run; cp config.ini saddle.con ef_run
+    pushd $(pwd)/ef_run
+    pixi run python ../../../../../_saddle_eon_ef.py
+    pixi run eonclient
+    popd
+    mv ef_run/results.dat ef_saddle.txt
+    rm -rf ef_run
+    """
