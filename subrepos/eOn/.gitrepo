@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:TheochemUI/eOn.git
+	branch = main
+	commit = 178bffb7d438f015faa0ac14b086e1b77993d84e
+	parent = 049011731c37d935efde3a8f3d9d9ab4ac78d1e8
+	method = merge
+	cmdver = 0.4.9
