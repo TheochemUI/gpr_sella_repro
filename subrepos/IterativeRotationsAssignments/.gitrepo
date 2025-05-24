@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:HaoZeke/IterativeRotationsAssignments.git
+	branch = gprd_sella_bench
+	commit = 69e4f0bf7e23cd4ed8bc46a7050ecb07a4ed6c74
+	parent = 728d470df394af713ca7d68d407ed61feafb50af
+	method = merge
+	cmdver = 0.4.9
