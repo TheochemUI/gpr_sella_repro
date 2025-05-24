@@ -1,0 +1,116 @@
+%
+% $Id$
+%
+\label{sec:property}
+
+Properties can be calculated for both the Hartree-Fock and DFT wave 
+functions. The properties that are available are:
+
+\begin{itemize}
+\item Natural bond analysis
+\item Dipole, quadrupole, and octupole moment 
+\item Mulliken population analysis and bond order analysis
+\item Electrostatic potential (diamagnetic shielding) at nuclei 
+\item Electric field and field gradient at nuclei 
+\item Electron and spin density at nuclei 
+\item NMR shielding (GIAO method)
+\item NMR hyperfine coupling (Fermi-Contact and Spin-Dipole expectation values)
+\item NMR indirect spin-spin coupling
+\end{itemize}
+
+The properties module is started when the task directive
+\verb+TASK <theory> property+ is defined in the user input file. The input 
+format has the form:
+
+\begin{verbatim}
+  PROPERTY
+    [property keyword]
+    [CENTER ((com || coc || origin || arb <real x y z>) default coc)]
+  END
+\end{verbatim}
+
+Most of the properties can be computed for Hartree-Fock
+(closed-shell RHF, open-shell ROHF, and open-shell UHF), and DFT
+(closed-shell and open-shell spin unrestricted) wavefunctions. The NMR
+chemical shift is limited to closed-shell wave functions, whereas the NMR 
+hyperfine and indirect spin-spin coupling require a UHF or ODFT wave function.
+
+\section{Property keywords}
+
+Each property can be requested by defining one of the following keywords:
+
+\begin{verbatim}
+  NBOFILE
+  DIPOLE
+  QUADRUPOLE
+  OCTUPOLE
+  MULLIKEN
+  ESP
+  EFIELD
+  EFIELDGRAD
+  ELECTRONDENSITY
+  HYPERFINE
+  SHIELDING [<integer> number_of_atoms <integer> atom_list]
+  SPINSPIN [<integer> number_of_pairs <integer> pair_list]
+  AIMFILE
+  ALL
+\end{verbatim}
+
+The ``{\tt ALL}'' keyword generates all currently available properties. 
+
+Both the NMR shielding and spin-spin coupling have additional optional
+parameters that can be defined in the input. For the shielding the user
+can define the number of atoms for which the shielding tensor should be 
+calculated, followed by the list of specific atom centers. In the case 
+of spin-spin coupling the number of atom pairs, followed by the atom
+pairs, can be defined (i.e., spinspin 1 1 2 will calculate the coupling 
+for one pair, and the coupling will be between atoms 1 and 2).
+
+For both the NMR spin-spin and hyperfine coupling the isotope that has 
+the highest abundance and has spin, will be choosen for each atom under
+consideration.
+
+The user also has the option to choose the center of expansion for
+the dipole, quadrupole, and octupole calculations.
+
+\begin{verbatim}
+    [CENTER ((com || coc || origin || arb <real x y z>) default coc)]
+\end{verbatim}
+
+\verb+com+ is the center of mass, \verb+coc+ is the center of charge, \verb+origin+ is 
+(0.0, 0.0, 0.0) and \verb+arb+ is any arbitrary point which must be accompanied
+by the coordinated to be used.  Currently the x, y, and z coordinates
+must be given in the same units as \verb+UNITS+ in \verb+GEOMETRY+ (See Section
+\ref{sec:geomkeys}).
+
+\subsection{Nbofile}
+\label{sec:Nbofile}
+
+The keyword {\tt NBOFILE} does not execute the Natural Bond Analysis
+code, but simply creates an input file to be used as input to the
+stand-alone NBO code.  All other properties are calculated upon
+request.
+
+Following the successful completion of an electronic structure
+calculation, a Natural Bond Orbital (NBO) analysis may be carried out
+by providing the keyword \verb+NBOFILE+ in the \verb+PROPERTY+ directive.  
+NWChem will query the rtdb and construct an ASCII file,
+\verb+<file_prefix>.gen+, that may be used as input to the stand alone
+version of the NBO program, gennbo.  \verb+<file_prefix>+ is equal to
+string following the \verb+START+ directive.  The input deck may be edited
+to provide additional options to the NBO calculation, (see the NBO
+user's manual for details.)  
+
+\subsection{AIM file}
+\label{sec:AIMfile}
+
+The keyword {\tt aimfile} creates a \verb+.wfn+ file from a given 
+eigenvector file (i.e., \verb+.movecs+), geometry and a basis set. 
+The \verb+.wfn+ file summarizes the single determinant wavefunction in order to be analyzed 
+through a third-party software.
+Among some known analyses are the Bader's approach for atoms in molecules (AIM), the electron 
+localization function (ELF), the Fermi hole function and energy density analysis.
+The follow input directive will create the an AIM file \verb+.wfx+ format.
+\begin{verbatim}
+ set prop:nowfx F
+\end{verbatim}

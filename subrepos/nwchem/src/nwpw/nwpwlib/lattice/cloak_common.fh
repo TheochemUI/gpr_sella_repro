@@ -1,0 +1,9 @@
+*
+* $Id$
+*
+
+*     **** common block for masker ****
+      integer masker(2),nwave,nwave_all
+      common / cloak_block / masker,nwave,nwave_all
+
+

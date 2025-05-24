@@ -1,0 +1,6 @@
+      logical oskel
+C$Id$
+      common /cskeleton/ oskel
+c
+c     oskel ... if true SCF uses petite list symmetry
+c                

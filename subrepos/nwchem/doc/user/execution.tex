@@ -1,0 +1,306 @@
+%
+% $Id$
+%
+%A more complete description should be available at 
+%\begin{verbatim}
+%   http://emsl.pnl.gov:2080/docs/nwchem/nwchem.html
+%\htmladdnormallink{http://www.emsl.pnl.gov:2080/docs/nwchem/nwchem.html}
+%{http://www.emsl.pnl.gov:2080/docs/nwchem/nwchem.html}
+%\end{verbatim}
+
+The command required to invoke NWChem is machine dependent, whereas
+most of the NWChem input is machine independent\footnote{Machine
+dependence within the input arises from file names, machine
+specific resources, and differing services provided by the operating system.} .
+
+\section{Sequential execution}
+
+To run NWChem sequentially on nearly all UNIX-based platforms simply
+use the command \verb+nwchem+ and provide the name of the input file
+as an argument (See section \ref{sec:inputstructure} for more information).
+This does assume that either \verb+nwchem+ is in your path or you have
+set an alias of \verb+nwchem+ to point to the appropriate executable.
+
+Output is to standard output, standard error and Fortran unit 6
+(usually the same as standard output).  Files are created by default
+in the current directory, though this may be overridden in the input
+(section \ref{sec:dirs}).
+
+Generally, one will run a job with the following command:
+
+\verb+nwchem input.nw >& input.out &+
+
+\section{Parallel execution on UNIX-based parallel machines
+including workstation clusters using TCGMSG}
+\label{sec:procgrp}
+
+ These platforms require the use of the TCGMSG\footnote{Where required
+TCGMSG is automatically built with NWChem.} \verb+parallel+ command
+and thus also require the definition of a process-group (or procgroup)
+file.  The process-group file describes how many processes to start,
+what program to run, which machines to use, which directories to work
+in, and under which userid to run the processes.  By convention the
+process-group file has a \verb+.p+ suffix.
+
+The process-group file is read to end-of-file.  The character \verb+#+
+(hash or pound sign) is used to indicate a comment which continues to
+the next new-line character.  Each line describes a cluster of
+processes and consists of the following whitespace separated fields:
+
+\begin{verbatim}
+  userid hostname nslave executable workdir
+\end{verbatim}
+
+\begin{itemize}
+\item \verb+userid+ -- The user-name on the machine that will be executing the
+      process. 
+
+\item \verb+hostname+ --  The hostname of the machine to execute this process.
+             If it is the same machine on which parallel was invoked
+             the name must match the value returned by the command 
+             hostname. If a remote machine it must allow remote execution
+             from this machine (see man pages for rlogin, rsh).
+
+\item \verb+nslave+ --  The total number of copies of this process to be executing
+             on the specified machine. Only ``clusters'' of identical processes
+             specified in this fashion can use shared memory to communicate.
+             If no shared memory is supported on machine \verb+<hostname>+ then
+             only the value one (1) is valid.
+
+\item \verb+executable+ --  Full path name on the host \verb+<hostname>+ of the image to execute.
+             If \verb+<hostname>+ is the local machine then a local path will
+             suffice.
+
+\item \verb+workdir+ --  Full path name on the host \verb+<hostname>+ of the directory to
+             work in. Processes execute a chdir() to this directory before
+             returning from pbegin(). If specified as a ``.'' then remote
+             processes will use the login directory on that machine and local
+             processes (relative to where parallel was invoked) will use
+             the current directory of parallel.
+\end{itemize}
+
+  For example, if your file \verb+"nwchem.p"+ contained the following
+\begin{verbatim}
+ d3g681 pc 4 /msrc/apps/bin/nwchem /scr22/rjh
+\end{verbatim}
+then 4 processes running NWChem would be started on the machine 
+\verb+pc+ running as user \verb+d3g681+ in directory \verb+"/scr22/rjh"+.
+To actually run this simply type:
+\begin{verbatim}
+  parallel nwchem big_molecule.nw
+\end{verbatim}
+
+{\em N.B.} : The first process specified (process zero) is the only
+process that
+\begin{itemize}
+\item opens and reads the input file, and
+\item opens and reads/updates the database.
+\end{itemize}
+Thus, if your file systems are physically distributed (e.g., most
+workstation clusters) you must ensure that process zero can correctly
+resolve the paths for the input and database files.
+
+{\em N.B.}  In releases of NWChem prior to 3.3 additional processes
+had to be created on workstation clusters to support remote access to
+shared memory.  This is no longer the case.  The TCGMSG process group
+file now just needs to refer to processes running NWChem.
+
+\section{Parallel execution on UNIX-based parallel machines
+including workstation clusters using MPI}
+
+To run with MPI, \verb+parallel+ should not be used.  The way
+we usually run nwchem under MPI are the following
+
+\begin{itemize}
+\item using mpirun:
+\begin{verbatim}
+     mpirun -np 8 $NWCHEM_TOP/bin/$NWCHEM_TARGET/nwchem input.nw
+\end{verbatim}
+\item If you have all nodes connected via shared memory
+     and you have installed the ch\_shmem version of MPICH,
+     you can do
+\begin{verbatim}
+     $NWCHEM_TOP/bin/$NWCHEM_TARGET/nwchem -np 8 h2o.nw
+\end{verbatim}
+\end{itemize}
+
+\section{Parallel execution on MPPs}
+
+All of these machines require use of different commands in order to
+gain exclusive access to computational resources.
+
+\section{IBM SP}
+
+If using POE (IBM's Parallel Operating Environment) interactively,
+simply create the list of nodes to use in the file \verb+"host.list"+ in
+the current directory and invoke NWChem with
+\begin{verbatim}
+  nwchem <input_file> -procs <n>
+\end{verbatim}
+where \verb+n+ is the number of processes to use.  Process 0 will run
+on the first node in \verb+"host.list"+ and must have access to the
+input and other necessary files.  Very significant performance gains
+may be had by setting the following environment variables before
+running NWChem (or setting them using POE command line options).
+\begin{itemize}
+\item \verb+setenv MP_EUILIB us+ --- dedicated user space
+  communication over the switch (the default is IP over the switch
+  which is much slower).
+\item \verb+setenv MP_CSS_INTERRUPT yes+ --- enable interrupts when a 
+  message arrives (the default is to poll which significantly slows
+  down global array accesses).
+\end{itemize}
+In addition, if the IBM is running PSSP version 3.1, or later
+\begin{itemize}
+\item \verb+setenv MP_MSG_API lapi+, or 
+\item \verb+setenv MP_MSG_API mpi,lapi+ (if using both GA and MPI) 
+\end{itemize}
+
+For batch execution, we recommend use of the \verb+llnw+ command which
+is installed in \verb+/usr/local/bin+ on the EMSL/PNNL IBM SP.  If you 
+are not running on that system, the \verb+llnw+ script may be found in
+the NWChem distribution directory contrib/loadleveler.
+Interactive help may be obtained with the command \verb+llnw -help+.
+Otherwise, the very simplest job to run NWChem in batch using Load
+Leveller is something like this
+\begin{verbatim}
+#!/bin/csh -x
+# @ job_type         =    parallel
+# @ class            =    small
+# @ network.lapi     = css0,not_shared,US
+# @ input            =    /dev/null
+# @ output           =    <OUTPUT_FILE_NAME>
+# @ error            =    <ERROUT_FILE_NAME>
+# @ environment      =    COPY_ALL; MP_PULSE=0; MP_SINGLE_THREAD=yes; MP_WAIT_MODE=yield; restart=no
+# @ min_processors   =    7
+# @ max_processors   =    7
+# @ cpu_limit        =    1:00:00
+# @ wall_clock_limit =    1:00:00
+# @ queue
+#
+
+cd /scratch
+
+nwchem <INPUT_FILE_NAME>
+\end{verbatim}
+
+Substitute \verb+<OUTPUT_FILE_NAME>+, \verb+<ERROUT_FILE_NAME>+ and
+\verb+<INPUT_FILE_NAME>+ with the {\em full} path of the appropriate
+files.  Also, if you are using an SP with more than one processor per node,
+you will need to substitute
+
+\begin{verbatim}
+# @ network.lapi     = css0,shared,US
+# @ node             = NNODE
+# @ tasks_per_node   = NTASK
+\end{verbatim}
+for the lines
+\begin{verbatim}
+# @ network.lapi     = css0,not_shared,US
+# @ min_processors   =    7
+# @ max_processors   =    7
+\end{verbatim}
+where \verb+NNODE+ is the number of physical nodes to be used and 
+\verb+NTASK+ is the
+number of tasks per node.
+
+These files and the NWChem executable must be in a file system
+accessible to all processes.  Put the above into a file (e.g.,
+\verb+"test.job"+) and submit it with the command
+\begin{verbatim}
+  llsubmit test.job
+\end{verbatim}
+It will run a 7 processor, 1 hour job in the queue \verb+small+.  It
+should be apparent how to change these values.
+
+Note that on many IBM SPs, including that at EMSL, the local scratch
+disks are wiped clean at the beginning of each job and therefore
+persistent files should be stored elsewhere.  PIOFS is recommended for
+files larger than a few MB.
+
+\section{Cray T3E}
+
+\begin{verbatim}
+  mpprun -n <npes> $NWCHEM_TOP/bin/$NWCHEM_TARGET/nwchem <input_file>
+\end{verbatim}
+
+where \verb+npes+ is the number of processors and \verb+input_file+ is the
+name of your input file.
+
+% no longer the case with modern kernels
+%\section{Linux}
+%
+%If running in parallel across multiple machines you should consider
+%applying this patch to your kernel to boost the performance of TCP/IP
+%\begin{itemize}
+%\item \htmladdnormallink{http://www.icase.edu/coral/LinuxTCP.html}{http://www.icase.edu/coral/LinuxTCP.html}
+%%\end{itemize}
+
+\section{Alpha systems with Quadrics switch}
+
+\begin{verbatim}
+  prun -n <npes> $NWCHEM_TOP/bin/$NWCHEM_TARGET/nwchem <input_file>
+\end{verbatim}
+
+where \verb+npes+ is the number of processors and \verb+input_file+ is the
+name of your input file.
+
+\section{Windows 98 and NT}
+
+\begin{verbatim}
+   $NWCHEM_TOP/bin/win32/nw32 <input_file>
+\end{verbatim}
+
+where  and \verb+input_file+ is the
+name of your input file. 
+If you use WMPI, you must have a file named {\bf \tt nw32.pg} in the
+\verb+ $NWCHEM_TOP/bin/win32+ directory; the file must only contains the 
+following single line
+\begin{verbatim}
+   local 0
+\end{verbatim}
+
+
+
+\section{Tested Platforms and O/S versions}
+
+\begin{itemize}
+\item IBM SP with Power 3 and Power 4 nodes, AIX 5.1
+    and PSSP 3.4; IBM RS6000 workstation, AIX 5.1. Xlf 8.1.0.0 and
+    8.1.0.1 are known to produce bad code.
+\item SUN workstations with Solaris 2.6 and 2.8. Fujitsu SPARC systems 
+   (thanks to Herbert Fr\"uchtl) with Parallelnavi compilers.
+\item HP DEC alpha workstation , Tru64 V5.1,
+    Compaq Fortran V5.3, V5.4.2, V5.5.1
+\item Linux with Intel x86 cpus. 
+    NWChem Release 4.5 has been tested on RedHat 6.x and 7.x,
+    Mandrake  7.x.
+    We have tested NWChem on Linux for the Power PC Macintosh with
+    Yellow Dog 2.4.
+    These all use the GCC compiler at different levels. 
+    The Intel Fortran Compiler version 7 is supported.
+    The Portland Group Compiler has been tested in a less robust manner.
+    Automatic generation of SSE2 optimized code is available when the 
+    Intel compiler is used (ifc vs g77 performances gain of 40\% in
+    some benchmarks)
+    A somewhat Athlon optimized code can be generated under the GNU
+    or Intel compilers by typing {\tt make \_CPU=k7}.
+    GCC3 specific options can be turned on by typing {\tt make GCC31=y}
+\item HP 9000/800 workstations with  HPUX B.11.00. f90 must be used for
+    compilation.
+\item Intel x86 with Windows 2000 has been tested with Compaq Visual Fortran
+    6.0 and 6.1 with WMPI 1.3 or NT-Mpich.
+    NT-MPICH is available from
+\htmladdnormallink{http://www-unix.mcs.anl.gov/\~\space ashton/mpich.nt/}{http://www-unix.mcs.anl.gov/~ashton/mpich.nt/}
+
+\item Intel IA64 under Linux (with Intel compilers version 7 and later)
+    and under HPUX.
+\item Fujitsu VPP computers.
+
+
+\end{itemize}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "user"
+%%% End: 

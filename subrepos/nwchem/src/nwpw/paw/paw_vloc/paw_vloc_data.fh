@@ -1,0 +1,5 @@
+*
+* $Id$
+*
+      integer vl(4)
+      common /paw_vloc_common/ vl

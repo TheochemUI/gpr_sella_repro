@@ -1,0 +1,8 @@
+*
+* $Id$
+*
+      integer smd_charge_ga
+
+      common /smd_charge_data/ smd_charge_ga
+
+

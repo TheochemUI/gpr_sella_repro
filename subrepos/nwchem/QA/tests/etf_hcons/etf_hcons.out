@@ -1,0 +1,1404 @@
+ argument  1 = /home/edo/nwchem/nwchem-master/QA/tests/etf_hcons/etf_hcons.nw
+  NWChem w/ OpenMP: maximum threads =    1
+
+
+
+============================== echo of input deck ==============================
+echo
+start
+
+basis
+  * library 3-21g
+end
+
+dft
+print low
+iterations 1000
+end
+
+
+geometry nocenter noautosym noautoz
+  C        0.93300        0.53200       -1.40700
+  H        1.44900        0.44900       -2.39500
+  O        0.72500        1.63600       -0.86500
+  O        0.62500       -0.68400       -0.97500
+  C       -0.55900       -1.18100        0.76400
+  H        0.27700       -1.76000        1.09400
+  H       -1.22500       -1.68400        0.09700
+  C       -0.93000       -0.02000        1.41700
+  H       -0.22400        0.89500        0.83300
+  H       -1.95400        0.30300        1.32900
+  H       -0.44300        0.20900        2.35000
+end
+
+constraints
+fix atom 1:11
+unfix atom 9
+spring bond 3 9 5.0 2.54
+end
+
+driver
+print low
+clear
+maxiter 40
+xyz etf
+end
+
+task dft optimize
+
+
+================================================================================
+
+
+                                         
+                                         
+
+
+              Northwest Computational Chemistry Package (NWChem) 6.8
+              ------------------------------------------------------
+
+
+                    Environmental Molecular Sciences Laboratory
+                       Pacific Northwest National Laboratory
+                                Richland, WA 99352
+
+                              Copyright (c) 1994-2018
+                       Pacific Northwest National Laboratory
+                            Battelle Memorial Institute
+
+             NWChem is an open-source computational chemistry package
+                        distributed under the terms of the
+                      Educational Community License (ECL) 2.0
+             A copy of the license is included with this distribution
+                              in the LICENSE.TXT file
+
+                                  ACKNOWLEDGMENT
+                                  --------------
+
+            This software and its documentation were developed at the
+            EMSL at Pacific Northwest National Laboratory, a multiprogram
+            national laboratory, operated for the U.S. Department of Energy
+            by Battelle under Contract Number DE-AC05-76RL01830. Support
+            for this work was provided by the Department of Energy Office
+            of Biological and Environmental Research, Office of Basic
+            Energy Sciences, and the Office of Advanced Scientific Computing.
+
+
+           Job information
+           ---------------
+
+    hostname        = durian
+    program         = /home/edo/nwchem/nwchem-master/bin/LINUX64/nwchem
+    date            = Wed Oct  2 12:52:45 2019
+
+    compiled        = Tue_Oct_01_23:13:22_2019
+    source          = /home/edo/nwchem/nwchem-master
+    nwchem branch   = Development
+    nwchem revision = nwchem_on_git-1221-g767bba738
+    ga revision     = 5.7.0
+    use scalapack   = T
+    input           = /home/edo/nwchem/nwchem-master/QA/tests/etf_hcons/etf_hcons.nw
+    prefix          = etf_hcons.
+    data base       = ./etf_hcons.db
+    status          = startup
+    nproc           =        2
+    time left       =     -1s
+
+
+
+           Memory information
+           ------------------
+
+    heap     =   13107196 doubles =    100.0 Mbytes
+    stack    =   13107201 doubles =    100.0 Mbytes
+    global   =   26214400 doubles =    200.0 Mbytes (distinct from heap & stack)
+    total    =   52428797 doubles =    400.0 Mbytes
+    verify   = yes
+    hardfail = no 
+
+
+           Directory information
+           ---------------------
+
+  0 permanent = .
+  0 scratch   = .
+
+
+
+
+                                NWChem Input Module
+                                -------------------
+
+
+
+
+ Summary of "ao basis" -> "" (cartesian)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ *                           3-21g                    on all atoms 
+
+
+
+ Scaling coordinates for geometry "geometry" by  1.889725989
+ (inverse scale =  0.529177249)
+
+
+
+                             Geometry "geometry" -> ""
+                             -------------------------
+
+ Output coordinates in angstroms (scale by  1.889725989 to convert to a.u.)
+
+  No.       Tag          Charge          X              Y              Z
+ ---- ---------------- ---------- -------------- -------------- --------------
+    1 C                    6.0000     0.93300000     0.53200000    -1.40700000
+    2 H                    1.0000     1.44900000     0.44900000    -2.39500000
+    3 O                    8.0000     0.72500000     1.63600000    -0.86500000
+    4 O                    8.0000     0.62500000    -0.68400000    -0.97500000
+    5 C                    6.0000    -0.55900000    -1.18100000     0.76400000
+    6 H                    1.0000     0.27700000    -1.76000000     1.09400000
+    7 H                    1.0000    -1.22500000    -1.68400000     0.09700000
+    8 C                    6.0000    -0.93000000    -0.02000000     1.41700000
+    9 H                    1.0000    -0.22400000     0.89500000     0.83300000
+   10 H                    1.0000    -1.95400000     0.30300000     1.32900000
+   11 H                    1.0000    -0.44300000     0.20900000     2.35000000
+
+      Atomic Mass 
+      ----------- 
+
+      C                 12.000000
+      H                  1.007825
+      O                 15.994910
+
+
+ Effective nuclear repulsion energy (a.u.)     166.8581715926
+
+            Nuclear Dipole moment (a.u.) 
+            ----------------------------
+        X                 Y               Z
+ ---------------- ---------------- ----------------
+    10.0986956830     3.8059081410   -12.7896654907
+
+
+            XYZ format geometry
+            -------------------
+    11
+ geometry
+ C                     0.93300000     0.53200000    -1.40700000
+ H                     1.44900000     0.44900000    -2.39500000
+ O                     0.72500000     1.63600000    -0.86500000
+ O                     0.62500000    -0.68400000    -0.97500000
+ C                    -0.55900000    -1.18100000     0.76400000
+ H                     0.27700000    -1.76000000     1.09400000
+ H                    -1.22500000    -1.68400000     0.09700000
+ C                    -0.93000000    -0.02000000     1.41700000
+ H                    -0.22400000     0.89500000     0.83300000
+ H                    -1.95400000     0.30300000     1.32900000
+ H                    -0.44300000     0.20900000     2.35000000
+
+ ==============================================================================
+                                internuclear distances
+ ------------------------------------------------------------------------------
+       center one      |      center two      | atomic units |  angstroms
+ ------------------------------------------------------------------------------
+    2 H                |   1 C                |     2.11218  |     1.11772
+    3 O                |   1 C                |     2.35712  |     1.24733
+    4 O                |   1 C                |     2.50711  |     1.32670
+    6 H                |   5 C                |     2.02036  |     1.06913
+    7 H                |   5 C                |     2.01896  |     1.06839
+    8 C                |   5 C                |     2.61300  |     1.38274
+   10 H                |   8 C                |     2.03587  |     1.07733
+   11 H                |   8 C                |     2.03538  |     1.07708
+ ------------------------------------------------------------------------------
+                         number of included internuclear distances:          8
+ ==============================================================================
+
+
+
+ ==============================================================================
+                                 internuclear angles
+ ------------------------------------------------------------------------------
+        center 1       |       center 2       |       center 3       |  degrees
+ ------------------------------------------------------------------------------
+    2 H                |   1 C                |   3 O                |   121.79
+    2 H                |   1 C                |   4 O                |   109.08
+    3 O                |   1 C                |   4 O                |   129.13
+    6 H                |   5 C                |   7 H                |   115.16
+    6 H                |   5 C                |   8 C                |   121.25
+    7 H                |   5 C                |   8 C                |   121.53
+    5 C                |   8 C                |  10 H                |   117.92
+    5 C                |   8 C                |  11 H                |   117.79
+   10 H                |   8 C                |  11 H                |   115.90
+ ------------------------------------------------------------------------------
+                            number of included internuclear angles:          9
+ ==============================================================================
+
+
+
+ fixed atoms                  :   1     2     3     4
+                                  5     6     7     8
+                                 10    11
+
+
+ spring bond (i,j,k,r0)          3       9   5.000   2.540
+ no bondings springs found
+ no bondings springs found
+ no dihedral springs found
+
+  Deleted DRIVER restart files 
+
+                         NWChem Constraints Module
+                         -------------------------
+ General Information
+ -------------------
+ fixed atoms                  :   1     2     3     4
+                                  5     6     7     8
+                                 10    11
+
+
+ spring bond (i,j,k,r0)          3       9   5.000   2.540
+ no bondings springs found
+ no bondings springs found
+ no dihedral springs found
+
+
+                           NWChem Geometry Optimization
+                           ----------------------------
+
+
+ maximum gradient threshold         (gmax) =   0.000450
+ rms gradient threshold             (grms) =   0.000300
+ maximum cartesian step threshold   (xmax) =   0.001800
+ rms cartesian step threshold       (xrms) =   0.001200
+ fixed trust radius                (trust) =   0.300000
+ maximum step size to saddle      (sadstp) =   0.100000
+ energy precision                  (eprec) =   5.0D-06
+ maximum number of steps          (nptopt) =   40
+ initial hessian option           (inhess) =    0
+ line search option               (linopt) =    1
+ hessian update option            (modupd) =    1
+ saddle point option              (modsad) =    0
+ initial eigen-mode to follow     (moddir) =    0
+ initial variable to follow       (vardir) =    0
+ follow first negative mode     (firstneg) =    T
+ apply conjugacy                    (opcg) =    F
+ source of zmatrix                         =           
+
+
+          -------------------
+          Energy Minimization
+          -------------------
+
+
+ Using diagonal initial Hessian 
+
+          --------
+          Step   0
+          --------
+
+                                 NWChem DFT Module
+                                 -----------------
+
+
+                      Basis "ao basis" -> "ao basis" (cartesian)
+                      -----
+  C (Carbon)
+  ----------
+            Exponent  Coefficients 
+       -------------- ---------------------------------------------------------
+  1 S  1.72256000E+02  0.061767
+  1 S  2.59109000E+01  0.358794
+  1 S  5.53335000E+00  0.700713
+
+  2 S  3.66498000E+00 -0.395897
+  2 S  7.70545000E-01  1.215840
+
+  3 P  3.66498000E+00  0.236460
+  3 P  7.70545000E-01  0.860619
+
+  4 S  1.95857000E-01  1.000000
+
+  5 P  1.95857000E-01  1.000000
+
+  H (Hydrogen)
+  ------------
+            Exponent  Coefficients 
+       -------------- ---------------------------------------------------------
+  1 S  5.44717800E+00  0.156285
+  1 S  8.24547000E-01  0.904691
+
+  2 S  1.83192000E-01  1.000000
+
+  O (Oxygen)
+  ----------
+            Exponent  Coefficients 
+       -------------- ---------------------------------------------------------
+  1 S  3.22037000E+02  0.059239
+  1 S  4.84308000E+01  0.351500
+  1 S  1.04206000E+01  0.707658
+
+  2 S  7.40294000E+00 -0.404453
+  2 S  1.57620000E+00  1.221560
+
+  3 P  7.40294000E+00  0.244586
+  3 P  1.57620000E+00  0.853955
+
+  4 S  3.73684000E-01  1.000000
+
+  5 P  3.73684000E-01  1.000000
+
+
+
+ Summary of "ao basis" -> "ao basis" (cartesian)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ C                           3-21g                   5        9   3s2p
+ H                           3-21g                   2        2   2s
+ O                           3-21g                   5        9   3s2p
+
+
+
+  Caching 1-el integrals 
+   Time after variat. SCF:      0.1
+   Time prior to 1st pass:      0.1
+  Resetting Diis
+
+
+         Total DFT energy =     -264.644926095864
+      One electron energy =     -693.811940353420
+           Coulomb energy =      295.524979094709
+    Exchange-Corr. energy =      -33.216136429716
+ Nuclear repulsion energy =      166.858171592564
+
+ Numeric. integr. density =       39.999978626845
+
+     Total iterative time =      4.4s
+
+
+
+
+                         DFT ENERGY GRADIENTS
+
+    atom               coordinates                        gradient
+                 x          y          z           x          y          z
+   1 C       1.763114   1.005334  -2.658844    0.000000   0.000000   0.000000
+   2 H       2.738213   0.848487  -4.525894    0.000000   0.000000   0.000000
+   3 O       1.370051   3.091592  -1.634613    0.000000   0.000000   0.000000
+   4 O       1.181079  -1.292573  -1.842483    0.000000   0.000000   0.000000
+   5 C      -1.056357  -2.231766   1.443751    0.000000   0.000000   0.000000
+   6 H       0.523454  -3.325918   2.067360    0.000000   0.000000   0.000000
+   7 H      -2.314914  -3.182299   0.183303    0.000000   0.000000   0.000000
+   8 C      -1.757445  -0.037795   2.677742    0.000000   0.000000   0.000000
+   9 H      -0.423299   1.691305   1.574142    0.029770   0.028064  -0.000337
+  10 H      -3.692525   0.572587   2.511446    0.000000   0.000000   0.000000
+  11 H      -0.837149   0.394953   4.440856    0.000000   0.000000   0.000000
+
+
+@ Step       Energy      Delta E   Gmax     Grms     Xrms     Xmax   Walltime
+@ ---- ---------------- -------- -------- -------- -------- -------- --------
+@    0    -254.93466565  0.0D+00 11.36754  2.42176  0.00000  0.00000      5.7
+                                                                    
+
+ Restricting large step in mode    1 eval= 9.0D-02 step= 5.7D+00 new= 3.0D-01
+ Restricting large step in mode    2 eval= 1.1D-01 step=-4.6D+01 new=-3.0D-01
+ Restricting large step in mode    3 eval= 4.0D-01 step= 3.2D+01 new= 3.0D-01
+ Restricting overall step due to large component. alpha=  0.76
+
+                                 NWChem DFT Module
+                                 -----------------
+
+
+
+  Caching 1-el integrals 
+   Time after variat. SCF:      5.7
+   Time prior to 1st pass:      5.7
+
+
+         Total DFT energy =     -264.638065700234
+      One electron energy =     -694.215188464339
+           Coulomb energy =      295.692710361650
+    Exchange-Corr. energy =      -33.203509013488
+ Nuclear repulsion energy =      167.087921415944
+
+ Numeric. integr. density =       39.999996622059
+
+     Total iterative time =      2.9s
+
+
+ Line search: 
+     step= 0.76 grad=-5.6D+00 hess= 9.7D-01 energy=   -258.608063 mode=downhill
+ new step= 2.87                   predicted energy=   -262.905485
+
+          --------
+          Step   1
+          --------
+
+                                 NWChem DFT Module
+                                 -----------------
+
+
+
+  Caching 1-el integrals 
+   Time after variat. SCF:      8.6
+   Time prior to 1st pass:      8.6
+
+
+         Total DFT energy =     -264.609308877063
+      One electron energy =     -695.704548882017
+           Coulomb energy =      296.328300346626
+    Exchange-Corr. energy =      -33.200846629378
+ Nuclear repulsion energy =      167.967786287705
+
+ Numeric. integr. density =       40.000002279505
+
+     Total iterative time =      3.2s
+
+
+
+
+                         DFT ENERGY GRADIENTS
+
+    atom               coordinates                        gradient
+                 x          y          z           x          y          z
+   1 C       1.763114   1.005334  -2.658844    0.000000   0.000000   0.000000
+   2 H       2.738213   0.848487  -4.525894    0.000000   0.000000   0.000000
+   3 O       1.370051   3.091592  -1.634613    0.000000   0.000000   0.000000
+   4 O       1.181079  -1.292573  -1.842483    0.000000   0.000000   0.000000
+   5 C      -1.056357  -2.231766   1.443751    0.000000   0.000000   0.000000
+   6 H       0.523454  -3.325918   2.067360    0.000000   0.000000   0.000000
+   7 H      -2.314914  -3.182299   0.183303    0.000000   0.000000   0.000000
+   8 C      -1.757445  -0.037795   2.677742    0.000000   0.000000   0.000000
+   9 H       0.430734   1.226609   0.445200    0.021586  -0.022822  -0.001577
+  10 H      -3.692525   0.572587   2.511446    0.000000   0.000000   0.000000
+  11 H      -0.837149   0.394953   4.440856    0.000000   0.000000   0.000000
+
+
+  Step       Energy      Delta E   Gmax     Grms     Xrms     Xmax   Walltime
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    1    -263.78017232 -8.8D+00  2.87211  0.71002  0.25936  1.12894     13.0
+                                                                    
+
+ Restricting large step in mode    1 eval= 8.8D-02 step= 1.4D+01 new= 3.0D-01
+ Restricting large step in mode    2 eval= 1.6D-01 step= 8.3D+00 new= 3.0D-01
+ Restricting large step in mode   33 eval= 8.1D+00 step=-4.5D-01 new=-3.0D-01
+ Restricting overall step due to large component. alpha=  0.64
+
+                                 NWChem DFT Module
+                                 -----------------
+
+
+
+  Caching 1-el integrals 
+   Time after variat. SCF:     13.0
+   Time prior to 1st pass:     13.0
+
+
+         Total DFT energy =     -264.617587647711
+      One electron energy =     -695.613149867823
+           Coulomb energy =      296.230305685016
+    Exchange-Corr. energy =      -33.202177180373
+ Nuclear repulsion energy =      167.967433715470
+
+ Numeric. integr. density =       39.999994082339
+
+     Total iterative time =      2.5s
+
+
+ Line search: 
+     step= 0.64 grad=-1.9D+00 hess= 1.0D+00 energy=   -264.542736 mode=downhill
+ new step= 0.89                   predicted energy=   -264.610710
+
+          --------
+          Step   2
+          --------
+
+                                 NWChem DFT Module
+                                 -----------------
+
+
+
+  Caching 1-el integrals 
+   Time after variat. SCF:     15.6
+   Time prior to 1st pass:     15.6
+
+
+         Total DFT energy =     -264.621875907482
+      One electron energy =     -695.604942231901
+           Coulomb energy =      296.207007641519
+    Exchange-Corr. energy =      -33.205387605460
+ Nuclear repulsion energy =      167.981446288359
+
+ Numeric. integr. density =       39.999997361478
+
+     Total iterative time =      2.2s
+
+
+
+
+                         DFT ENERGY GRADIENTS
+
+    atom               coordinates                        gradient
+                 x          y          z           x          y          z
+   1 C       1.763114   1.005334  -2.658844    0.000000   0.000000   0.000000
+   2 H       2.738213   0.848487  -4.525894    0.000000   0.000000   0.000000
+   3 O       1.370051   3.091592  -1.634613    0.000000   0.000000   0.000000
+   4 O       1.181079  -1.292573  -1.842483    0.000000   0.000000   0.000000
+   5 C      -1.056357  -2.231766   1.443751    0.000000   0.000000   0.000000
+   6 H       0.523454  -3.325918   2.067360    0.000000   0.000000   0.000000
+   7 H      -2.314914  -3.182299   0.183303    0.000000   0.000000   0.000000
+   8 C      -1.757445  -0.037795   2.677742    0.000000   0.000000   0.000000
+   9 H       0.440329   1.646826   0.251475    0.011022  -0.036546   0.002822
+  10 H      -3.692525   0.572587   2.511446    0.000000   0.000000   0.000000
+  11 H      -0.837149   0.394953   4.440856    0.000000   0.000000   0.000000
+
+
+  Step       Energy      Delta E   Gmax     Grms     Xrms     Xmax   Walltime
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    2    -264.62123905 -8.4D-01  0.10046  0.02364  0.08057  0.42022     18.9
+                                                                    
+
+
+                                 NWChem DFT Module
+                                 -----------------
+
+
+
+  Caching 1-el integrals 
+   Time after variat. SCF:     19.0
+   Time prior to 1st pass:     19.0
+
+
+         Total DFT energy =     -264.625088103017
+      One electron energy =     -695.484775345591
+           Coulomb energy =      296.152108361189
+    Exchange-Corr. energy =      -33.203818828469
+ Nuclear repulsion energy =      167.911397709855
+
+ Numeric. integr. density =       40.000004079837
+
+     Total iterative time =      2.2s
+
+
+ Line search: 
+     step= 1.00 grad=-4.1D-03 hess= 5.7D-04 energy=   -264.624809 mode=downhill
+ new step= 3.62                   predicted energy=   -264.628729
+
+          --------
+          Step   3
+          --------
+
+                                 NWChem DFT Module
+                                 -----------------
+
+
+
+  Caching 1-el integrals 
+   Time after variat. SCF:     21.2
+   Time prior to 1st pass:     21.2
+
+
+         Total DFT energy =     -264.630902500839
+      One electron energy =     -695.105832449826
+           Coulomb energy =      295.981786287164
+    Exchange-Corr. energy =      -33.198099656426
+ Nuclear repulsion energy =      167.691243318249
+
+ Numeric. integr. density =       40.000014366967
+
+     Total iterative time =      2.6s
+
+
+
+
+                         DFT ENERGY GRADIENTS
+
+    atom               coordinates                        gradient
+                 x          y          z           x          y          z
+   1 C       1.763114   1.005334  -2.658844    0.000000   0.000000   0.000000
+   2 H       2.738213   0.848487  -4.525894    0.000000   0.000000   0.000000
+   3 O       1.370051   3.091592  -1.634613    0.000000   0.000000   0.000000
+   4 O       1.181079  -1.292573  -1.842483    0.000000   0.000000   0.000000
+   5 C      -1.056357  -2.231766   1.443751    0.000000   0.000000   0.000000
+   6 H       0.523454  -3.325918   2.067360    0.000000   0.000000   0.000000
+   7 H      -2.314914  -3.182299   0.183303    0.000000   0.000000   0.000000
+   8 C      -1.757445  -0.037795   2.677742    0.000000   0.000000   0.000000
+   9 H       0.129986   1.894660   0.258132   -0.004821  -0.026901   0.007669
+  10 H      -3.692525   0.572587   2.511446    0.000000   0.000000   0.000000
+  11 H      -0.837149   0.394953   4.440856    0.000000   0.000000   0.000000
+
+
+  Step       Energy      Delta E   Gmax     Grms     Xrms     Xmax   Walltime
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    3    -264.62893000 -7.7D-03  0.15453  0.03831  0.06915  0.31034     25.0
+                                                                    
+
+
+                                 NWChem DFT Module
+                                 -----------------
+
+
+
+  Caching 1-el integrals 
+   Time after variat. SCF:     25.0
+   Time prior to 1st pass:     25.0
+
+
+         Total DFT energy =     -264.633245062500
+      One electron energy =     -694.946267141024
+           Coulomb energy =      295.906099084358
+    Exchange-Corr. energy =      -33.197327743254
+ Nuclear repulsion energy =      167.604250737420
+
+ Numeric. integr. density =       39.999998441568
+
+     Total iterative time =      2.2s
+
+
+ Line search: 
+     step= 1.00 grad=-1.0D-02 hess= 7.3D-03 energy=   -264.631970 mode=downhill
+ new step= 0.71                   predicted energy=   -264.632595
+
+          --------
+          Step   4
+          --------
+
+                                 NWChem DFT Module
+                                 -----------------
+
+
+
+  Caching 1-el integrals 
+   Time after variat. SCF:     27.2
+   Time prior to 1st pass:     27.2
+
+
+         Total DFT energy =     -264.632625247224
+      One electron energy =     -694.993184302850
+           Coulomb energy =      295.927649101837
+    Exchange-Corr. energy =      -33.197472851262
+ Nuclear repulsion energy =      167.630382805050
+
+ Numeric. integr. density =       40.000003657724
+
+     Total iterative time =      2.2s
+
+
+
+
+                         DFT ENERGY GRADIENTS
+
+    atom               coordinates                        gradient
+                 x          y          z           x          y          z
+   1 C       1.763114   1.005334  -2.658844    0.000000   0.000000   0.000000
+   2 H       2.738213   0.848487  -4.525894    0.000000   0.000000   0.000000
+   3 O       1.370051   3.091592  -1.634613    0.000000   0.000000   0.000000
+   4 O       1.181079  -1.292573  -1.842483    0.000000   0.000000   0.000000
+   5 C      -1.056357  -2.231766   1.443751    0.000000   0.000000   0.000000
+   6 H       0.523454  -3.325918   2.067360    0.000000   0.000000   0.000000
+   7 H      -2.314914  -3.182299   0.183303    0.000000   0.000000   0.000000
+   8 C      -1.757445  -0.037795   2.677742    0.000000   0.000000   0.000000
+   9 H       0.172021   1.967005   0.294262   -0.004961  -0.025233   0.012898
+  10 H      -3.692525   0.572587   2.511446    0.000000   0.000000   0.000000
+  11 H      -0.837149   0.394953   4.440856    0.000000   0.000000   0.000000
+
+
+  Step       Energy      Delta E   Gmax     Grms     Xrms     Xmax   Walltime
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    4    -264.63243776 -3.5D-03  0.03372  0.00721  0.01587  0.07235     30.6
+                                                                    
+
+
+                                 NWChem DFT Module
+                                 -----------------
+
+
+
+  Caching 1-el integrals 
+   Time after variat. SCF:     30.6
+   Time prior to 1st pass:     30.6
+
+
+         Total DFT energy =     -264.634550030377
+      One electron energy =     -694.593656643277
+           Coulomb energy =      295.748456218657
+    Exchange-Corr. energy =      -33.191415819076
+ Nuclear repulsion energy =      167.402066213319
+
+ Numeric. integr. density =       39.999982122435
+
+     Total iterative time =      2.5s
+
+
+ Line search: 
+     step= 1.00 grad=-3.6D-03 hess= 1.7D-03 energy=   -264.634283 mode=accept  
+ new step= 1.00                   predicted energy=   -264.634283
+
+          --------
+          Step   5
+          --------
+
+                                 NWChem DFT Module
+                                 -----------------
+
+
+
+
+  The DFT is already converged 
+
+         Total DFT energy =   -264.634550030377
+
+
+
+                         DFT ENERGY GRADIENTS
+
+    atom               coordinates                        gradient
+                 x          y          z           x          y          z
+   1 C       1.763114   1.005334  -2.658844    0.000000   0.000000   0.000000
+   2 H       2.738213   0.848487  -4.525894    0.000000   0.000000   0.000000
+   3 O       1.370051   3.091592  -1.634613    0.000000   0.000000   0.000000
+   4 O       1.181079  -1.292573  -1.842483    0.000000   0.000000   0.000000
+   5 C      -1.056357  -2.231766   1.443751    0.000000   0.000000   0.000000
+   6 H       0.523454  -3.325918   2.067360    0.000000   0.000000   0.000000
+   7 H      -2.314914  -3.182299   0.183303    0.000000   0.000000   0.000000
+   8 C      -1.757445  -0.037795   2.677742    0.000000   0.000000   0.000000
+   9 H       0.092511   2.141098   0.353652   -0.011351  -0.015511   0.020638
+  10 H      -3.692525   0.572587   2.511446    0.000000   0.000000   0.000000
+  11 H      -0.837149   0.394953   4.440856    0.000000   0.000000   0.000000
+
+
+  Step       Energy      Delta E   Gmax     Grms     Xrms     Xmax   Walltime
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    5    -264.63428349 -1.8D-03  0.07763  0.01754  0.03488  0.17409     34.3
+                                                                    
+
+
+                                 NWChem DFT Module
+                                 -----------------
+
+
+
+  Caching 1-el integrals 
+   Time after variat. SCF:     34.3
+   Time prior to 1st pass:     34.3
+
+
+         Total DFT energy =     -264.634746748328
+      One electron energy =     -694.603474202917
+           Coulomb energy =      295.752334260740
+    Exchange-Corr. energy =      -33.191865901989
+ Nuclear repulsion energy =      167.408259095837
+
+ Numeric. integr. density =       39.999981588873
+
+     Total iterative time =      2.2s
+
+
+ Line search: 
+     step= 1.00 grad=-7.1D-04 hess= 2.5D-04 energy=   -264.634746 mode=downhill
+ new step= 1.44                   predicted energy=   -264.634793
+
+          --------
+          Step   6
+          --------
+
+                                 NWChem DFT Module
+                                 -----------------
+
+
+
+  Caching 1-el integrals 
+   Time after variat. SCF:     36.6
+   Time prior to 1st pass:     36.6
+
+
+         Total DFT energy =     -264.634832974233
+      One electron energy =     -694.607316192510
+           Coulomb energy =      295.753533133059
+    Exchange-Corr. energy =      -33.192022300608
+ Nuclear repulsion energy =      167.410972385826
+
+ Numeric. integr. density =       39.999981351684
+
+     Total iterative time =      1.9s
+
+
+
+
+                         DFT ENERGY GRADIENTS
+
+    atom               coordinates                        gradient
+                 x          y          z           x          y          z
+   1 C       1.763114   1.005334  -2.658844    0.000000   0.000000   0.000000
+   2 H       2.738213   0.848487  -4.525894    0.000000   0.000000   0.000000
+   3 O       1.370051   3.091592  -1.634613    0.000000   0.000000   0.000000
+   4 O       1.181079  -1.292573  -1.842483    0.000000   0.000000   0.000000
+   5 C      -1.056357  -2.231766   1.443751    0.000000   0.000000   0.000000
+   6 H       0.523454  -3.325918   2.067360    0.000000   0.000000   0.000000
+   7 H      -2.314914  -3.182299   0.183303    0.000000   0.000000   0.000000
+   8 C      -1.757445  -0.037795   2.677742    0.000000   0.000000   0.000000
+   9 H       0.098843   2.145597   0.346907   -0.011495  -0.015901   0.020871
+  10 H      -3.692525   0.572587   2.511446    0.000000   0.000000   0.000000
+  11 H      -0.837149   0.394953   4.440856    0.000000   0.000000   0.000000
+
+
+  Step       Energy      Delta E   Gmax     Grms     Xrms     Xmax   Walltime
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    6    -264.63479331 -5.1D-04  0.00540  0.00106  0.00179  0.00674     39.6
+                                                                    
+
+
+                                 NWChem DFT Module
+                                 -----------------
+
+
+
+  Caching 1-el integrals 
+   Time after variat. SCF:     39.6
+   Time prior to 1st pass:     39.6
+
+
+         Total DFT energy =     -264.635115149641
+      One electron energy =     -694.462046250845
+           Coulomb energy =      295.688001457746
+    Exchange-Corr. energy =      -33.190003876778
+ Nuclear repulsion energy =      167.328933520235
+
+ Numeric. integr. density =       39.999974220140
+
+     Total iterative time =      2.2s
+
+
+ Line search: 
+     step= 1.00 grad=-4.6D-04 hess= 1.6D-04 energy=   -264.635098 mode=downhill
+ new step= 1.45                   predicted energy=   -264.635131
+
+          --------
+          Step   7
+          --------
+
+                                 NWChem DFT Module
+                                 -----------------
+
+
+
+  Caching 1-el integrals 
+   Time after variat. SCF:     41.9
+   Time prior to 1st pass:     41.9
+
+
+         Total DFT energy =     -264.635118016512
+      One electron energy =     -694.396410108347
+           Coulomb energy =      295.659458904049
+    Exchange-Corr. energy =      -33.189153571743
+ Nuclear repulsion energy =      167.290986759530
+
+ Numeric. integr. density =       39.999972550912
+
+     Total iterative time =      1.9s
+
+
+
+
+                         DFT ENERGY GRADIENTS
+
+    atom               coordinates                        gradient
+                 x          y          z           x          y          z
+   1 C       1.763114   1.005334  -2.658844    0.000000   0.000000   0.000000
+   2 H       2.738213   0.848487  -4.525894    0.000000   0.000000   0.000000
+   3 O       1.370051   3.091592  -1.634613    0.000000   0.000000   0.000000
+   4 O       1.181079  -1.292573  -1.842483    0.000000   0.000000   0.000000
+   5 C      -1.056357  -2.231766   1.443751    0.000000   0.000000   0.000000
+   6 H       0.523454  -3.325918   2.067360    0.000000   0.000000   0.000000
+   7 H      -2.314914  -3.182299   0.183303    0.000000   0.000000   0.000000
+   8 C      -1.757445  -0.037795   2.677742    0.000000   0.000000   0.000000
+   9 H       0.057862   2.246264   0.368332   -0.015307  -0.010382   0.024975
+  10 H      -3.692525   0.572587   2.511446    0.000000   0.000000   0.000000
+  11 H      -0.837149   0.394953   4.440856    0.000000   0.000000   0.000000
+
+
+  Step       Energy      Delta E   Gmax     Grms     Xrms     Xmax   Walltime
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    7    -264.63511578 -3.2D-04  0.01971  0.00425  0.01928  0.10067     44.9
+                                                                    
+
+
+                                 NWChem DFT Module
+                                 -----------------
+
+
+
+  Caching 1-el integrals 
+   Time after variat. SCF:     44.9
+   Time prior to 1st pass:     44.9
+
+
+         Total DFT energy =     -264.635191985578
+      One electron energy =     -694.409744759909
+           Coulomb energy =      295.664146483103
+    Exchange-Corr. energy =      -33.189324932555
+ Nuclear repulsion energy =      167.299731223782
+
+ Numeric. integr. density =       39.999972647393
+
+     Total iterative time =      1.6s
+
+
+ Line search: 
+     step= 1.00 grad=-6.0D-05 hess= 2.9D-05 energy=   -264.635147 mode=accept  
+ new step= 1.00                   predicted energy=   -264.635147
+
+          --------
+          Step   8
+          --------
+
+                                 NWChem DFT Module
+                                 -----------------
+
+
+
+
+  The DFT is already converged 
+
+         Total DFT energy =   -264.635191985578
+
+
+
+                         DFT ENERGY GRADIENTS
+
+    atom               coordinates                        gradient
+                 x          y          z           x          y          z
+   1 C       1.763114   1.005334  -2.658844    0.000000   0.000000   0.000000
+   2 H       2.738213   0.848487  -4.525894    0.000000   0.000000   0.000000
+   3 O       1.370051   3.091592  -1.634613    0.000000   0.000000   0.000000
+   4 O       1.181079  -1.292573  -1.842483    0.000000   0.000000   0.000000
+   5 C      -1.056357  -2.231766   1.443751    0.000000   0.000000   0.000000
+   6 H       0.523454  -3.325918   2.067360    0.000000   0.000000   0.000000
+   7 H      -2.314914  -3.182299   0.183303    0.000000   0.000000   0.000000
+   8 C      -1.757445  -0.037795   2.677742    0.000000   0.000000   0.000000
+   9 H       0.056974   2.242003   0.362987   -0.015349  -0.010749   0.024643
+  10 H      -3.692525   0.572587   2.511446    0.000000   0.000000   0.000000
+  11 H      -0.837149   0.394953   4.440856    0.000000   0.000000   0.000000
+
+
+  Step       Energy      Delta E   Gmax     Grms     Xrms     Xmax   Walltime
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    8    -264.63514704 -3.1D-05  0.00104  0.00022  0.00120  0.00534     47.7
+                                              ok       ok           
+
+
+                                 NWChem DFT Module
+                                 -----------------
+
+
+
+  Caching 1-el integrals 
+   Time after variat. SCF:     47.7
+   Time prior to 1st pass:     47.7
+
+
+         Total DFT energy =     -264.635203033244
+      One electron energy =     -694.396298534190
+           Coulomb energy =      295.658598788023
+    Exchange-Corr. energy =      -33.189208152519
+ Nuclear repulsion energy =      167.291704865442
+
+ Numeric. integr. density =       39.999972327427
+
+     Total iterative time =      1.9s
+
+
+ Line search: 
+     step= 1.00 grad=-8.2D-06 hess= 2.6D-06 energy=   -264.635153 mode=downhill
+ new step= 1.57                   predicted energy=   -264.635153
+
+          --------
+          Step   9
+          --------
+
+                                 NWChem DFT Module
+                                 -----------------
+
+
+
+  Caching 1-el integrals 
+   Time after variat. SCF:     49.6
+   Time prior to 1st pass:     49.6
+
+
+         Total DFT energy =     -264.635206473358
+      One electron energy =     -694.387439822847
+           Coulomb energy =      295.654112115195
+    Exchange-Corr. energy =      -33.189013281340
+ Nuclear repulsion energy =      167.287134515634
+
+ Numeric. integr. density =       39.999972177346
+
+     Total iterative time =      1.6s
+
+
+
+
+                         DFT ENERGY GRADIENTS
+
+    atom               coordinates                        gradient
+                 x          y          z           x          y          z
+   1 C       1.763114   1.005334  -2.658844    0.000000   0.000000   0.000000
+   2 H       2.738213   0.848487  -4.525894    0.000000   0.000000   0.000000
+   3 O       1.370051   3.091592  -1.634613    0.000000   0.000000   0.000000
+   4 O       1.181079  -1.292573  -1.842483    0.000000   0.000000   0.000000
+   5 C      -1.056357  -2.231766   1.443751    0.000000   0.000000   0.000000
+   6 H       0.523454  -3.325918   2.067360    0.000000   0.000000   0.000000
+   7 H      -2.314914  -3.182299   0.183303    0.000000   0.000000   0.000000
+   8 C      -1.757445  -0.037795   2.677742    0.000000   0.000000   0.000000
+   9 H       0.046083   2.254006   0.360539   -0.016110  -0.010112   0.024851
+  10 H      -3.692525   0.572587   2.511446    0.000000   0.000000   0.000000
+  11 H      -0.837149   0.394953   4.440856    0.000000   0.000000   0.000000
+
+
+  Step       Energy      Delta E   Gmax     Grms     Xrms     Xmax   Walltime
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    9    -264.63515348 -6.4D-06  0.00088  0.00023  0.00285  0.01200     52.3
+                                              ok                    
+
+
+                                 NWChem DFT Module
+                                 -----------------
+
+
+
+  Caching 1-el integrals 
+   Time after variat. SCF:     52.3
+   Time prior to 1st pass:     52.3
+
+
+         Total DFT energy =     -264.635205579312
+      One electron energy =     -694.390645872032
+           Coulomb energy =      295.655588405274
+    Exchange-Corr. energy =      -33.189062276105
+ Nuclear repulsion energy =      167.288914163550
+
+ Numeric. integr. density =       39.999972192953
+
+     Total iterative time =      0.9s
+
+
+ Line search: 
+     step= 1.00 grad=-1.3D-06 hess= 2.2D-07 energy=   -264.635155 mode=accept  
+ new step= 1.00                   predicted energy=   -264.635155
+
+          --------
+          Step  10
+          --------
+
+                                 NWChem DFT Module
+                                 -----------------
+
+
+
+
+  The DFT is already converged 
+
+         Total DFT energy =   -264.635205579312
+
+
+
+                         DFT ENERGY GRADIENTS
+
+    atom               coordinates                        gradient
+                 x          y          z           x          y          z
+   1 C       1.763114   1.005334  -2.658844    0.000000   0.000000   0.000000
+   2 H       2.738213   0.848487  -4.525894    0.000000   0.000000   0.000000
+   3 O       1.370051   3.091592  -1.634613    0.000000   0.000000   0.000000
+   4 O       1.181079  -1.292573  -1.842483    0.000000   0.000000   0.000000
+   5 C      -1.056357  -2.231766   1.443751    0.000000   0.000000   0.000000
+   6 H       0.523454  -3.325918   2.067360    0.000000   0.000000   0.000000
+   7 H      -2.314914  -3.182299   0.183303    0.000000   0.000000   0.000000
+   8 C      -1.757445  -0.037795   2.677742    0.000000   0.000000   0.000000
+   9 H       0.043928   2.252679   0.358627   -0.016180  -0.010175   0.024686
+  10 H      -3.692525   0.572587   2.511446    0.000000   0.000000   0.000000
+  11 H      -0.837149   0.394953   4.440856    0.000000   0.000000   0.000000
+
+
+  Step       Energy      Delta E   Gmax     Grms     Xrms     Xmax   Walltime
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@   10    -264.63515456 -1.1D-06  0.00052  0.00013  0.00055  0.00216     54.4
+                                              ok       ok           
+
+
+                                 NWChem DFT Module
+                                 -----------------
+
+
+
+  Caching 1-el integrals 
+   Time after variat. SCF:     54.4
+   Time prior to 1st pass:     54.4
+
+
+         Total DFT energy =     -264.635203235020
+      One electron energy =     -694.398873504647
+           Coulomb energy =      295.660375755004
+    Exchange-Corr. energy =      -33.189363203031
+ Nuclear repulsion energy =      167.292657717655
+
+ Numeric. integr. density =       39.999972252016
+
+     Total iterative time =      1.2s
+
+
+ Line search: 
+     step= 1.00 grad=-1.6D-06 hess= 8.8D-07 energy=   -264.635155 mode=accept  
+ new step= 1.00                   predicted energy=   -264.635155
+
+          --------
+          Step  11
+          --------
+
+                                 NWChem DFT Module
+                                 -----------------
+
+
+
+
+  The DFT is already converged 
+
+         Total DFT energy =   -264.635203235020
+
+
+
+                         DFT ENERGY GRADIENTS
+
+    atom               coordinates                        gradient
+                 x          y          z           x          y          z
+   1 C       1.763114   1.005334  -2.658844    0.000000   0.000000   0.000000
+   2 H       2.738213   0.848487  -4.525894    0.000000   0.000000   0.000000
+   3 O       1.370051   3.091592  -1.634613    0.000000   0.000000   0.000000
+   4 O       1.181079  -1.292573  -1.842483    0.000000   0.000000   0.000000
+   5 C      -1.056357  -2.231766   1.443751    0.000000   0.000000   0.000000
+   6 H       0.523454  -3.325918   2.067360    0.000000   0.000000   0.000000
+   7 H      -2.314914  -3.182299   0.183303    0.000000   0.000000   0.000000
+   8 C      -1.757445  -0.037795   2.677742    0.000000   0.000000   0.000000
+   9 H       0.040195   2.249838   0.355062   -0.016304  -0.010327   0.024382
+  10 H      -3.692525   0.572587   2.511446    0.000000   0.000000   0.000000
+  11 H      -0.837149   0.394953   4.440856    0.000000   0.000000   0.000000
+
+
+  Step       Energy      Delta E   Gmax     Grms     Xrms     Xmax   Walltime
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@   11    -264.63515525 -6.9D-07  0.00009  0.00002  0.00103  0.00373     56.8
+                                     ok       ok       ok           
+
+
+                                 NWChem DFT Module
+                                 -----------------
+
+
+
+  Caching 1-el integrals 
+   Time after variat. SCF:     56.8
+   Time prior to 1st pass:     56.8
+
+
+         Total DFT energy =     -264.635203683732
+      One electron energy =     -694.397276510870
+           Coulomb energy =      295.658831078429
+    Exchange-Corr. energy =      -33.189201991367
+ Nuclear repulsion energy =      167.292443740076
+
+ Numeric. integr. density =       39.999972249077
+
+     Total iterative time =      0.9s
+
+
+ Line search: 
+     step= 1.00 grad=-4.4D-09 hess=-6.2D-08 energy=   -264.635155 mode=accept  
+ new step= 1.00                   predicted energy=   -264.635155
+
+          --------
+          Step  12
+          --------
+
+                                 NWChem DFT Module
+                                 -----------------
+
+
+
+
+  The DFT is already converged 
+
+         Total DFT energy =   -264.635203683732
+
+
+
+                         DFT ENERGY GRADIENTS
+
+    atom               coordinates                        gradient
+                 x          y          z           x          y          z
+   1 C       1.763114   1.005334  -2.658844    0.000000   0.000000   0.000000
+   2 H       2.738213   0.848487  -4.525894    0.000000   0.000000   0.000000
+   3 O       1.370051   3.091592  -1.634613    0.000000   0.000000   0.000000
+   4 O       1.181079  -1.292573  -1.842483    0.000000   0.000000   0.000000
+   5 C      -1.056357  -2.231766   1.443751    0.000000   0.000000   0.000000
+   6 H       0.523454  -3.325918   2.067360    0.000000   0.000000   0.000000
+   7 H      -2.314914  -3.182299   0.183303    0.000000   0.000000   0.000000
+   8 C      -1.757445  -0.037795   2.677742    0.000000   0.000000   0.000000
+   9 H       0.040301   2.250020   0.355194   -0.016301  -0.010316   0.024394
+  10 H      -3.692525   0.572587   2.511446    0.000000   0.000000   0.000000
+  11 H      -0.837149   0.394953   4.440856    0.000000   0.000000   0.000000
+
+
+  Step       Energy      Delta E   Gmax     Grms     Xrms     Xmax   Walltime
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@   12    -264.63515532 -6.7D-08  0.00000  0.00000  0.00004  0.00018     58.9
+                                     ok       ok       ok       ok  
+
+
+      ----------------------
+      Optimization converged
+      ----------------------
+
+
+  Step       Energy      Delta E   Gmax     Grms     Xrms     Xmax   Walltime
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@   12    -264.63515532 -6.7D-08  0.00000  0.00000  0.00004  0.00018     58.9
+                                     ok       ok       ok       ok  
+
+
+
+                         Geometry "geometry" -> "geometry"
+                         ---------------------------------
+
+ Output coordinates in angstroms (scale by  1.889725989 to convert to a.u.)
+
+  No.       Tag          Charge          X              Y              Z
+ ---- ---------------- ---------- -------------- -------------- --------------
+    1 C                    6.0000     0.93300000     0.53200000    -1.40700000
+    2 H                    1.0000     1.44900000     0.44900000    -2.39500000
+    3 O                    8.0000     0.72500000     1.63600000    -0.86500000
+    4 O                    8.0000     0.62500000    -0.68400000    -0.97500000
+    5 C                    6.0000    -0.55900000    -1.18100000     0.76400000
+    6 H                    1.0000     0.27700000    -1.76000000     1.09400000
+    7 H                    1.0000    -1.22500000    -1.68400000     0.09700000
+    8 C                    6.0000    -0.93000000    -0.02000000     1.41700000
+    9 H                    1.0000     0.02132658     1.19065950     0.18796070
+   10 H                    1.0000    -1.95400000     0.30300000     1.32900000
+   11 H                    1.0000    -0.44300000     0.20900000     2.35000000
+
+      Atomic Mass 
+      ----------- 
+
+      C                 12.000000
+      H                  1.007825
+      O                 15.994910
+
+
+ Effective nuclear repulsion energy (a.u.)     167.2924437401
+
+            Nuclear Dipole moment (a.u.) 
+            ----------------------------
+        X                 Y               Z
+ ---------------- ---------------- ----------------
+    10.5622957054     4.3646235841   -14.0086130234
+
+                         NWChem Constraints Module
+                         -------------------------
+ Summary
+ -------
+ fixed atoms                  :   1     2     3     4
+                                  5     6     7     8
+                                 10    11
+
+
+ spring #                    :    1
+ spring parameters (i,j,k,r0):    3   9 5.000   2.540
+ spring length               :  2.537
+ spring energy               :  0.000
+ spring forces               : -0.016  -0.010   0.024
+   
+ Total energy with constraints        :    -264.635155
+ Energy contribution from constraints :       0.000048
+ Total energy without constraints     :    -264.635204
+ --------------------------------------
+
+ Task  times  cpu:       58.7s     wall:       58.9s
+
+
+                                NWChem Input Module
+                                -------------------
+
+
+ Summary of allocated global arrays
+-----------------------------------
+  No active global arrays
+
+
+
+                         GA Statistics for process    0
+                         ------------------------------
+
+       create   destroy   get      put      acc     scatter   gather  read&inc
+calls: 2330     2330     1.02e+06 6734     6.40e+05    0        0     3.20e+04 
+number of processes/call -1.89e+12 3.86e+13 -1.73e+12 0.00e+00 0.00e+00
+bytes total:             3.52e+08 4.24e+07 1.73e+08 0.00e+00 0.00e+00 2.56e+05
+bytes remote:            2.43e+06 8.84e+05 3.00e+06 0.00e+00 0.00e+00 0.00e+00
+Max memory consumed for GA by this process: 935712 bytes
+
+MA_summarize_allocated_blocks: starting scan ...
+MA_summarize_allocated_blocks: scan completed: 0 heap blocks, 0 stack blocks
+MA usage statistics:
+
+	allocation statistics:
+					      heap	     stack
+					      ----	     -----
+	current number of blocks	         0	         0
+	maximum number of blocks	        28	        51
+	current total bytes		         0	         0
+	maximum total bytes		  54531440	  22513704
+	maximum total K-bytes		     54532	     22514
+	maximum total M-bytes		        55	        23
+
+
+                                     CITATION
+                                     --------
+                Please cite the following reference when publishing
+                           results obtained with NWChem:
+
+                 M. Valiev, E.J. Bylaska, N. Govind, K. Kowalski,
+              T.P. Straatsma, H.J.J. van Dam, D. Wang, J. Nieplocha,
+                        E. Apra, T.L. Windus, W.A. de Jong
+                 "NWChem: a comprehensive and scalable open-source
+                  solution for large scale molecular simulations"
+                      Comput. Phys. Commun. 181, 1477 (2010)
+                           doi:10.1016/j.cpc.2010.04.018
+
+                                      AUTHORS
+                                      -------
+     E. Apra, E. J. Bylaska, N. Govind, K. Kowalski, M. Valiev, W. A. de Jong,
+      T. P. Straatsma, H. J. J. van Dam, D. Wang, T. L. Windus, N. P. Bauman,
+       A. Panyala, J. Hammond, J. Autschbach, K. Bhaskaran-Nair, J. Brabec,
+    K. Lopata, S. A. Fischer, S. Krishnamoorthy, M. Jacquelin, W. Ma, M. Klemm,
+       O. Villa, Y. Chen, V. Anisimov, F. Aquino, S. Hirata, M. T. Hackler,
+          Eric Hermes, L. Janssen, J. E. Moore, J. C. Becca, V. Konjkov,
+            D. Mejia-Rodriguez, T. Risthaus, M. Malagoli, A. Marenich,
+   A. Otero-de-la-Roza, J. Mullin, P. Nichols, R. Peverati, J. Pittner, Y. Zhao,
+        P.-D. Fan, A. Fonari, M. J. Williamson, R. J. Harrison, J. R. Rehr,
+      M. Dupuis, D. Silverstein, D. M. A. Smith, J. Nieplocha, V. Tipparaju,
+    M. Krishnan, B. E. Van Kuiken, A. Vazquez-Mayagoitia, L. Jensen, M. Swart,
+      Q. Wu, T. Van Voorhis, A. A. Auer, M. Nooijen, L. D. Crosby, E. Brown,
+      G. Cisneros, G. I. Fann, H. Fruchtl, J. Garza, K. Hirao, R. A. Kendall,
+      J. A. Nichols, K. Tsemekhman, K. Wolinski, J. Anchell, D. E. Bernholdt,
+      P. Borowski, T. Clark, D. Clerc, H. Dachsel, M. J. O. Deegan, K. Dyall,
+    D. Elwood, E. Glendening, M. Gutowski, A. C. Hess, J. Jaffe, B. G. Johnson,
+     J. Ju, R. Kobayashi, R. Kutteh, Z. Lin, R. Littlefield, X. Long, B. Meng,
+      T. Nakajima, S. Niu, L. Pollack, M. Rosing, K. Glaesemann, G. Sandrone,
+      M. Stave, H. Taylor, G. Thomas, J. H. van Lenthe, A. T. Wong, Z. Zhang.
+       Aggregate GFloating-point ops:   61.94    
+        Aggregate GFLOPS (Real_time):   1.051    
+        Aggregate GFLOPS (Proc_time):   1.055    
+                    Average   GFLOPS:  0.5257    
+                    Max       GFLOPS:  0.7464    
+                    Min       GFLOPS:  0.3049    
+
+ Total times  cpu:       58.7s     wall:       58.9s

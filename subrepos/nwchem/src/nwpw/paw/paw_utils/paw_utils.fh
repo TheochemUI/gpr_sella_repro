@@ -1,0 +1,7 @@
+!c
+!c $Id$
+!c
+
+      double precision find_multipole_energy
+      external find_multipole_energy
+

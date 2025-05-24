@@ -1,0 +1,1749 @@
+%
+% $Id$ 
+%
+\label{sec:dft}
+
+The NWChem density functional theory (DFT) module uses the
+Gaussian basis set approach to compute
+closed shell and open shell densities and Kohn-Sham orbitals
+in the: 
+\begin{itemize}
+\item local density approximation (LDA), 
+\item non-local density approximation (NLDA), 
+\item local spin-density approximation (LSD), 
+\item non-local spin-density approximation (NLSD),
+\item non-local meta-GGA approximation (metaGGA),
+\item any empirical mixture of local and non-local approximations
+(including exact exchange), and
+\item asymptotically corrected exchange-correlation potentials.
+\end{itemize}
+
+The formal scaling of the DFT computation can be reduced by choosing
+to use auxiliary Gaussian basis sets to fit the charge density (CD) and/or 
+fit the exchange-correlation (XC) potential.
+
+DFT input is provided using the compound \verb+DFT+ directive
+\begin{verbatim}
+  DFT
+    ...
+  END
+\end{verbatim}
+The actual DFT calculation will be performed when the input module
+encounters the \verb+TASK+ directive (Section \ref{sec:task}).  
+\begin{verbatim}
+  TASK DFT
+\end{verbatim}
+
+Once a user has specified a geometry and a Kohn-Sham orbital basis set
+the DFT module can be invoked with no input directives (defaults 
+invoked throughout).  There are sub-directives which allow for 
+customized application; those currently provided as options for 
+the DFT module are:
+\begin{verbatim}
+  VECTORS [[input] (<string input_movecs default atomic>) || \
+                   (project <string basisname> <string filename>)] \
+           [swap [alpha||beta] <integer vec1 vec2> ...] \
+           [output <string output_filename default input_movecs>] \
+
+
+  XC [[acm] [b3lyp] [beckehandh] [pbe0]\
+     [becke97]  [becke97-1] [becke97-2] [becke97-3] [becke97-d] [becke98] \
+      [hcth] [hcth120] [hcth147]\
+      [hcth407] [becke97gga1]  [hcth407p]\
+      [mpw91] [mpw1k] [xft97] [cft97] [ft97] [op] [bop] [pbeop]\
+      [xpkzb99] [cpkzb99] [xtpss03] [ctpss03] [xctpssh]\
+      [b1b95] [bb1k] [mpw1b95] [mpwb1k] [pw6b95] [pwb6k] [m05] [m05-2x] [vs98] \
+      [m06] [m06-hf] [m06-L] [m06-2x] \
+      [HFexch <real prefactor default 1.0>] \
+      [becke88 [nonlocal] <real prefactor default 1.0>] \
+      [xperdew91 [nonlocal] <real prefactor default 1.0>] \
+      [xpbe96 [nonlocal] <real prefactor default 1.0>] \
+      [gill96 [nonlocal] <real prefactor default 1.0>] \
+      [lyp <real prefactor default 1.0>] \
+      [perdew81 <real prefactor default 1.0>] \
+      [perdew86 [nonlocal] <real prefactor default 1.0>] \
+      [perdew91 [nonlocal] <real prefactor default 1.0>] \
+      [cpbe96 [nonlocal] <real prefactor default 1.0>] \
+      [pw91lda <real prefactor default 1.0>] \
+      [slater <real prefactor default 1.0>] \
+      [vwn_1 <real prefactor default 1.0>] \
+      [vwn_2 <real prefactor default 1.0>] \
+      [vwn_3 <real prefactor default 1.0>] \
+      [vwn_4 <real prefactor default 1.0>] \
+      [vwn_5 <real prefactor default 1.0>] \
+      [vwn_1_rpa <real prefactor default 1.0>] \
+      [xtpss03 [nonlocal] <real prefactor default 1.0>] \
+      [ctpss03 [nonlocal] <real prefactor default 1.0>] \
+      [bc95 [nonlocal] <real prefactor default 1.0>] \
+      [xpw6b95 [nonlocal] <real prefactor default 1.0>] \
+      [xpwb6k [nonlocal] <real prefactor default 1.0>] \
+      [xm05 [nonlocal] <real prefactor default 1.0>] \
+      [xm05-2x [nonlocal] <real prefactor default 1.0>] \
+      [cpw6b95 [nonlocal] <real prefactor default 1.0>] \
+      [cpwb6k [nonlocal] <real prefactor default 1.0>] \
+      [cm05 [nonlocal] <real prefactor default 1.0>] \
+      [cm05-2x [nonlocal] <real prefactor default 1.0>]] \
+      [xvs98 [nonlocal] <real prefactor default 1.0>]] \
+      [cvs98 [nonlocal] <real prefactor default 1.0>]] \
+      [xm06-L [nonlocal] <real prefactor default 1.0>]] \
+      [xm06-hf [nonlocal] <real prefactor default 1.0>]] \
+      [xm06 [nonlocal] <real prefactor default 1.0>]] \
+      [xm06-2x [nonlocal] <real prefactor default 1.0>]] \
+      [cm06-L [nonlocal] <real prefactor default 1.0>]] \
+      [cm06-hf [nonlocal] <real prefactor default 1.0>]] \
+      [cm06 [nonlocal] <real prefactor default 1.0>]] \
+      [cm06-2x [nonlocal] <real prefactor default 1.0>]] 
+
+
+
+  CONVERGENCE [[energy <real energy default 1e-7>] \
+               [density <real density default 1e-5>] \
+               [gradient <real gradient default 5e-4>] \
+               [dampon <real dampon default 0.0>] \
+               [dampoff <real dampoff default 0.0>] \
+               [diison <real diison default 0.0>] \
+               [diisoff <real diisoff default 0.0>] \
+               [levlon <real levlon default 0.0>] \
+               [levloff <real levloff default 0.0>] \
+               [ncydp <integer ncydp default 2>] \
+               [ncyds <integer ncyds default 30>] \
+               [ncysh <integer ncysh default 30>] \
+               [damp <integer ndamp default 0>] [nodamping] \
+               [diis [nfock <integer nfock default 10>]] \
+               [nodiis] [lshift <real lshift default 0.5>] \
+               [nolevelshifting] \
+               [hl_tol <real hl_tol default 0.1>] \
+               [rabuck [n_rabuck <integer n_rabuck default 25>]]
+
+
+  GRID [(xcoarse||coarse||medium||fine||xfine) default medium] \
+       [(gausleg||lebedev ) default lebedev ] \
+       [(becke||erf1||erf2||ssf) default erf1] \
+       [(euler||mura||treutler) default mura] \
+       [rm <real rm default 2.0>] \
+       [nodisk]
+        
+
+  TOLERANCES [[tight] [tol_rho <real tol_rho default 1e-10>] \
+              [accCoul <integer accCoul default 8>] \
+              [radius <real radius default 25.0>]]
+
+
+  [(LB94||CS00 <real shift default none>)]
+
+  DECOMP
+  ODFT
+  DIRECT
+  SEMIDIRECT [filesize <integer filesize default disksize>]
+             [memsize  <integer memsize default available>]
+             [filename <string filename default $file_prefix.aoints$>]
+  INCORE
+  ITERATIONS <integer iterations default 30>
+  MAX_OVL
+  MULLIKEN
+  DISP
+  MULT <integer mult default 1>
+  NOIO
+  PRINT||NOPRINT
+\end{verbatim}
+%              [accCDfunc <integer accAOfunc default 20>] \
+%       [store_wght] [nquad_task <integer nquad_task default 1>] \
+
+The following 
+sections describe these keywords and
+optional sub-directives that can be specified for a \verb+DFT+ calculation
+in NWChem.
+
+\section{Specification of Basis Sets for the DFT Module}
+
+The DFT module requires at a minimum the basis set for the Kohn-Sham 
+molecular orbitals.  This basis set must be in the default basis set named
+{\tt "ao basis"}, or it must be assigned to this default name using the
+\verb+SET+ directive (see Section \ref{sec:set}).
+
+In addition to the basis set for the Kohn-Sham orbitals, 
+the charge density fitting basis set can also be specified in the 
+input directives for the DFT module.  This basis set is used for the 
+evaluation of the Coulomb potential in the Dunlap scheme\footnote{B.I.~Dunlap, 
+J.W.D.~Connolly and J.R.~Sabin, J.~Chem.~Phys.~{\bf 71},  4993 (1979)}.
+The charge density fitting basis set must have the name {\tt "cd basis"}.
+This can be the actual name of a basis set, or a basis set can be 
+assigned this name using the \verb+SET+ directive, as described in
+Section \ref{sec:set}.  If this basis set is not defined by input,
+the $O(N^4)$ exact Coulomb contribution is computed.
+
+The user also has the option of specifying a third basis set for the 
+evaluation of the exchange-correlation potential.  This basis set must
+have the name {\tt "xc basis"}.  If this basis set is not specified
+by input, the exchange contribution (XC) is evaluated by numerical
+quadrature.  In most applications, this approach is efficient enough,
+so the {\tt "xc basis"} basis set is not generally required.
+
+For the DFT module, the input options for defining the basis sets in a given
+calculation can be summarized as follows;
+\begin{itemize}
+\item {\tt "ao basis"} -- Kohn-Sham molecular orbitals; required for all 
+calculations
+\item {\tt "cd basis"} -- charge density fitting basis set; optional, but
+recommended for evaluation of the Coulomb potential
+\item {\tt "xc basis"} -- exchange-correlation (XC) fitting basis set; 
+optional, and usually not recommended
+\end{itemize}
+
+
+\section{{\tt VECTORS} and {\tt MAX\_OVL} --- KS-MO Vectors}
+
+The \verb+VECTORS+ directive is the same as that in the SCF module
+(Section \ref{sec:vectors}).  Currently, the \verb+LOCK+ keyword
+is not supported by the DFT module, however the directive
+\begin{verbatim}
+  MAX_OVL
+\end{verbatim}
+has the same effect.
+
+\section{{\tt XC} and {\tt DECOMP} --- Exchange-Correlation Potentials}
+\label{sec:xc}
+\begin{verbatim}
+  XC [[acm] [b3lyp] [beckehandh] [pbe0]\
+     [becke97]  [becke97-1] [becke97-2] [becke97-3] [becke98] [hcth] [hcth120] [hcth147] \
+      [hcth407] [becke97gga1] [hcth407p] \
+      [optx] [hcthp14] [mpw91] [mpw1k] [xft97] [cft97] [ft97] [op] [bop] [pbeop]\
+      [HFexch <real prefactor default 1.0>] \
+      [becke88 [nonlocal] <real prefactor default 1.0>] \
+      [xperdew91 [nonlocal] <real prefactor default 1.0>] \
+      [xpbe96 [nonlocal] <real prefactor default 1.0>] \
+      [gill96 [nonlocal] <real prefactor default 1.0>] \
+      [lyp <real prefactor default 1.0>] \
+      [perdew81 <real prefactor default 1.0>] \
+      [perdew86 [nonlocal] <real prefactor default 1.0>] \
+      [perdew91 [nonlocal] <real prefactor default 1.0>] \
+      [cpbe96 [nonlocal] <real prefactor default 1.0>] \
+      [pw91lda <real prefactor default 1.0>] \
+      [slater <real prefactor default 1.0>] \
+      [vwn_1 <real prefactor default 1.0>] \
+      [vwn_2 <real prefactor default 1.0>] \
+      [vwn_3 <real prefactor default 1.0>] \
+      [vwn_4 <real prefactor default 1.0>] \
+      [vwn_5 <real prefactor default 1.0>] \
+      [vwn_1_rpa <real prefactor default 1.0>]]
+\end{verbatim}
+
+The user has the option of specifying the exchange-correlation
+treatment in the DFT Module (see table \ref{tablexc}).
+  The default exchange-correlation
+functional is defined as the local density approximation (LDA) for
+closed shell systems and its counterpart the local spin-density (LSD)
+approximation for open shell systems.  Within this approximation the
+exchange functional is the Slater $\rho^{1/3}$ functional (from
+J.C.~Slater, {\sl Quantum Theory of Molecules and Solids, Vol.~4: The
+  Self-Consistent Field for Molecules and Solids} (McGraw-Hill, New
+York, 1974)), and the correlation functional is the Vosko-Wilk-Nusair
+(VWN) functional (functional V) (S.J.~Vosko, L.~Wilk and M.~Nusair,
+Can.~J.~Phys.~{\bf 58}, 1200 (1980)).  The parameters used in this
+formula are obtained by fitting to the Ceperley and
+Alder\footnote{D.M.~Ceperley and B.J.~Alder, Phys. Rev. Lett. {\bf
+    45}, 566 (1980).}
+Quantum Monte-Carlo solution of the {\em
+  homogeneous electron gas}.
+
+These defaults can be invoked explicitly by specifying the following
+keywords within the DFT module input directive, \verb+XC slater vwn_5+.
+
+
+That is, this statement in the input file
+\begin{verbatim}
+dft
+  XC slater vwn_5
+end
+task dft
+\end{verbatim}
+
+is equivalent to the simple line
+\begin{verbatim}
+task dft
+\end{verbatim}
+
+
+The \verb+DECOMP+ directive causes the components of the energy
+corresponding to each functional to be printed, rather than just the
+total exchange-correlation energy which is the default.  You can see
+an example of this directive in the sample input in 
+Section \ref{sec:DFTsample}.
+
+
+Many alternative exchange and correlation functionals are available to
+the user as listed in table \ref{tablexc}.  The following sections describe 
+how to use these options.
+
+\subsection{Exchange-Correlation Functionals}
+
+There are several Exchange and Correlation functionals in addition to the 
+default {\tt slater} and {\tt vwn\_5}
+functionals.  These are either local or gradient-corrected functionals (GCA);
+a full list can be found in table \ref{tablexc}. 
+
+%\begin{itemize}
+%
+%\item the Becke 1998 gradient-corrected functional (see A.D.~Becke, 
+% Phys. Rev. A {\bf 38}, 3098 (1988)), is invoked by specifying
+%
+%\begin{verbatim}
+%   XC becke88
+%\end{verbatim}
+%
+%\item the Perdew 1991 gradient-corrected exchange functional (J.P. Perdew,
+%  J.A.~Chevary, S.H.~Vosko, K.A.~Jackson, M.R.~Pederson, D.J.~Singh
+%  and C.~Fiolhais, Phys. Rev. B {\bf 46}, 6671 (1992)), is invoked by specifying
+%
+%\begin{verbatim}
+%   XC xperdew91
+%\end{verbatim}
+%
+%\item the Perdew-Burke-Ernzerhof gradient-corrected exchange functional \\
+% (J.P.~Perdew, K.~Burke and M.~Ernzerhof, Physical Review Letters
+%{\bf 77}, 3865 (1996); {\bf 78}, 1396 (1997))), is invoked by specifying
+%
+%\begin{verbatim}
+%   XC xpbe96
+%\end{verbatim}
+%
+%\item the Gill 1996 gradient-corrected exchange functional (P.W.Gill , Mol. Phys. {\bf 89}, 433 (1996)), is invoked by specifying
+%
+%\begin{verbatim}
+%   XC gill96
+%\end{verbatim}
+
+
+%\item 
+The Hartree-Fock exact exchange functional, (which has $O(N^4)$
+computation expense), is invoked by specifying
+\begin{verbatim}
+   XC HFexch
+\end{verbatim}
+%\end{itemize}
+
+Note that the user also has the ability to include only the local or
+nonlocal contributions of a given functional.  In addition the user
+can specify a multiplicative prefactor (the variable
+\verb+<prefactor>+ in the input) for the local/nonlocal component or
+total.  An example of this might be,
+\begin{verbatim}
+   XC becke88 nonlocal 0.72
+\end{verbatim}
+The user should be aware that the Becke88 local component is simply
+the Slater exchange and should be input as such.
+
+Any combination of the supported exchange functional options can be
+used.  For example the popular Gaussian B3 exchange could be specified
+as:
+\begin{verbatim}
+   XC slater 0.8 becke88 nonlocal 0.72 HFexch 0.2
+\end{verbatim}
+
+  
+%\subsection{Correlation Functionals}
+
+%In addition to the default \verb+vwn_5+ correlation functional, the user has
+%alternative correlation functionals as listed in table \ref{tablexc}.
+%to choose from: lyp, perdew81,
+%perdew86, perdew91, pw91lda, \verb+vwn_1+, \verb+vwn_2+, \verb+vwn_3+,
+%\verb+vwn_4+, and \verb+vwn_1_rpa+.
+
+%As in the exchange functional input, individual local/nonlocal
+%components as well as multiplicative prefactors can be invoked where
+%appropriate.  Each of the correlation functionals is listed below along with
+%appropriate citation in table \ref{tablexc}. 
+
+\sloppy
+
+%\begin{itemize}
+%\item VWN local density functionals; S.J.~Vosko, L.~Wilk and M.~Nusair, 
+%  Can.~J.~Phys.~{\bf  58}, 1200 (1980); all five (5) functionals as
+%  described in this paper (addressed in the paper as I - V) have been
+%  implemented.  These functionals can be invoked with the keywords:
+%\begin{verbatim}
+%   XC vwn_1
+%   XC vwn_2
+%   XC vwn_3
+%   XC vwn_4
+%   XC vwn_5
+%\end{verbatim}
+%
+%  Note that functionals; \verb+vwn_2+, \verb+vwn_3+, and \verb+vwn_4+
+%  require both sets of parameters (the Monte Carlo parameters of
+%  Ceperley and Alder and VWN's RPA parameters) used in fitting the
+%  homogeneous electron gas correlation energy.  Functionals
+%  \verb+vwn_1+ and \verb+vwn_5+ require only the Monte Carlo fitting
+%  parameters.  In order to reproduce results in the literature another
+%  functional was added; the \verb+vwn_1_rpa+.  This is the original
+%  \verb+vwn_1+ functional with RPA parameters as opposed to the
+%  prescribed Monte Carlo parameters.  This functional can be invoked
+%  with the keyword,
+%\begin{verbatim}
+%   XC vwn_1_rpa
+%\end{verbatim}
+%
+%\item Perdew81 local density functional; J.~P.~Perdew and A.~Zunger,
+%  Phys.~Rev.~B {\bf23}, 5048 (1981). This functional can be invoked with the
+%  keyword,
+%\begin{verbatim}
+%   XC perdew81
+%\end{verbatim}
+%
+%\item Perdew \& Wang 1991 local density functional;  J.P.~Perdew
+%  and Y.~Wang, Phys. Rev. B {\bf 45}, 13244 (1992).  The parameters
+%  used in this formula are obtained by fitting to the Ceperley and
+%  Alder Quantum Monte Carlo solution of the {\em
+%  homogeneous electron gas}.  This functional can be invoked with the
+%  keyword,
+%\begin{verbatim}
+%   XC pw91lda
+%\end{verbatim}
+%
+%\item Perdew86 gradient-corrected functional; J.~P.~Perdew, Phys.~Rev.~B 
+%  {\bf33}, 8822 (1986).  Note that this is a nonlocal functional and
+%  in the absence of any local functional specification the local
+%  component is defaulted to the perdew81 local correlation
+%  functional. This functional can be invoked with the
+%  keyword,
+%\begin{verbatim}
+%   XC perdew86
+%\end{verbatim}
+%
+%\item Perdew91 gradient-corrected functional;  J.P.~Perdew,
+%  J.A.~Chevary, S.H.~Vosko, K.A.~Jackson, M.R.~Pederson, D.J.~Singh
+%  and C.~Fiolhais, Phys. Rev. B {\bf 46}, 6671 (1992). Note that this
+%  is a nonlocal functional and in the absence of any local functional 
+%  specification the local component is defaulted to the \verb+pw91lda+ local 
+%  correlation functional.  This functional can be invoked with the keyword,
+%\begin{verbatim}
+%   XC perdew91
+%\end{verbatim}
+%
+%\item the Perdew-Burke-Ernzerhof gradient-corrected correlation functional \\
+% (J.P.~Perdew, K.~Burke and M.~Ernzerhof, Physical Review Letters
+%{\bf 77}, 3865 (1996); {\bf 78}, 1396 (1997))), is invoked by specifying
+%
+%\begin{verbatim}
+%   XC cpbe96
+%\end{verbatim}
+
+%\item LYP gradient-corrected functional; C.~Lee, W.~Yang and
+%   R.~G.~Parr, Phys.~Rev.~B {\bf 37}, 785 (1988).  Note that this
+%  is a local and nonlocal functional but cannot be conveniently split
+%  into the individual components.  The option to scale the total remains.
+%  This functional can be invoked with the keyword,
+%\begin{verbatim}
+%   XC lyp
+%\end{verbatim}
+%
+%\end{itemize}
+
+\fussy
+
+Any combination of the supported correlation functional options can be
+used.  For example  B3LYP could be specified as:
+\begin{verbatim}
+XC vwn_1_rpa 0.19 lyp 0.81 HFexch 0.20  slater 0.80 becke88 nonlocal 0.72
+\end{verbatim}
+and X3LYP as:
+\begin{verbatim}
+xc vwn_1_rpa 0.129 lyp 0.871 hfexch 0.218 slater 0.782 \
+becke88 nonlocal 0.542  xperdew91 nonlocal 0.167 
+\end{verbatim}
+
+  
+\subsection{Combined Exchange and Correlation Functionals}
+
+In addition to the options listed above for the exchange and correlation
+functionals, the user has the alternative of specifying combined exchange and 
+correlation functionals. A complete list of the available functionals
+appears in table \ref{tablexc}.
+
+  The available hybrid functionals 
+(where a Hartree-Fock Exchange component is present) consist of the Becke
+``{\it half and half}'' (see A.D.~Becke, J.~Chem.~Phys.~98, 1372 (1992)), the
+adiabatic connection method (see A.D.~Becke, J.~Chem.~Phys.~98, 5648
+(1993)),  B3LYP (popularized by Gaussian9X), Becke 1997 
+(``Becke V'' paper: A.D.Becke, J. Chem. Phys., {\bf 107}, 8554 (1997)).
+
+%These options can be invoked by specifying any of the following input lines,
+%\begin{verbatim}
+%   XC beckehandh
+%   XC acm
+%   XC b3lyp
+%   XC becke97
+%   Xc becke97-1
+%   xc becke98
+%   xc pbe0
+%   xc hcth
+%   xc hcth120
+%   xc hcth147
+%   xc hcth407
+%   xc hcthp14
+%   xc becke97gga1
+%\end{verbatim}
+
+The keyword \verb+beckehandh+ specifies that the exchange-correlation energy will be
+computed as 
+\begin{eqnarray*}
+E_{XC} \ \approx \ \frac{1}{2} E^{\rm HF}_X + \frac{1}{2} E^{\rm
+  Slater}_{X} + \frac{1}{2} E^{\rm PW91LDA}_{C}
+\end{eqnarray*}
+We know this is NOT the correct Becke prescribed implementation which
+requires the XC potential in the energy expression.  But this is what
+is currently implemented as an approximation to it.
+
+%\clearpage
+%
+
+The keyword \verb+acm+ specifies that the exchange-correlation energy
+is computed as
+\begin{eqnarray*}
+E_{XC} \ &=& \ a_0 E^{\rm HF}_X + (1-a_0) E^{\rm Slater}_{X} +
+a_X \Delta E^{\rm Becke88}_{X} + E^{\rm VWN}_C + a_C \Delta E^{Perdew91}_C \\
+& &{\rm where } \\
+a_0 &=& 0.20, \ a_X = 0.72, \ a_C = 0.81
+\end{eqnarray*}
+and $\Delta$ stands for a non-local component.
+
+
+The keyword \verb+b3lyp+ specifies that the exchange-correlation energy
+is computed as
+\begin{eqnarray*}
+E_{XC} \ &=& \ a_0 E^{\rm HF}_X + (1-a_0) E^{\rm Slater}_{X} +
+a_X \Delta E^{\rm Becke88}_{X} + (1-a_C)E^{\rm VWN\_1\_RPA}_C + a_C E^{LYP}_C \\
+& &{\rm where } \\
+a_0 &=& 0.20, \ a_X = 0.72, \ a_C = 0.81
+\end{eqnarray*}
+
+
+%The keyword \verb+becke97-1+ specifies  the hybrid exchange-correlation energy
+%derived by Handy et al by re-fitting the Becke 1997 functional
+%(F.A.Hamprecht, A.J.Cohen, D.J.Tozer and N.C.Handy, 
+%    J. Chem. Phys. {\bf 109}, 6264 (1998))
+%
+%The keyword \verb+hcth+ specifies the  exchange-correlation energy 
+%functional derived by Hamprecht-Cohen-Tozer-Handy 
+%(this is not a hybrid functional)
+%(F.A.Hamprecht, A.J.Cohen, D.J.Tozer and N.C.Handy, 
+%    J. Chem. Phys. {\bf 109}, 6264 (1998))
+
+
+
+\subsection{Meta-GGA Functionals}
+
+
+One way to calculate meta-GGA energies is to use
+ orbitals and densities 
+from fully self-consistent GGA or LDA calculations
+and run them in one iteration in the meta-GGA functional.
+It is expected that meta-GGA energies obtained
+this way will be close to fully self consistent
+meta-GGA calculations. 
+
+It is possible to calculate metaGGA energies both ways
+in NWChem, that is, self-consistently or with
+GGA/LDA orbitals and densities.  However, since second derivatives
+are not available for metaGGAs, in order to
+calculate frequencies, one must use
+\verb+ task dft freq numerical+.
+A sample file with this is shown below,
+in \ref{sec:DFTsample}.  In this instance, the
+energy is calculated self-consistently and geometry is optimized using the analytical gradients.
+
+
+(For more information on metaGGAs,  see
+S. Kurth, J. Perdew, P. Blaha, Int. J. Quant. Chem 75, 889 (1999)
+for a brief description of meta-GGAs, and  citations 14-27
+therein for thorough background )
+
+Note:  both TPSS and PKZB correlation
+require the PBE GGA CORRELATION (which is itself dependent on an LDA).  
+The decision has been made to
+use these functionals with the accompanying local
+PW91LDA.  The user does not have the ability to set
+the local part of these metaGGA functionals.
+
+
+\section{{\tt LB94} and {\tt CS00} --- Asymptotic correction}
+
+The keyword \verb+LB94+ will correct the asymptotic region of 
+the \verb+XC+ definition of exchange-correlation {\it potential} by 
+the van-Leeuwen--Baerends exchange-correlation {\it potential} that
+has the correct $-1/r$ asymptotic behavior.  The total energy will be computed by the 
+\verb+XC+ definition of exchange-correlation functional.  This scheme is known to
+tend to overcorrect the deficiency of most uncorrected exchange-correlation potentials.
+
+The keyword \verb+CS00+, when supplied with a real value of shift (in atomic units),
+will perform Casida--Salahub '00 asymptotic correction.  This is primarily intended
+for use in conjunction with TDDFT and the background of this method is given in more
+detail in Chapter 14.  The shift is normally positive (which means that the original
+uncorrected exchange-correlation potential must be shifted down).
+
+When the keyword \verb+CS00+ is specified without the value of shift, the program will
+automatically supply it according to the semi-empirical formula of Zhan, Nichols, and
+Dixon (again, see Chapter 14 for more details and references).  As the Zhan's formula 
+is calibrated against B3LYP results, it is most meaningful to use this in conjunction
+with the B3LYP functional, although the program does not prohibit (or even warn) the use
+of any other functional.
+
+Sample input files of asymptotically corrected TDDFT calculations can be found in 
+Chapter 14.
+
+\section{Sample input file}
+\label{sec:DFTsample}
+A simple example  calculates the geometry
+ of water, using the metaGGA functionals
+\verb+ xtpss03+ and \verb+ctpss03+.
+This also highlights some of
+the print features in the DFT module.  Note
+that you must use the line
+\verb+task dft freq numerical+ because
+analytic hessians are not available for the metaGGAs:
+\begin{verbatim}
+title "WATER 6-311G* meta-GGA XC geometry"
+echo
+geometry units angstroms
+  O       0.0  0.0  0.0
+  H       0.0  0.0  1.0
+  H       0.0  1.0  0.0
+end
+basis
+  H library 6-311G*
+  O library 6-311G*
+end
+dft
+ iterations 50
+ print  kinetic_energy
+ xc xtpss03 ctpss03
+ decomp
+end
+task dft optimize
+
+task dft freq numerical
+\end{verbatim}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\twocolumn
+\begin{table}[htp]
+\centering
+{\scriptsize 
+\begin{tabular}{|l|p{0.12cm}p{0.12cm}cccp{0.35cm}|c|}
+\hline
+Keyword    & X        & C           & GGA    & Meta & Hybr. & 2nd  & Ref.\\
+\hline
+{\tt  slater  }& $\star$  &             &        &      &        &  Y   &[1] \\
+\hline                                                  
+{\tt  vwn\_1   }&          &   $\star$   &        &      &        &  Y   &[2] \\
+{\tt  vwn\_2   }&          &   $\star$   &        &      &        &  Y   &[2] \\
+{\tt  vwn\_3   }&          &   $\star$   &        &      &        &  Y   &[2] \\
+{\tt  vwn\_4   }&          &   $\star$   &        &      &        &  Y   &[2] \\
+{\tt  vwn\_5   }&          &   $\star$   &        &      &        &  Y   &[2] \\
+{\tt  vwn\_1\_rpa}&          &   $\star$   &        &      &        &  Y   &[2] \\
+{\tt  perdew81 }&          &   $\star$   &        &      &        &  Y   &[3] \\
+{\tt  pw91lda  }&          &   $\star$   &        &      &        &  Y   &[4] \\
+\hline                                                  
+{\tt  becke88  }& $\star$  &             &  $\star$  &   &        &  Y   &[5]\\
+{\tt  xperdew91}& $\star$  &             &  $\star$  &   &        &  Y   &[6]\\
+{\tt  xpbe96   }& $\star$  &             &  $\star$  &   &        &  Y   &[7]\\
+{\tt  gill96   }& $\star$  &             &  $\star$  &   &        &  Y   &[8]\\
+{\tt  optx     }& $\star$  &             &  $\star$  &   &        &  N   &[20]\\
+{\tt  mpw91    }& $\star$  &             &  $\star$  &   &        &  Y   &[23]\\
+{\tt  xft97    }& $\star$  &             &  $\star$  &   &        &  N   &[24]\\
+{\tt  rpbe     }& $\star$  &             &  $\star$  &   &        &  Y   &[33]\\
+{\tt  revpbe   }& $\star$  &             &  $\star$  &   &        &  Y   &[34]\\
+{\tt  xpw6b95  }& $\star$  &             &  $\star$  &   &        &  N   &[36]\\
+{\tt  xpwb6k   }& $\star$  &             &  $\star$  &   &        &  N   &[36]\\
+\hline                                                  
+{\tt  perdew86 }&          &   $\star$   &  $\star$  &   &       &  Y   &[9]\\
+{\tt  lyp      }&          &   $\star$   &  $\star$  &   &       &  Y   &[10]\\
+{\tt  perdew91 }&          &   $\star$   &  $\star$  &   &       &  Y   &[6]\\
+{\tt  cpbe96   }&          &   $\star$   &  $\star$  &   &       &  Y   &[7]\\
+{\tt  cft97    }&          &   $\star$   &  $\star$  &   &       &  N   &[24]\\
+{\tt  op       }&          &   $\star$   &  $\star$  &   &       &  N   &[31]\\
+\hline                                                  
+{\tt  hcth     }& $\star$  &   $\star$   &  $\star$  &   &       &  N   &[11]\\
+{\tt  hcth120  }& $\star$  &   $\star$   &  $\star$  &   &       &  N   &[12]\\
+{\tt  hcth147  }& $\star$  &   $\star$   &  $\star$  &   &       &  N   &[12]\\
+{\tt  hcth407  }& $\star$  &   $\star$   &  $\star$  &   &       &  N   &[19]\\
+{\tt  becke97gga1}& $\star$ &   $\star$   &  $\star$  &   &       &  N   &[18]\\
+{\tt  hcthp14  }& $\star$  &   $\star$   &  $\star$  &   &       &  N   &[21]\\
+{\tt  ft97     }& $\star$  &   $\star$   &  $\star$  &   &       &  N   &[24]\\
+{\tt  htch407p }& $\star$  &   $\star$   &  $\star$  &   &       &  N   &[27]\\
+{\tt  bop      }& $\star$  &   $\star$   &  $\star$  &   &       &  N   &[31]\\
+{\tt  pbeop    }& $\star$  &   $\star$   &  $\star$  &   &       &  N   &[32]\\
+\hline                                                  
+{\tt  xpkzb99  }& $\star$  &             &           &$\star$&   &  N   &[26]\\
+{\tt  cpkzb99  }&          &  $\star$    &           &$\star$&   &  N   &[26]\\
+{\tt  xtpss03  }& $\star$  &             &           &$\star$&   &  N   &[28]\\
+{\tt  ctpss03  }&          &  $\star$    &           &$\star$&   &  N   &[28]\\
+{\tt  bc95     }&          &  $\star$    &           &$\star$&   &  N   &[33]\\
+{\tt  cpw6b95  }&          &  $\star$    &           &$\star$&   &  N   &[36]\\
+{\tt  cpwb6k   }&          &  $\star$    &           &$\star$&   &  N   &[36]\\
+{\tt  xm05     }& $\star$  &             &           &$\star$&   &  N   &[37]\\
+{\tt  cm05     }&          &  $\star$    &           &$\star$&   &  N   &[37]\\
+{\tt  xm05-2x  }& $\star$  &             &           &$\star$&   &  N   &[38]\\
+{\tt  cm05-2x  }&          &  $\star$    &           &$\star$&   &  N   &[38]\\
+{\tt  xctpssh  }&          &             &       &$\star$&$\star$&  N   &[29]\\
+{\tt  bb1k     }&          &             &       &$\star$&$\star$&  N   &[34]\\
+{\tt  mpw1b95  }&          &             &       &$\star$&$\star$&  N   &[35]\\
+{\tt  mpwb1k   }&          &             &       &$\star$&$\star$&  N   &[35]\\
+{\tt  pw6b95   }&          &             &       &$\star$&$\star$&  N   &[36]\\
+{\tt  pwb6k    }&          &             &       &$\star$&$\star$&  N   &[36]\\
+{\tt  m05      }&          &             &       &$\star$&$\star$&  N   &[37]\\
+{\tt  vsxc     }&          &             &       &$\star$&$\star$&  N   &[39]\\
+{\tt  xvsxc    }& $\star$  &             &       &$\star$&       &  N   &[39]\\
+{\tt  cvsxc    }&          & $\star$     &       &$\star$&       &  N   &[39]\\
+{\tt  m06-L    }& $\star$  & $\star$     &       &$\star$&$\star$&  N   &[40]\\
+{\tt  xm06-L   }&          &             &       &$\star$&       &  N   &[40]\\
+{\tt  cm06-L   }&          & $\star$     &       &$\star$&       &  N   &[40]\\
+{\tt  m06-hf   }&          &             &       &$\star$&$\star$&  N   &[41]\\
+{\tt  xm06-hf  }& $\star$  &             &       &$\star$&       &  N   &[41]\\
+{\tt  cm06-hf  }&          & $\star$     &       &$\star$&       &  N   &[41]\\
+{\tt  m06      }&          &             &       &$\star$&$\star$&  N   &[42]\\
+{\tt  xm06     }& $\star$  &             &       &$\star$&       &  N   &[42]\\
+{\tt  cm06     }&          & $\star$     &       &$\star$&       &  N   &[42]\\
+{\tt  m06-2x   }&          &             &       &$\star$&$\star$&  N   &[42]\\
+{\tt  xm06-2x  }& $\star$  &             &       &$\star$&       &  N   &[42]\\
+{\tt  cm06-2x  }&          & $\star$     &       &$\star$&       &  N   &[42]\\
+\hline
+{\tt  beckehandh}& $\star$  &   $\star$   &           &   & $\star$  &  Y   &[13]\\
+{\tt  b3lyp    }& $\star$  &   $\star$   &  $\star$  &   & $\star$  &  Y   &[14]\\
+{\tt  acm      }& $\star$  &   $\star$   &  $\star$  &   & $\star$  &  Y   &[14]\\
+{\tt  becke97  }& $\star$  &   $\star$   &  $\star$  &   & $\star$  &  N   &[15]\\
+{\tt  becke97-1}& $\star$  &   $\star$   &  $\star$  &   & $\star$  &  N   &[11]\\
+{\tt  becke97-2}& $\star$  &   $\star$   &  $\star$  &   & $\star$  &  N   &[22]\\
+{\tt  becke97-3}& $\star$  &   $\star$   &  $\star$  &   & $\star$  &  N   &[30]\\
+{\tt  becke97-d}& $\star$  &   $\star$   &  $\star$  &   & $\star$  &  N   &[45]\\
+{\tt  becke98  }& $\star$  &   $\star$   &  $\star$  &   & $\star$  &  N   &[16]\\
+{\tt  pbe0     }& $\star$  &   $\star$   &  $\star$  &   & $\star$  &  Y   &[17]\\
+{\tt  mpw1k    }& $\star$  &   $\star$   &  $\star$  &   & $\star$  &  Y   &[25]\\
+\hline
+\end{tabular}
+\caption{Table of available Exchange (X) and Correlation (C) functionals.
+GGA is the Generalized Gradient Approximation, and Meta refers to Meta-GGAs.
+The column {\em 2nd} refers to second derivatives of the
+energy with respect to nuclear position. }
+\label{tablexc}
+}
+\end{table}
+
+
+
+{\footnotesize
+\vspace{8.5cm}
+\begin{enumerate}\setlength{\itemsep}{-1\baselineskip}
+\setlength{\parsep}{-1\baselineskip}
+\item J.C.~Slater and K. H. Johnson, Phys. Rev. B {\bf 5}, 844 (1972)\\
+\item  S.J.~Vosko, L.~Wilk and M.~Nusair,
+Can.~J.~Phys.~{\bf 58}, 1200 (1980)\\
+\item  J.~P.~Perdew and A.~Zunger,  Phys.~Rev.~B {\bf23}, 5048
+(1981). \\
+\item  J.P.~Perdew and Y.~Wang, Phys. Rev. B {\bf 45},
+13244 (1992)\\
+\item   A.D.~Becke,  Phys. Rev. A {\bf 88}, 3098 (1988)\\ 
+\item  J.P. Perdew,  J.A.~Chevary, S.H.~Vosko, K.A.~Jackson, 
+M.R.~Pederson, D.J.~Singh and C.~Fiolhais, Phys. Rev. B {\bf 46}, 6671
+(1992)\\
+\item  J.P.~Perdew, K.~Burke and M.~Ernzerhof, 
+Phys. Rev. Lett. {\bf 77}, 3865 (1996); {\bf 78 }, 1396 (1997)\\
+\item  P.W.Gill , Mol. Phys. {\bf 89}, 433 (1996)\\
+\item  J.~P.~Perdew, Phys.~Rev.~B   {\bf33}, 8822 (1986)\\
+\item C.~Lee, W.~Yang and R.~G.~Parr, Phys.~Rev.~B {\bf 37}, 785
+(1988)\\
+\item  F.A.Hamprecht, A.J.Cohen, D.J.Tozer and N.C\\ Handy, 
+    J. Chem. Phys. {\bf 109}, 6264 (1998)\\
+\item   A.D.Boese, N.L.Doltsinis, N.C.Handy and
+M.Sprik. J. Chem. Phys. {\bf 112}, 1670 (2000)\\
+\item  A.D.~Becke, J.~Chem.~Phys. {\bf 98}, 1372 (1992)\\
+\item  A.D.~Becke, J.~Chem.~Phys.~{\bf 98}, 5648 (1993)\\
+\item A.D.Becke, J. Chem. Phys. {\bf 107}, 8554 (1997)\\
+\item  H.L.Schmider and A.D.~Becke, J.~Chem.~Phys.~{\bf 108},
+9624 (1998)\\
+\item C.Adamo and V.Barone, J.~Chem.~Phys. {\bf 110}, 6158 (1998)\\
+\item  A.J.Cohen and N.C. Handy, Chem. Phys. Lett. {\bf 316}, 160 (2000)\\
+\item  A.D.Boese,  N.C.Handy, J. Chem. Phys. {\bf 114}, 5497
+(2001)\\
+\item  N.C.Handy, A.J. Cohen, Mol. Phys. {\bf 99}, 403 (2001)\\
+\item G. Menconi, P.J. Wilson, D.J. Tozer, 
+J. Chem. Phys {\bf 114}, 3958 (2001)\\
+\item  P.J. Wilson, T.J. Bradley, D.J. Tozer, J. Chem. Phys {\bf 115}, 
+9233 (2001)\\
+\item C. Adamo and V. Barone, J.~Chem.~Phys. {\bf 108}, 664 (1998); Y. Zhao and D.G. Truhlar, J. Phys. Chem. A {\bf 109}, 5656 (2005)\\
+\item M.Filatov and W.Thiel, Mol.Phys. {\bf 91}, 847 (1997).
+ M.Filatov and W.Thiel, Int.J.Quantum Chem. {\bf 62}, 603 (1997)\\
+\item B.J. Lynch, P.L. Fast, M. Harris and D.G. Truhlar, J. Phys. Chem. A
+{\bf 104}, 4811(2000)\\
+\item  J.P.~Perdew, S.~Kurth, A.~Zupan and P.~Blaha, 
+Phys. Rev. Lett. {\bf 82}, 2544 (1999)\\
+\item A.~D.~Boese, A.~Chandra, J.~M.~L.~Martin and D.~Marx,
+  J. Chem. Phys. {\bf 119}, 5965 (2003)\\
+\item J. Tao,J.Perdew, V. Staroverov and G. Scuseria,
+Phys. Rev. Let. {\bf 91}, 146401-1 (2003)\\
+\item V. Staroverov, G. Scuseria,
+J. Tao and J.Perdew, J. Chem.Phys. {\bf 119}, 12129 (2003)\\
+\item  T.W. Keal, D.J. Tozer, J. Chem. Phys {\bf 123}, 
+121103 (2005)\\
+\item T. Tsuneda, T. Suzumura and K. Hirao,
+J. Chem Phys. {\bf 110}, 10664 (1999)\\
+\item T. Tsuneda, T. Suzumura and K. Hirao,
+J. Chem Phys. {\bf 111}, 5656  (1999) \\
+\item B. Hammer, L. B. Hansen and J. N{\o}rskov , Phys. Rev. B {\bf 58}, 7413 (1999)\\
+\item Y. Zhang and W. Yang, Phys. Rev. Letters {\bf 80}, 890 (1998)\\
+\item A. D. Becke, J. Chem. Phys. {\bf 104}, 1040 (1996)\\
+\item Y. Zhao and D. G. Truhlar, J. Phys. Chem. A {\bf 108}, 2715 (2004)\\
+\item Y. Zhao and D. G. Truhlar, J. Phys. Chem. A {\bf 108}, 6908 (2004)\\
+\item Y. Zhao and D. G. Truhlar, J. Phys. Chem. A {\bf 109}, 5656 (2005)\\
+\item Y. Zhao, N. E. Schultz and D. G. Truhlar, J. Chem. Phys. {\bf 123}, 161103 (2005)\\
+\item Y. Zhao, N. E. Schultz and D. G. Truhlar, J. Chem. Theory Comput. {\bf 2}, 364 (2006)\\
+\item T. Van Voorhis, G. E. Scuseria, J. Chem. Phys. {\bf 109}, 400 (1998)\\
+\item Y. Zhao, D. G. Truhlar, J. Chem. Phys. {\bf 125}, 194101 (2006)\\
+\item Y. Zhao, D. G. Truhlar, J. Phys. Chem. A. {\bf 110}, 13126 (2006)\\
+\item Y. Zhao, D. G. Truhlar, Theor. Chem. Acc. (2006)\\
+\item S. Grimme, J. Comp. Chem. \bf{27}, 1787 (2006).
+
+\end{enumerate}
+}
+%\end{table}
+\onecolumn
+
+\section{{\tt ITERATIONS} --- Number of SCF iterations}
+
+\begin{verbatim}
+  ITERATIONS <integer iterations default 30>
+\end{verbatim}
+
+The default optimization in the DFT module is to iterate on the 
+Kohn-Sham (SCF) equations for a specified number of iterations
+(default 30).  The keyword that controls this optimization 
+is \verb+ITERATIONS+, and has the following general form,
+
+\begin{verbatim}
+   iterations <integer iterations default 30>
+\end{verbatim}
+
+The optimization procedure will stop when the specified number of
+iterations is reached or convergence is met.  See an example
+that uses this directive in section \ref{sec:DFTsample}.
+
+\section{{\tt CONVERGENCE} --- SCF Convergence Control}
+\label{sec:dftconv}
+
+\begin{verbatim}
+  CONVERGENCE [energy <real energy default 1e-6>] \
+              [density <real density default 1e-5>] \
+              [gradient <real gradient default 5e-4>] \
+              [hl_tol <real hl_tol default 0.1>]
+              [dampon <real dampon default 0.0>] \
+              [dampoff <real dampoff default 0.0>] \
+              [ncydp <integer ncydp default 2>] \
+              [ncyds <integer ncyds default 30>] \
+              [ncysh <integer ncysh default 30>] \
+              [damp <integer ndamp default 0>] [nodamping] \
+              [diison <real diison default 0.0>] \
+              [diisoff <real diisoff default 0.0>] \
+              [(diis [nfock <integer nfock default 10>]) || nodiis] \
+              [levlon <real levlon default 0.0>] \
+              [levloff <real levloff default 0.0>] \
+              [(lshift <real lshift default 0.5>) || nolevelshifting] \
+              [rabuck [n_rabuck <integer n_rabuck default 25>]]
+\end{verbatim}
+
+Convergence is satisfied by meeting any or all of three criteria;
+\begin{itemize}
+\item convergence of the total energy; this is defined to be when the
+  total DFT energy at iteration N and at iteration N-1 differ by a value less
+  than some value (the default is 1e-6).  This value can be modified
+  using the key word,
+\begin{verbatim}
+  CONVERGENCE energy <real energy default 1e-6>
+\end{verbatim}
+
+\item convergence of the total density; this is defined to be when the
+  total DFT density matrix at iteration N and at iteration N-1 have a
+  RMS difference less than some value (the default is 1e-5).  This value can be modified
+  using the key word,
+\begin{verbatim}
+  CONVERGENCE density <real density default 1e-5>
+\end{verbatim}
+
+\item convergence of the orbital gradient; this is defined to be when the
+  DIIS error vector becomes less than some value (the default is
+  5e-4).  This value can be modified using the key word,
+\begin{verbatim}
+  CONVERGENCE gradient <real gradient default 5e-4>
+\end{verbatim}
+\end{itemize}
+
+The default optimization strategy is to immediately begin direct
+inversion of the iterative subspace\footnote {P.~Pulay, Chem.\ Phys.\ 
+  Lett.\ {\bf 73}, 393 (1980) and P.~Pulay, J.~Comp.~Chem.~{\bf 3},
+  566 (1982)}.  Damping is also initiated (using 70\% of the previous
+density) for the first 2 iteration.  In addition, if the HOMO - LUMO
+gap is small and the Fock matrix somewhat diagonally dominant, then
+level-shifting is automatically initiated.  There are a variety of ways
+to customize this procedure to whatever is desired.
+
+An alternative optimization strategy is to specify, by using the change 
+in total energy (from iterations when N and N-1), when to turn
+damping, level-shifting, and/or DIIS on/off.  Start and stop keywords for
+each of these is available as,
+\begin{verbatim}
+  CONVERGENCE  [dampon <real dampon default 0.0>] \
+               [dampoff <real dampoff default 0.0>] \
+               [diison <real diison default 0.0>] \
+               [diisoff <real diisoff default 0.0>] \
+               [levlon <real levlon default 0.0>] \
+               [levloff <real levloff default 0.0>]
+\end{verbatim}
+
+So, for example, damping, DIIS, and/or level-shifting can be turned
+on/off as desired.
+
+Another strategy can be to simply specify how many iterations (cycles) you wish
+each type of procedure to be used.  The necessary keywords to control
+the number of damping cycles (ncydp), the number of DIIS cycles
+(ncyds), and the number of level-shifting cycles (ncysh) are input as,
+\begin{verbatim}
+  CONVERGENCE  [ncydp <integer ncydp default 2>] \
+               [ncyds <integer ncyds default 30>] \
+               [ncysh <integer ncysh default 0>]
+\end{verbatim}
+
+The amount of damping, level-shifting, time at which level-shifting is
+automatically imposed, and Fock matrices used in the DIIS
+extrapolation can be modified by the following keywords
+\begin{verbatim}
+  CONVERGENCE  [damp <integer ndamp default 0>] \
+               [diis [nfock <integer nfock default 10>]] \
+               [lshift <real lshift default 0.5>] \
+               [hl_tol <real hl_tol default 0.1>]]
+\end{verbatim}
+
+Damping is defined to be the percentage of the previous iterations
+density mixed with the current iterations density.  So, for example 
+\begin{verbatim}
+  CONVERGENCE damp 70
+\end{verbatim}
+would mix 30\% of the current iteration density with 70\% of the
+previous iteration density.
+
+Level-Shifting\footnote {M.F.~Guest and 
+V.R.~Saunders, Mol.~Phys.~{\bf 28}, 819 (1974)} is defined as the
+amount of shift applied to the diagonal elements of the unoccupied
+block of the Fock matrix.  The shift is specified by the
+keyword \verb+lshift+.  For example the directive,
+\begin{verbatim}
+  CONVERGENCE lshift 0.5
+\end{verbatim}
+causes the diagonal elements of the Fock matrix
+corresponding to the virtual orbitals to be shifted by 0.5 a.u.
+By default, this level-shifting procedure is switched on whenever the
+HOMO-LUMO gap is small.  Small is defined by default to be 0.05 au but
+can be modified by the directive \verb+hl_tol+.  An example of
+changing the HOMO-LUMO gap tolerance to 0.01 would be,
+\begin{verbatim}
+  CONVERGENCE hl_tol 0.01
+\end{verbatim}
+
+Direct inversion of the iterative subspace with extrapolation of up to
+10 Fock matrices is a default optimization procedure.  For large
+molecular systems the amount of available memory may preclude the ability to
+store this number of N**2 arrays in global memory.  The user may then
+specify the number of Fock matrices to be used in the extrapolation
+(must be greater than three (3) to be effective).  To set the number of
+Fock matrices stored and used in the extrapolation procedure to 3
+would take the form,
+\begin{verbatim}
+  CONVERGENCE diis 3
+\end{verbatim}
+
+The user has the ability to simply turn off any optimization
+procedures deemed undesirable with the obvious keywords,
+\begin{verbatim}
+  CONVERGENCE [nodamping] [nodiis] [nolevelshifting]
+\end{verbatim}
+
+
+For systems where the initial guess is very poor, the user can try the
+method described in
+\footnote{A.~D.~Rabuck and G.~E.~Scuseria, J.~Chem.~Phys {\bf 110},695
+(1999)}
+that makes use of {\bf fractional occupation} of the orbital levels during
+the initial cycles of the SCF convergence. The input has the following form
+
+\begin{verbatim}
+  CONVERGENCE rabuck [n_rabuck <integer n_rabuck default 25>]]
+\end{verbatim}
+
+where the optional value {\tt n\_rabuck} determines the number of SCF
+cycles during which the method will be active. For example, to
+set equal to 30 the number of cycles where the Rabuck method is
+active, you need to use the following line
+\begin{verbatim}
+  CONVERGENCE rabuck 30
+\end{verbatim}
+
+\section{{\tt CDFT} --- Constrained DFT}
+\label{cdft}
+
+This option enables the constrained DFT formalism by Wu and Van Voorhis described 
+in the paper: Q. Wu, T. Van Voorhis, Phys. Rev. A {\bf 72}, 024502 (2005). 
+
+\begin{verbatim}
+  CDFT <integer fatom1 latom1> [<integer fatom2 latom2>] (charge||spin <real constaint_value>) \
+       [pop (becke||mulliken||lowdin) default lowdin]
+\end{verbatim}
+
+Variables fatom1 and latom1 define the first and last atom of the group of atoms to which
+the constaint will be applied. Therefore the atoms in the same group should be placed 
+continuously in the geometry input. If fatom2 and latom2 are specified, the difference between
+group 1 and 2 (i.e. 1-2) is constrained. 
+
+The constraint can be either on the charge or the spin density (\# of alpha - beta electrons) with
+a user specified constaint\_value.  Note: No gradients have been implemented for the spin constaints 
+case. Geometry optimizations can only be performed using the charge constaint.
+
+To calculate the charge or spin density, the Becke, Mulliken, and Lowdin population schemes can be 
+used. The Lowdin scheme is default while the Mulliken scheme is not recommended. If basis sets with 
+many diffuse functions are used, the Becke population scheme is recommended.
+
+Multiple constaints can be defined simultaniously by defining multiple {\tt cdft} lines in the input. 
+The same population scheme will be used for all constaints and only needs to be specified once. If 
+multiple population options are defined, the last one will be used. When there are convergence
+problems with multiple constaints, the user is advised to do one constraint first and to use the
+resulting orbitals for the next step of the constained calculations.
+
+It is best to put "convergence nolevelshifting" in the dft directive to avoid issues with gradient 
+calculations and convergence in CDFT. Use orbital swap to get a broken-symmetry solution.
+
+An input example is given below.
+
+\begin{verbatim}
+geometry
+symmetry
+C  0.0  0.0  0.0
+O  1.2  0.0  0.0
+C  0.0  0.0  2.0
+O  1.2  0.0  2.0
+end
+
+basis
+* library 6-31G*
+end
+
+dft
+ xc b3lyp
+ convergence nolevelshifting
+ odft
+ mult 1
+ vectors swap beta 14 15
+ cdft 1 2 charge 1.0
+end
+task dft
+\end{verbatim}
+
+\section{{\tt SMEAR} --- Fractional Occupation of the Molecular Orbitals}
+\label{smear}
+
+The {\tt \bf SMEAR} keyword is useful in cases with many degenerate states
+near the HOMO (eg metallic clusters)
+
+\begin{verbatim}
+  SMEAR <real smear default 0.001>
+\end{verbatim}
+
+This  option allows fractional occupation of the molecular orbitals.
+A Gaussian broadening function of exponent {\tt smear} is used as described in 
+the paper:
+R.W. Warren and B.I. Dunlap, Chem. Phys. Letters {\bf 262}, 384 (1996).\\
+The user must be aware that an additional energy term is added to the total
+energy in order to have
+energies and gradients consistent.
+
+
+\section{{\tt GRID} --- Numerical Integration of the XC Potential}
+\label{grgrid}
+\begin{verbatim}
+  GRID [(xcoarse||coarse||medium||fine||xfine) default medium] \
+       [(gausleg||lebedev ) default lebedev ] \
+       [(becke||erf1||erf2||ssf) default erf1] \
+       [(euler||mura||treutler) default mura] \
+       [rm <real rm default 2.0>] \
+       [nodisk]
+\end{verbatim}
+
+A numerical integration is necessary for the evaluation of the
+exchange-correlation contribution to the density functional.  The
+default quadrature used for the numerical integration is an
+Euler-MacLaurin scheme for the radial components (with a modified
+Mura-Knowles transformation)
+and a Lebedev
+scheme for the angular components.  Within this numerical
+integration procedure various levels of accuracy have been defined and
+are available to the user.  The user can specify the level of accuracy
+with the keywords; xcoarse, coarse, medium, fine, and xfine.  The
+default is medium.
+
+\begin{verbatim}
+  GRID [xcoarse||coarse||medium||fine||xfine]
+\end{verbatim}
+
+Our intent is to have a numerical integration scheme which would give
+us approximately the accuracy defined below regardless of molecular
+composition.  
+\begin{center}
+  \begin{tabular}[right]{|c|c|} \hline
+Keyword & {\tt Total Energy Target Accuracy} \\ \hline
+{\tt xcoarse} & $1x10^{-4}$ \\ \hline
+{\tt coarse}  & $1x10^{-5}$ \\ \hline
+{\tt medium}  & $1x10^{-6}$ \\ \hline
+{\tt fine}    & $1x10^{-7}$ \\ \hline
+{\tt xfine}   & $1x10^{-8}$ \\ \hline
+  \end{tabular} \\
+\end{center}
+
+In order to determine the level of radial and angular quadrature needed
+to give us the target accuracy we computed total DFT energies 
+at the LDA level of theory for many
+homonuclear atomic, diatomic and triatomic systems in rows 1-4 of the
+periodic table.  In each case all bond lengths were set to twice the
+Bragg-Slater radius.  The total DFT energy of the system was computed
+using the converged SCF density with atoms having radial shells
+ranging from 35-235 (at fixed 48/96 angular quadratures) and angular
+quadratures of 12/24-48/96 (at fixed 235 radial shells).  The error of
+the numerical integration was determined by comparison to a ``best''
+or most accurate calculation in which a grid of 235 radial points 48
+theta and 96 phi angular points on each atom was used.  This
+corresponds to approximately 1 million points per atom.  The following
+tables were empirically determined to give the desired target accuracy
+for DFT total energies.  These tables below show the number of radial and
+angular shells which the DFT module will use for for a given atom
+depending on the row it is in (in the periodic table) and the desired
+accuracy.  Note, differing atom types in a given molecular system will
+most likely have differing associated numerical grids.  The intent is
+to generate the desired energy accuracy (with utter disregard for speed).
+
+%{\bf Important note to users.}  We clearly understand that the default
+%(Euler-MacLaurin/Gauss-Legendre) grids are large and result in slow
+%%construction of the numerical components of the Kohn-Sham equations.
+%%Alternatively, we have provided access to two-dimensional Lebedev
+%%angular quadratures which can be used in many cases to substantially
+%%reduce the number of grid points per atom while keeping good accuracy.
+%%We have not yet had the opportunity to benchmark the Lebedev angular
+%%quadratures to the same extent that we have for the Gauss-Legendre.
+%%We therefore do not have default Lebedev quadratures for specific
+%%target accuracy for all elements of the periodic table.  If the user
+%%wants to significantly decrease CPU time to solution it is suggested
+%%that a few prototype benchmark calculations be done using various
+%%Lebedev quadratures (which we describe below) while monitoring the
+%%numerically integrated density and total energies for the molecular
+%%systems of interest.  For many examples we have observed speed-ups of
+%%two or more for the same numerical accuracy when using Lebedev rather
+%%than the default Gauss-Legendre quadrature.  In addition, we have
+%%observed that with Lebedev angular quadratures a reduction in the
+%%number of radial shells (perhaps by as much as 30\%) might be possible
+%%while continuing to provide the same level of accuracy.
+%%% g94/Sg-1        grid ssf lebedev  gausleg  50 8
+%%% g98/fine        grid ssf lebedev gausleg  75 11
+
+
+\begin{table}[h]
+\begin{center}
+\caption{Program default number of radial and angular shells empirically determined for Row 1 atoms
+  (Li $\rightarrow$ F) to reach the desired accuracies.}
+
+\vspace{.2in}
+
+  \begin{tabular}[right]{|c|c|c|} \hline
+Keyword & {\tt Radial} & {\tt Angular}  \\ \hline
+{\tt xcoarse} & 21 & 194  \\ \hline
+{\tt coarse}  & 35 & 302  \\ \hline
+{\tt medium}  & 49 & 434  \\ \hline
+{\tt fine}    & 70 & 590  \\ \hline
+{\tt xfine}   &100 &1202  \\ \hline
+  \end{tabular} \\
+\end{center}
+\end{table}
+
+\begin{table}[h]
+\begin{center}
+\caption{Program default number of radial and angular shells empirically determined for Row 2 atoms
+  (Na $\rightarrow$ Cl) to reach the desired accuracies.}
+
+\vspace{.2in}
+
+  \begin{tabular}[right]{|c|c|c|} \hline
+Keyword & {\tt Radial} & {\tt Angular} \\ \hline
+{\tt xcoarse} & 42 & 194  \\ \hline
+{\tt coarse}  & 70 & 302  \\ \hline
+{\tt medium}  & 88 & 434  \\ \hline
+{\tt fine}    &123 & 770  \\ \hline
+{\tt xfine}   &125 &1454  \\ \hline
+  \end{tabular} \\
+\end{center}
+\end{table}
+
+\begin{table}[h]
+\begin{center}
+\caption{Program default number of radial and angular shells empirically determined for Row 3 atoms
+  (K $\rightarrow$ Br) to reach the desired accuracies.}
+
+\vspace{.2in}
+
+  \begin{tabular}[right]{|c|c|c|} \hline
+Keyword & {\tt Radial} & {\tt Angular}  \\ \hline
+{\tt xcoarse} & 75 & 194  \\ \hline
+{\tt coarse}  & 95 & 302  \\ \hline
+{\tt medium}  &112 & 590  \\ \hline
+{\tt fine}    &130 & 974  \\ \hline
+{\tt xfine}   &160 &1454  \\ \hline
+  \end{tabular} \\
+\end{center}
+\end{table}
+
+\begin{table}[h]
+\begin{center}
+\caption{Program default number of radial and angular shells empirically determined for Row 4 atoms
+  (Rb $\rightarrow$ I) to reach the desired accuracies.}
+
+\vspace{.2in}
+
+  \begin{tabular}[right]{|c|c|c|} \hline
+Keyword & {\tt Radial} & {\tt Angular}  \\ \hline
+{\tt xcoarse} & 84 &194  \\ \hline
+{\tt coarse}  &104 &302  \\ \hline
+{\tt medium}  &123 &590  \\ \hline
+{\tt fine}    &141 &974  \\ \hline
+{\tt xfine}   &205 &1454 \\ \hline
+  \end{tabular} \\
+\end{center}
+\end{table}
+
+\clearpage
+
+\subsection{Angular grids}
+
+In addition to the simple keyword specifying the desired accuracy as
+described above, the user has the option of specifying a custom
+quadrature of this type in which ALL atoms have the same grid
+specification.  This is accomplished by using the \verb+gausleg+ keyword.
+
+\paragraph{Gauss-Legendre angular grid}
+
+\begin{verbatim}
+  GRID gausleg <integer nradpts default 50> <integer nagrid default 10> 
+\end{verbatim}
+
+In this type of grid, the number of phi points is twice the number of
+theta points. So, for example, a specification of,
+\begin{verbatim}
+  GRID gausleg 80 20
+\end{verbatim}
+would be interpreted as 80 radial points, 20 theta points, and 40
+phi points per center (or 64000 points per center before pruning).
+
+\paragraph{Lebedev angular grid}
+
+A second quadrature is the Lebedev
+scheme for the angular components\footnote{The subroutine 
+for the Lebedev grid was derived from a routine supplied by M.~Caus\`a
+of the University of Torino and from the grid points supplied by
+D.N.~Laikov from Moscow State University.}.  
+Within this numerical integration procedure various levels 
+of accuracy have also been defined and are available to the user.  
+The input for this type of grid takes the form,
+\begin{verbatim}
+  GRID lebedev <integer radpts > <integer iangquad > 
+\end{verbatim}
+In this context the variable iangquad specifies a certain number of
+angular points as indicated by the table below.\footnote{
+V.I. Lebedev and D.N. Laikov, Doklady Mathematics {\bf 366}, 741
+(1999).
+}
+\begin{table}[htp]
+\begin{center}
+\begin{tabular}[right]{|c|rr|} \hline
+$IANGQUAD$ & $N_{angular}$ & $l$\\
+\hline
+ 1&   38&   9  \\
+ 2&   50&  11  \\
+ 3&   74 & 13  \\
+ 4&   86 & 15  \\
+ 5&  110 & 17  \\
+ 6&  146 & 19  \\
+ 7&  170 & 21  \\
+ 8&  194 & 23  \\
+ 9&  230 & 25  \\
+10&  266&  27  \\
+11&  302&  29  \\
+12&  350&  31  \\
+13&  434&  35  \\
+14&  590&  41  \\
+15&  770&  47  \\
+16&  974&  53  \\
+17& 1202&  59  \\
+18& 1454&   65 \\
+19& 1730&   71 \\
+20& 2030&   77 \\
+21& 2354&   83 \\
+22& 2702&   89 \\ 
+23& 3074&   95 \\
+24& 3470&  101 \\
+25& 3890&  107 \\
+26& 4334&  113 \\
+27& 4802&  119 \\
+28& 5294&  125 \\
+29& 5810&  131 \\
+\hline
+\end{tabular}
+\end{center}
+\caption{List of Lebedev quadratures}
+\end{table}
+Therefore the user can specify any number of radial points along with
+the level of angular quadrature (1-29).
+
+The user can also specify grid parameters specific for a given atom type: 
+parameters that must be supplied are: atom tag and number of radial points.
+As an example, here is a grid input line for the water molecule
+\begin{verbatim}
+grid lebedev 80 11 H 70 8  O 90 11 
+\end{verbatim}
+
+
+% Delley weights do not work .. need to replace with SSWs after input is
+%changed  
+%The user also has the option of choosing one of two types of spatial weights
+%implemented in the numerical integration of the XC terms; Delley and Becke.
+
+\clearpage
+\subsection{Partitioning functions}
+
+\begin{verbatim}
+  GRID [(becke||erf1||erf2||ssf) default erf1]
+\end{verbatim}
+
+
+\begin{description}
+\item[\tt becke]  A. D. Becke, J. Chem. Phys. {\bf 88}, 1053 (1988).
+\item[\tt ssf] R.E.Stratmann, G.Scuseria and  M.J.Frisch,
+Chem. Phys. Lett. {\bf 257}, 213 (1996).
+\item[\tt erf1] modified ssf
+\item[\tt erf2] modified ssf
+\end{description}
+
+Erf$n$ partioning functions
+
+\begin{eqnarray*}
+ w_A(r) & = & \prod_{B\neq A}\frac{1}{2} \left[1 \ - \
+erf(\mu^\prime_{AB})\right] \\
+ \mu^\prime_{AB} & = & \frac{1}{\alpha} \ \frac{\mu_{AB}}{(1-\mu_{AB}^2)^n}\\
+ \mu_{AB} & = & \frac{{\mathbf r}_A - {\mathbf r}_B}
+{\left|{\mathbf r}_A - {\mathbf r}_B \right|}
+\end{eqnarray*}
+
+
+
+
+\subsection{Radial grids}
+
+\begin{verbatim}
+  GRID [[euler||mura||treutler]  default mura]
+\end{verbatim}
+
+\begin{description}
+\item[\tt euler] Euler-McLaurin quadrature wih the transformation
+  devised by
+C.W. Murray, N.C. Handy, and G.L. Laming,
+Mol. Phys.{\bf 78}, 997 (1993).
+ \\
+\item[\tt mura] Modification of the Murray-Handy-Laming scheme by 
+M.E.Mura and P.J.Knowles, J Chem Phys {\bf 104}, 9848
+(1996) (we are not using the scaling factors proposed
+in this paper).\\
+\item[\tt treutler] Gauss-Chebyshev using the transformation suggested
+  by O.Treutler and R.Alrhichs, J.Chem.Phys {\bf 102}, 346 (1995).\\
+\end{description}
+
+\subsection{Disk usage for Grid}
+
+\begin{verbatim}
+  NODISK
+\end{verbatim}
+
+This keyword turns off storage of grid points and weights on disk.
+
+
+\section{{\tt TOLERANCES} --- Screening tolerances}
+
+\begin{verbatim}
+  TOLERANCES [[tight] [tol_rho <real tol_rho default 1e-10>] \
+              [accCoul <integer accCoul default 8>] \
+              [radius <real radius default 25.0>]]
+\end{verbatim}
+%              [accQrad <integer accQrad default 12>] \
+%              [accAOfunc <integer accAOfunc default 20>] \
+%              [accXCfunc <integer accXCfunc default 20>] \
+%              [accCDfunc <integer accAOfunc default 20>] \
+%
+%{\bf JEFF: tight needs explanation}
+%
+The user has the option of controlling screening for the tolerances in
+the integral evaluations for the DFT module.  In most applications,
+the default values will be adequate for the calculation, but different
+values can be specified in the input for the DFT module using the
+keywords described below.
+
+%The input to define a screening tolerance for evaluation of the AO 
+%Gaussian functions is specified with the keyword \verb+accAOfunc+, as
+%follows,
+%\begin{verbatim}
+%  TOLERANCES accAOfunc <integer accAOfunc>
+%\end{verbatim}
+%A Gaussian Type Function of the Orbital basis set is 
+%evaluated at a point $r_i$ if its value it is greater than 
+%$exp(-${\tt accAOfunc}$)$ ;
+%the default value is set to $-ln(\Delta E)$, where $\Delta E$ is the desired 
+%accuracy on energy.
+%A Gaussian orbital basis (AO) function with exponent $\zeta$
+%and radial factor $e^{-\zeta\cdot r_i^2}$ is 
+%evaluated  at a point $r_i$ only if 
+%$\zeta\cdot r_i^2$ is less than the value specified for ${\tt accAOfunc}$.
+
+%The input to define a screening tolerance for evaluation of the exchange-
+%correlation (XC) Gaussian fitting functions is specified with the
+%keyword \verb+accXCfunc+, as follows,
+%\begin{verbatim}
+%  TOLERANCES accXCfunc <integer accXCfunc default 20>
+%\end{verbatim}
+%An exchange-correlation (XC) fitting function with exponent $\zeta$
+%and radial factor $e^{-\zeta\cdot r_i^2}$ is 
+%evaluated  at a point $r_i$ only if 
+%$\zeta\cdot r_i^2$ is less than the value specified for ${\tt accXCfunc}$.
+%
+%The input to define a screening tolerance for evaluation of the
+%charge-density (CD) Gaussian fitting functions is specified with the
+%keyword \verb+accCDfunc+, as follows,
+%\begin{verbatim}
+%  TOLERANCES accCDfunc <integer accCDfunc default 20>
+%\end{verbatim}
+%A  charge-density (CD) fitting function with exponent $\zeta$
+%and radial factor $e^{-\zeta\cdot r_i^2}$ is evaluated  at a 
+%point $r_i$ only if $\zeta\cdot r_i^2$ is less than the value 
+%specified for ${\tt accCDfunc}$.
+
+The input
+parameter {\tt accCoul} is used to define the tolerance in Schwarz 
+screening for the Coulomb integrals.  Only integrals with estimated
+values greater than $10^{(-{\tt accCoul})}$ are evaluated.
+
+\begin{verbatim}
+  TOLERANCES accCoul <integer accCoul default 8>
+\end{verbatim}
+
+%The user also has the option of specifying the radial quadrature 
+%grid cut-off for the DFT calculation, using the keyword
+%\verb+accQrad+.  The input line for this option is as follows,
+%\begin{verbatim}
+%  TOLERANCES accQrad <integer accQrad default 12>
+%\end{verbatim}
+
+%The value entered for \verb+accQrad+ is the cutoff distance, in bohr, for grid
+%points around a given center or atom.  Grid points that lie more than 
+%\verb+accQrad+ bohr from the center or atom are neglected. 
+
+Screening away needless computation of the XC functional (on the grid)
+due to negligible density is also possible with the use of,
+\begin{verbatim}
+  TOLERANCES tol_rho <real tol_rho default 1e-10>
+\end{verbatim}
+XC functional computation is bypassed if the corresponding density
+elements are less than \verb+tol_rho+.
+
+A screening parameter, \verb+radius+, used in the screening of the
+Becke or Delley spatial weights is also available as,
+\begin{verbatim}
+  TOLERANCES radius <real radius default 25.0>
+\end{verbatim}
+where radius is the cutoff value in bohr.
+
+The tolerances as discussed previously are insured at convergence.
+More sleazy tolerances are invoked early in the iterative process
+which can speed things up a bit.  This can also be problematic at
+times because it introduces a discontinuity in the convergence
+process.  To avoid use of initial sleazy tolerances the user can
+invoke the \verb+tight+ option:
+
+\begin{verbatim}
+  TOLERANCES tight 
+\end{verbatim}
+
+This option sets all tolerances to their
+default/user specified values at the very first iteration.
+
+
+\section{{\tt DIRECT}, {\tt SEMIDIRECT} and {\tt NOIO} --- Hardware Resource Control}
+\begin{verbatim}
+  DIRECT||INCORE
+  SEMIDIRECT [filesize <integer filesize default disksize>]
+             [memsize  <integer memsize default available>]
+             [filename <string filename default $file_prefix.aoints$>]
+  NOIO
+\end{verbatim}
+
+\sloppy
+
+The inverted charge-density and exchange-correlation matrices
+for a DFT calculation are normally written to disk storage.  The user
+can prevent this by specifying the keyword \verb+noio+ within the
+input for the DFT directive.  The input to exercise this option is
+as follows,
+\begin{verbatim}
+   noio
+\end{verbatim}
+If this keyword is encountered, then the two matrices (inverted
+charge-density and exchange-correlation) are computed ``on-the-fly''
+whenever needed. 
+
+The \verb+INCORE+ option is always assumed to be true but can be
+overridden with the option \verb+DIRECT+ in which case all integrals
+are computed ``on-the-fly''.
+
+The \verb+SEMIDIRECT+ option controls caching of integrals.  A full 
+description of this option is described in User Manual~\ref{sec:max}.
+Some functionality which is only compatible with the \verb+DIRECT+
+option will not, at present, work when using \verb+SEMIDIRECT+.
+
+\fussy
+
+\section{{\tt ODFT} and {\tt MULT} --- Open shell systems}
+\begin{verbatim}
+  ODFT
+  MULT <integer mult default 1>
+\end{verbatim}
+
+Both {\sl closed-shell} and {\sl open-shell} systems can be studied using
+the DFT module.  Specifying the keyword \verb+MULT+ within the \verb+DFT+
+directive allows the user to define the spin multiplicity of the system.
+The form of the input line is as follows;
+\begin{verbatim}
+   MULT <integer mult default 1> 
+\end{verbatim}
+When the keyword \verb+MULT+ is specified, the user can define the integer
+variable \verb+mult+, where \verb+mult+ is equal to the number of alpha 
+electrons minus beta electrons, plus 1.
+
+The keyword \verb+ODFT+ is unnecessary except in the context
+of forcing a singlet system to be computed as an open shell
+system (i.e., using a spin-unrestricted wavefunction).
+
+\section{{\tt SIC} --- Self-Interaction Correction}
+
+\begin{verbatim}
+sic [perturbative || oep || oep-loc <default perturbative>]
+\end{verbatim}
+
+The Perdew and Zunger (see J. P. Perdew and A. Zunger, Phys. Rev. B 23,
+5048 (1981)) method to remove the self-interaction contained in many
+exchange-correlation functionals has been implemented with the
+Optimized Effective Potential method 
+(see R. T. Sharp and G. K. Horton, Phys. Rev. {\bf 90}, 317 (1953),
+J. D. Talman and W. F. Shadwick, Phys. Rev. A {\bf 14}, 36 (1976))
+within the Krieger-Li-Iafrate approximation (J. B. Krieger, Y.  Li, 
+and G. J. Iafrate, Phys. Rev. A {\bf 45}, 101 (1992); {\bf 46}, 5453 (1992); 
+47, 165 (1993))
+Three variants of these methods are included in NWChem:
+\begin{itemize}
+\item{\tt  sic perturbative} This is the default option for the sic
+directive. After a self-consistent calculation, the Kohn-Sham
+orbitals are localized with the Foster-Boys algorithm (see section
+\ref{orbloc}) and the self-interaction energy is added to the total energy. 
+All exchange-correlation functionals implemented in the NWChem can be
+used with this option.
+\item{\tt  sic oep} With this option the optimized effective potential is
+built in each step of the self-consistent process. Because the electrostatic
+potential generated for each orbital involves a numerical
+integration, this method can be expensive.
+\item{\tt  sic oep-loc} 
+This option is similar to the oep option with the
+addition of localization of the Kohn-Sham orbitals in each step of the 
+self-consistent process.
+\end{itemize}
+With oep and oep-loc options a {\bf xfine grid} (see section \ref{grgrid})
+must be used in order to avoid numerical noise, furthermore the hybrid 
+functionals can not be used with these options.  More details of the
+implementation of this method can be found in 
+J. Garza, J. A. Nichols and D. A. Dixon, J. Chem. Phys. 112, 7880 (2000). 
+The components of the sic energy can be printed out using:
+
+\begin{verbatim}
+print "SIC information"
+\end{verbatim}
+
+
+\section{{\tt MULLIKEN} --- Mulliken analysis}
+Mulliken analysis of the charge distribution is invoked by the keyword:
+\begin{verbatim}
+  MULLIKEN
+\end{verbatim}
+When this keyword is encountered, Mulliken analysis of both the input 
+density as well as the output density will occur.
+For example, to perform a mulliken analysis and print the
+explicit population analysis of the basis functions, use
+the following
+\begin{verbatim}
+dft
+ mulliken
+ print "mulliken ao"
+end
+task dft
+\end{verbatim}
+
+
+\section{{\tt BSSE} --- Basis Set Superposition Error}
+
+Particular care is required to compute BSSE by the counter-poise
+method for the DFT module. In order to include terms deriving from
+the numerical grid used in the XC integration, the user must label
+the ghost atoms not just {\tt bq}, but {\tt bq} followed by the given
+atomic symbol. For example, the first component needed to compute the
+BSSE for the water dimer, should be written as follows
+
+\begin{verbatim}
+geometry h2o autosym units au
+ O        0.00000000     0.00000000     0.22143139
+ H        1.43042868     0.00000000    -0.88572555
+ H       -1.43042868     0.00000000    -0.88572555
+ bqH      0.71521434     0.00000000    -0.33214708
+ bqH     -0.71521434     0.00000000    -0.33214708
+ bqO      0.00000000     0.00000000    -0.88572555
+end
+
+basis
+ H library aug-cc-pvdz
+ O library aug-cc-pvdz
+ bqH library H aug-cc-pvdz
+ bqO library O aug-cc-pvdz
+end
+\end{verbatim}
+
+Please note that the ``ghost'' oxygen atom has been labeled {\tt bqO},
+and not just {\tt bq}.
+
+\section{{\tt DISP} --- Empirical Long-range Contribution (vdW)}
+
+\begin{verbatim}
+  DISP 
+       [ vdw <real vdw integer default 2]]
+       [[s6 <real s6 default depends on XC functional>] \
+       [ alpha <real s6 default 20.0d0] \
+       [ off ] \
+\end{verbatim}
+
+When systems with high dependence on van der Waals interactions
+are computed, the dispersion term may be added empirically 
+through long-range contribution 
+DFT-D, i.e.$ E_{DFT-D}=E_{DFT-KS}+E_{disp}$,
+%[Q. Wu and W. Yang, \textit{J. Chem. Phys.} \textbf{116} 515 (2002)] 
+where:
+
+$$ E_{disp}=-s_6\sum^{N_{atom}-1}_{i=1}\sum^{N_{atom}}_{j=i+1} 
+\frac{C_{6}^{ij}}{R_{ij}^{6}}
+\left( 1+e^{-\alpha (R_{ij}/R_{vdw}-1)}  \right)^{-1}$$
+
+In this equation, the $s_6$ term depends in the functional and basis set used, $C_6^{ij}$ 
+is the dispersion coefficient between pairs of atoms.
+$R_{vdw}$ and $R_{ij}$ are related with van der Waals atom radii and
+the nucleus distance respectively. The $\alpha$ value contributes to control the corrections
+at intermediate distances.
+
+There are available three ways to compute $C_6^{ij}$:
+\begin{enumerate}
+\item   $C_6^{ij}=
+\frac{2(C_6^{i}C_6^{j})^{2/3}(N_{eff i}N_{eff j})^{1/3}}
+{C_6^{i}(N_{eff i}^2)^{1/3}+(C_6^{i}N_{eff j}^2)^{1/3}}$ 
+where $N_{eff}$ and $C_6$ are obtained from Q. Wu and W. Yang, \textit{J. Chem. Phys.} 
+\textbf{116} 515 (2002) and U. Zimmerli, M Parrinello and P. Koumoutsakos 
+\textit{J. Chem. Phys.} \textbf{120} 2693 (2004). (Use {\tt vdw 0})
+
+\item $C_6^{ij}=2\frac{C_6^{i}C_6^{j}}{C_6^{i}+C_6^{j}}$.
+See details in 
+S. Grimme \textit{J. Comp. Chem.} \textbf{25} 1463 (2004).
+% $R_{vdW}$ and $C_6$ 
+% those were obtained from this paper. 
+(Use {\tt vdw 1})
+
+\item $C_6^{ij}=\sqrt{C_6^{i}C_6^{j}}$
+See details in 
+S. Grimme \textit{J. Comp. Chem.} \textbf{27}1787 (2006).
+% $R_{vdW}$ and $C_6$ 
+% those were obtained from this paper. 
+(Use {\tt vdw 2})
+
+\end{enumerate}
+
+Note that in each option there is a certain set of $C_6$ and $R_{vdw}$.
+
+For options {\tt vdw 1 } and {\tt vdw 2 }, there are $s_6$ values by default for some functionals 
+and triple-zeta plus double polarization basis set (TZV2P):
+\begin{itemize}
+\item {\tt vdw 1}. BLYP 1.40, PBE 0.70 and BP86 1.30.
+\item {\tt vdw 2}. BLYP 1.20, PBE 0.75, BP86 1.05, B3LYP 1.05, Becke97-D 1.25 and TPSS 1.00.
+\end{itemize}
+
+This capability is also supported for energy gradients and Hessian.
+Is possible to be deactivated with \verb+OFF+.
+
+\section{Print Control}
+\begin{verbatim}
+  PRINT||NOPRINT
+\end{verbatim}
+
+The \verb+PRINT||NOPRINT+ options control the level of output in the
+DFT.  Please see some examples using this directive in
+section  \ref{sec:DFTsample}, a sample input file.
+  Known controllable print options are:
+
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{lcc}
+  {\bf Name}          & {\bf Print Level} & {\bf Description} \\
+ ``all vector symmetries''          & high        & symmetries of all molecular orbitals \\
+ ``alpha partner info''             & high        & unpaired alpha orbital analysis \\
+ ``common''                         & debug       & dump of common blocks \\
+ ``convergence''                    & default     & convergence of SCF procedure \\
+ ``coulomb fit''                    & high        & fitting electronic charge density \\
+ ``dft timings''                    & high        & \\
+ ``final vectors''                  & high        & \\
+ ``final vector symmetries''        & default     & symmetries of final molecular orbitals \\
+ ``information''                    & low         & general information  \\
+ ``initial vectors''                & high        & \\
+ ``intermediate energy info''       & high        & \\
+ ``intermediate evals''             & high        & intermediate orbital energies \\
+ ``intermediate fock matrix''       & high        & \\
+ ``intermediate overlap''           & high        & overlaps between the alpha and beta sets \\
+ ``intermediate S2''                & high        & values of S2 \\
+ ``intermediate vectors''           & high        & intermediate molecular orbitals \\
+ ``interm vector symm''             & high        & symmetries of intermediate orbitals \\
+ ``io info''                        & debug       & reading from and writing to disk  \\
+ ``kinetic\_energy''                & high        & kinetic energy \\
+ ``mulliken ao''                    & high        & mulliken atomic orbital population \\
+
+ ``multipole''                      & default     & moments of alpha, beta, and nuclear charge densities \\
+ ``parameters''                     & default     & input parameters \\
+ ``quadrature''                     & high        & numerical quadrature  \\
+ ``schwarz''                        & high        & integral screening info \& stats at completion\\
+ ``screening parameters''           & high        & integral accuracies \\
+ ``semi-direct info''               & default     & semi direct algorithm \\
+\end{tabular}
+\end{center}
+\caption{DFT Print Control Specifications}
+\end{table}
+
+
+
+

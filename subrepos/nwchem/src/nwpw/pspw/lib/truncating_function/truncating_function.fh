@@ -1,0 +1,14 @@
+c
+c $Id$
+c
+
+*     ***** truncating_function common block ******************************
+      real*8 rcut,pp
+      integer Trnc(2),nt
+      common / truncating_function_block /
+     >                rcut,pp,Trnc,nt
+
+*     ******************************************************************
+
+
+

@@ -1,0 +1,201 @@
+#!/bin/csh
+
+# Script to automate htmlization of the 
+# user and programmers manuals.
+
+if ($#argv != 1) then
+  echo usage: htmlize document 
+  echo        where document.tex is the main file
+  exit 1
+endif
+
+set TMP=tmp.$$
+
+set L2HOPT="-split 3 -bottom_navigation  -show_section_numbers -image_type gif -local_icons"
+
+# works also with a list of files here but not currently
+# used in this fashion
+
+foreach document ($1)
+
+  echo HTMLizing $document.tex
+
+# First make sure the latex builds OK
+
+  echo "htmlize:    Cleaning and making $document.ps"
+
+  make clean >& /dev/null
+  make $document.ps >& $document.latex.log
+
+
+  if ($document == "user") then
+  echo "htmlize:    making userpdf.pdf"
+  make pdf >>& $document.latex.log
+  endif
+
+  if ($status != 0) then
+    echo "htmlize: latex errors reported in $document.latex.log"
+    exit 1
+  endif
+
+# Get rid of the old directory and run latex2html
+
+  if (-e $document) then
+    echo "htmlize:   Removing old $document directory"
+    /bin/rm -rf $document
+  endif
+
+  echo "htmlize:   Running latex2html on $document.tex"
+
+  latex2html $L2HOPT $document.tex >& $document.latex2html.log
+  if ($status != 0) then
+    echo "htmlize: latex2html errors reported in $document.latex2html.log"
+    exit 1
+  endif
+
+# To make the document searchable we need to make the INDEX file
+# and insert the link near the top of document/document.html.
+# We actually shove it immediately before the first unnumbered list
+# <UL> which is the table of contents
+
+  echo "htmlize:   Inserting search information into $document/$document.html"
+
+  /bin/cp $document.INDEX $document/INDEX
+  if ($status != 0) then
+    echo "htmlize: copy of INDEX for $document failed"
+    exit 1
+  endif
+
+  @ i = 0
+  sed -e '/<UL>/,$ d' < $document/$document.html > $TMP
+  @ i += $status
+  cat $document.search >> $TMP
+  @ i += $status
+  echo '<UL>' >> $TMP
+  @ i += $status
+  sed -e '1,/<UL>/ d' < $document/$document.html >> $TMP
+  @ i += $status
+
+  if ($i != 0) then
+    echo "htmlize: insertion of search info into $document failed"
+    exit 1
+  endif
+
+  /bin/mv $document/$document.html  $document/$document.html.bak
+  mv $TMP $document/$document.html 
+  cp $document/$document.html $document/index.html
+  
+# Munge the backgrounds ... need to hardwire the sed here since have
+# trouble getting a shell variable inside two levels of quotes.
+#
+# At same time eliminate references to http://www.emsl.pnl.gov since we
+# need to reference files from the root in order for them to work on 
+# both the public and private side.
+# With DFS WEB now must also remove // from file paths used in images
+
+  echo "htmlize:   Munging backgrounds and http paths"
+
+  pushd $document > /dev/null
+
+  foreach file (*.html)
+    sed -e 's/<BODY >/<BODY>/' < $file > $TMP
+    if ($status != 0) then
+       echo "htmlize: munging of <BODY > to <BODY> failed"
+       exit 1
+    endif
+    mv $TMP $file
+    if ($document == "prog") then
+      sed -e 's,<BODY>,<BODY BGCOLOR="#FFFFFF">,' \
+          -e 's,http://www.emsl.pnl.gov/,/,g' \
+          -e 's,http://www.emsl.pnl.gov:2080/,/,g' \
+          -e 's,latex2html//,latex2html/,g'  < $file > $TMP
+    else if ($document == "user") then
+      sed -e 's/<BODY>/<BODY BGCOLOR="#FFFFFF">/' \
+          -e 's,http://www.emsl.pnl.gov/,/,g' \
+          -e 's,http://www.emsl.pnl.gov:2080/,/,g' \
+          -e 's,latex2html//,latex2html/,g'  < $file > $TMP
+    else
+      echo "htmlize: unknown document in background munge ... $document"
+      exit 1
+    endif
+
+    if ($status != 0) then
+       echo "htmlize: sed of $file failed ... look in $TMP for output."
+       exit 1
+    endif
+    /bin/mv $TMP $file
+  end
+
+  popd > /dev/null
+
+# Copy the postscript and compressed postscript files down
+
+  echo "htmlize:   Copying postscript source"
+
+# Note: $document.search must match the type and style of this copy
+#       e.g., for user you need to add the number of parts to user.search
+  if ($document == "user") then
+      cp userpdf.pdf $document
+  if ($status != 0) then
+    echo "htmlize: copy of pdf failed for $document"
+    exit 1
+  endif
+  endif
+
+
+  if (-e ${document}.ps) then
+     cp ${document}.ps $document
+     set cpstatus = $status
+  else if(-e ${document}.001.ps) then   # if one exists then there are at least two
+     cp ${document}.???.ps $document
+     set cpstatus = $status
+  else 
+     set cpstatus = 1
+  endif
+  if ($cpstatus != 0) then
+    echo "htmlize: copy of postscript failed for $document"
+    exit 1
+  endif
+
+  @ compress_stat = 0
+  echo "htmlize:   Compressing copies of postscript source"
+  foreach file (${document}*.ps)
+    if (-e $file) then
+      gzip < $file > ${document}/${file}.gz
+      @ compress_stat += $status
+    endif
+  end
+
+  if ($compress_stat != 0) then
+    echo "htmlize: compression of postscript failed for $document"
+    exit 1
+  endif
+
+#
+# new way to make frames document.
+#
+  if (! $?NWCHEM_TOP ) then
+    echo "htmlize:   NWCHEM_TOP is not defined ... cannot generate frames"
+  else if (! -e $NWCHEM_TOP/doc/write_frames.pl) then
+    echo "htmlize:   $NWCHEM_TOP/doc/write_frames.pl missing ... cannot generate frames"
+  else
+    if ($document == "user") then
+      set title = "NWChem User Manual"
+    else if ($document == "prog") then
+      set title = "NWChem Programmers Manual"
+    else
+      set title = "NWChem Manual"
+    endif
+    echo "htmlize:   Constructing frames documents"
+    $NWCHEM_TOP/doc/write_frames.pl $document "$title"
+  endif
+
+# Hopefully all is OK
+
+  echo "   Done htmlize-ing $document"
+ 
+  /bin/rm -rf $TMP 
+
+end
+
+

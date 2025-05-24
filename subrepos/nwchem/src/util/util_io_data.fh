@@ -1,0 +1,10 @@
+*
+* $Id$
+*
+      logical io_on
+      integer io_unit
+
+      common /util_io_data/ 
+     &                   io_on,
+     &                   io_unit
+

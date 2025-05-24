@@ -1,0 +1,9 @@
+* $Id$
+      Subroutine STUBROUTINE(RTDB)
+#include "errquit.fh"
+      Integer RTDB
+      Call ErrQuit(
+     $   'STUBROUTINE is not in this build of NWChem',
+     $    0, CAPMIS_ERR)
+      Return
+      End

@@ -1,0 +1,7 @@
+!$Id$
+!
+!$Log: not supported by cvs2svn $
+
+      double precision paw_hypergeom1F1
+      external paw_hypergeom1F1
+

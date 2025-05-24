@@ -1,0 +1,6 @@
+#
+# $Id$
+#
+
+Tools are now using a SVN repository under https://svn.pnl.gov/hpctools.
+You need to have a user name and password to access the GA tools repository.

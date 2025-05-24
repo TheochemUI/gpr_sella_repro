@@ -1,0 +1,7 @@
+c
+      integer ns_log, ns_int, ns_dbl
+C$Id$
+      parameter (ns_log  = 14)
+      parameter (ns_int  = 2)
+      parameter (ns_dbl  = 8)
+c

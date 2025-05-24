@@ -1,0 +1,22 @@
+! 
+! $Id$
+! 
+      integer paw_ovlp_coeff_size
+      external paw_ovlp_coeff_size
+
+      integer paw_ovlp_weight_size
+      external paw_ovlp_weight_size
+
+      integer paw_ne_total
+      external paw_ne_total
+
+      integer paw_ne_up
+      external paw_ne_up
+
+      integer paw_ne_down
+      external paw_ne_down
+
+      integer paw_ispin
+      external paw_ispin
+
+

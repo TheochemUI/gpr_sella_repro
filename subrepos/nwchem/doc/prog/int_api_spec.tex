@@ -1,0 +1,2025 @@
+%
+% $Id$
+%
+% 
+%-----------------------------------------------------------------%  
+%                                                                 % 
+%                                                                 % 
+%  This latex source file should NOT be edited.  It is generated  % 
+%  automatically from the integral API source code using "seetex" % 
+%  modifications required sould be made in the source code which  % 
+%  is in the source directory ".../nwchem/src/NWints/api" from    % 
+%  the standard repository. If you have questions or problems     % 
+%  contact Ricky Kendall at ra_kendall@pnl.gov or (509)375-2602   % 
+%                                                                 % 
+%  To make the ``current version'' of these files:                % 
+%  1) cd ${NWCHEM_TOP}/src/NWints/api                            $% 
+%  2) make doc                                                    % 
+%                                                                 % 
+%-----------------------------------------------------------------%  
+% 
+\chapter{Integral Application Programmer's Interface} 
+\label{appendix_intapi} 
+This appendix describes the interface to all routines for the NWChem 
+integral API. This includes the actual subroutine documentation and 
+design specifications. 
+ 
+ 
+\section{INT-API: Initialization, Integral Accuracy and Termination} 
+These routines set the scope for the integral computation that is 
+about to be performed.  
+% 
+ 
+%API Initialization and Termination Routines 
+\subsection{int\_init} 
+This is the main initialization routine for integrals. 
+Default memory requirements, accuracy thresholds, and other  
+initializations for all base integral codes are set here.  
+This routine will read (from the rtdb) any integral  
+settings changed by the user. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_init(rtdb, nbas, bases) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer rtdb        ! [input] run time data base handle 
+      integer nbas        ! [input] number of basis sets to be used 
+      integer bases(nbas) ! [input] basis set handles 
+\end{verbatim} 
+%API Initialization and Termination Routines 
+\subsection{intd\_init} 
+This is the main initialization routine for integral derivatives. 
+Default memory requirements, accuracy thresholds, and other  
+initializations for all base integral codes are set here.  
+This routine will read (from the rtdb) any integral  
+settings changed by the user. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine intd_init(rtdb,nbas,bases) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer rtdb        ! [input] run time data base handle 
+      integer nbas        ! [input] number of basis sets to be used 
+      integer bases(nbas) ! [input] basis set handles 
+\end{verbatim} 
+ 
+%API Initialization and Termination Routines 
+\subsection{int\_terminate} 
+This is the main termination routine for integrals. 
+After this call the INT-API is ready for re-initialization. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_terminate() 
+\end{verbatim} 
+No formal arguments 
+ 
+ 
+%API Initialization and Termination Routines 
+\subsection{intd\_terminate} 
+This is the main termination routine for integral 
+derivatives. 
+After this call the INT-API is ready for re-initialization. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine intd_terminate() 
+\end{verbatim} 
+No formal arguments 
+ 
+ 
+%API Initialization and Termination Routines 
+\subsection{intdd\_terminate} 
+This is the main termination routine for integral 
+second derivatives. 
+After this call the INT-API is ready for re-initialization. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine intdd_terminate() 
+\end{verbatim} 
+No formal arguments 
+ 
+% part of API Internal Routines 
+\subsection{int\_acc\_std} 
+This routine sets the integral threshold for radial cutoffs in all  
+integral codes used in the api via a parameter statement.  Other 
+routines have access via the apiP.fh common blocks and the set/get API. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_acc_std() 
+\end{verbatim} 
+The default ''standard'' value for the integral accuracy is: 
+\begin{verbatim} 
+c      parameter(val_def = 1.0d-15) 
+\end{verbatim} 
+% part of API Internal Routines 
+\subsection{int\_acc\_high} 
+This routine sets the integral threshold to ``high'' accuracy  
+for radial cutoffs in all integral codes used in the api via a  
+parameter statement.  Other routines have access via the apiP.fh  
+common blocks and the set/get API. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_acc_high() 
+\end{verbatim} 
+The default ''high accuracy'' value for the integral API is: 
+\begin{verbatim} 
+c      parameter (val_def_high = 1.0d-30) 
+\end{verbatim} 
+This is needed for certain algorithms within NWChem, e.g.,  
+the Schwarz inequality screening. 
+ 
+% part of API Internal Routines 
+\subsection{int\_acc\_get} 
+This routine returns the current integral threshold  
+for radial cutoffs in all integral codes used in the api via a  
+parameter statement.   
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_acc_get(retval) 
+\end{verbatim} 
+\begin{verbatim} 
+      double precision retval ! [output] current threshold 
+\end{verbatim} 
+% part of API Internal Routines 
+\subsection{int\_acc\_set} 
+This routine sets the current integral threshold  
+for radial cutoffs in all integral codes used in the api via a  
+parameter statement.   
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_acc_set(setval) 
+\end{verbatim} 
+\begin{verbatim} 
+      double precision setval ! [input] new threshold 
+\end{verbatim} 
+\section{INT-API: Memory Managment Routines} 
+These routines compute, store, and return memory requirements for 
+particular ``classes'' of integral computations.  These routines are 
+``overloaded'' since the application uses the same query function 
+whether integrals or integral derivatives are computed.  For example, 
+\verb+int_mem_2e4c+ is used to get the maximum buffer size and scratch 
+array size for both integrals computed using \verb+int_2e4c+ and 
+integral derivatives computed using \verb+intd_2e4c+.  The INT-API is 
+also designed such that if you initialize INT-API for integral 
+derivatives, the memory estimates are also valid for integrals as 
+well.   
+% 
+ 
+% This is part of the API Standard Integral routines 
+\subsection{int\_mem} 
+This routine returns the maximum buffer and scratch array 
+sizes for both one electron and two electron (4 center)  
+integrals. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_mem(max1e, maxg, mscratch_1e, mscratch_2e) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer max1e       ! [output] max 1e buffer size 
+      integer maxg        ! [output] max 2e4c buffer size 
+      integer mscratch_1e ! [output] max scr for 1e ints 
+      integer mscratch_2e ! [output] max scr for 2e ints 
+\end{verbatim} 
+% This is part of the API Standard Integral routines 
+\subsection{int\_mem\_1e} 
+This routine returns the maximum buffer and scratch array 
+sizes for one electron (2 center) 
+integrals. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_mem_1e(max1e, mscratch_1e) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer max1e       ! [output] max 1e buffer size 
+      integer mscratch_1e ! [output] max scr for 1e ints 
+\end{verbatim} 
+% This is part of the API Standard Integral routines 
+\subsection{int\_mem\_2e4c} 
+This routine returns the maximum buffer and scratch array 
+sizes for two electron (4 center) 
+integrals. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_mem_2e4c(maxg, mscratch_2e) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer maxg        ! [output] max 2e4c buffer size 
+      integer mscratch_2e ! [output] max scr for 2e ints 
+\end{verbatim} 
+% This is part of the API Standard Integral routines 
+\subsection{int\_mem\_h1} 
+This routine returns the maximum buffer and scratch array 
+sizes for one electron hamiltonian  
+integrals. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_mem_h1(maxh1, mscratch_h1) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer maxh1       ! [output] max buffer size for H1 ints 
+      integer mscratch_h1 ! [output] max scr size for H1 ints 
+\end{verbatim} 
+% This is part of the API Standard Integral routines 
+\subsection{int\_mem\_2eec} 
+This routine returns the maximum buffer and scratch array 
+sizes for two electron (3 center) 
+integrals. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_mem_2e3c(maxg, mscratch_2e3c) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer maxg           ! [output] max buf size for 2e3c ints 
+      integer mscratch_2e3c  ! [output] max scr size for 2e3c ints 
+\end{verbatim} 
+% This is part of the API Standard Integral routines 
+\subsection{int\_mem\_2e2c} 
+This routine returns the maximum buffer and scratch array 
+sizes for two electron (2 center) 
+integrals. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_mem_2e2c(maxg, mscratch_2e2c) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer maxg          ! [output] max buf size for 2e2c ints 
+      integer mscratch_2e2c ! [output] max scr size for 2e2c ints 
+\end{verbatim} 
+% This is part of the API Standard Integral routines 
+\subsection{int\_mem\_3ov} 
+This routine returns the maximum buffer and scratch array 
+sizes for one electron (3 center) 
+integrals. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_mem_3ov(maxbuf, mscratch_3ov) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer maxbuf       ! [output] max buf size for 3 center ov 
+      integer mscratch_3ov ! [output] max scr size for 3 center ov 
+\end{verbatim} 
+% This is part of the API Standard Integral routines 
+\subsection{int\_mem\_print} 
+This routine prints the maximum buffer and scratch array 
+sizes for all known ``classes'' of integrals. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_mem_print() 
+\end{verbatim} 
+% This is part of the API Standard Integral routines 
+\subsection{intb\_mem\_2e4c} 
+This routine returns the maximum buffer and scratch array 
+sizes for two electron (4 center) 
+integrals from the blocking interface. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine intb_mem_2e4c(maxg, mscratch_2e) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer maxg        ! [output] max buf size for blocked 2e4c ints 
+      integer mscratch_2e ! [output] max scr size for blocked 2e4c ints 
+\end{verbatim} 
+\section{INT-API: Integral Routines} 
+These routines compute and return integrals based on shell quartets 
+or groups of shell quartets.   
+% 
+ 
+% this is part of the API Standard Integral routines. 
+\subsection{int\_1estv} 
+This is an internal routine that most of the external 1 electron 
+routines call.  This is the actual workhorse routine. 
+This routine computes the 1 electron integrals S, T, and V: 
+\begin{eqnarray*} 
+S & = & ({\mu}|{\nu}) \\ 
+  & = & \int_{-\infty}^{\infty} g_{\mu}(X_{\mu},r_{1})g_{\nu}(X_{\nu},r_{1})dr_{1} \\ 
+T & = & ({\mu}|-\frac{1}{2}\nabla^{2}|{\nu}) \\ 
+  & = & -\frac{1}{2}\int_{-\infty}^{\infty}g_{\mu}(X_{\mu},r_{1})\nabla^{2}(r_{1}) 
+        g_{\nu}(X_{\nu},r_{1})dr_{1} \\ 
+V & = & ({\mu}|\sum_{\alpha}\frac{-Z_{\alpha}}{|r_{1}-R_{\alpha}|}|{\nu}) \\ 
+  & = & \int_{-\infty}^{\infty} g_{\mu}(X_{\mu},r_{1})\sum_{\alpha}\frac 
+{-Z_{\alpha}}{|r_{1}-R_{\alpha}|}g_{\nu}(X_{\nu},r_{1})dr_{1} \\ 
+\end{eqnarray*} 
+ 
+If an ECP is defined then the ECP integral contributions are summed 
+directly into the V integrals. 
+ 
+If a relativistic basis is defined then the one-electron integrals 
+for the case where both shells are relativistic are modified to 
+\begin{eqnarray*} 
+S & = & ({\mu^L}|{\nu^L}) 
+      - ({\mu^S}|\frac{\alpha^2}{4}{\nabla^{2}}|{\nu^S}) \\ 
+T & = & -\frac{1}{2} ({\mu^L}|{\nabla^{2}}|{\nu^S}) 
+      -  \frac{1}{2} ({\mu^S}|{\nabla^{2}}|{\nu^L}) 
+      +  \frac{1}{2} ({\mu^S}|{\nabla^{2}}|{\nu^S}) \\ 
+V & = & ({\mu^L}|\sum_{\alpha}\frac{-Z_{\alpha}}{|r_{1}-R_{\alpha}|}|{\nu^L}) 
+    - \frac{\alpha^2}{4} ({\mu^S}|\nabla\sum_{\alpha}\frac{-Z_{\alpha}}{|r_{1}-R_{\alpha}|}\cdot\nabla|{\nu^S}) \\ 
+\end{eqnarray*} 
+  
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_1estv(i_basis,ish,j_basis,jsh,lscr,scr,lstv,S,T,V, 
+     &    doS,doT,doV) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer i_basis ! [input] basis set handle for ish 
+      integer ish     ! [input] i shell/contraction 
+      integer j_basis ! [input] basis set handle for jsh 
+      integer jsh     ! [input] j shell/contraction 
+      integer lscr    ! [input] length of scratch array 
+      integer lstv               ! [input] length of integral buffer 
+      double precision scr(lscr) ! [scratch] scratch array 
+      double precision S(lstv)   ! [output] overlap integrals 
+      double precision T(lstv)   ! [output] kinetic energy integrals 
+      double precision V(lstv)   ! [output] potential energy integrals 
+      logical doS                ! [input] flag for overlap integrals 
+      logical doT                ! [input] flag for kinetic energy integrals 
+      logical doV                ! [input] flag for potential energy integrals 
+\end{verbatim} 
+% this is part of the API Standard Integral routines. 
+\subsection{int\_1eov} 
+This routine computes the 1 electron overlap integrals ($S$): 
+\begin{eqnarray*} 
+S & = & ({\mu}|{\nu}) \\ 
+  & = & \int_{-\infty}^{\infty}g_{\mu}(X_{\mu},r_{1})g_{\nu}(X_{\nu},r_{1})dr_{1} 
+\end{eqnarray*} 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_1eov(i_basis,ish,j_basis,jsh,lscr,scr,lov,Ov) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer i_basis ! [input] basis set handle for ish 
+      integer ish     ! [input] i shell/contraction 
+      integer j_basis ! [input] basis set handle for jsh 
+      integer jsh     ! [input] j shell/contraction 
+      integer lscr    ! [input] length of scratch array 
+      double precision scr(lscr) ! [scratch] scratch array 
+      integer lov                ! [input] length of Ov buffer 
+      double precision Ov(lov)   ! [output] overlap integrals 
+\end{verbatim} 
+% this is part of the API Standard Integral routines. 
+\subsection{int\_1eke} 
+This routine computes the 1 electron kinetic energy integrals, ($T$).: 
+\begin{eqnarray*} 
+T & = & ({\mu}|\frac{-1}{2}\nabla^{2}|{\nu}) \\ 
+  & = & \int_{-\infty}^{\infty}g_{\mu}(X_{\mu},r_{1})\frac{-1}{2}\nabla^{2}(r_{1})g_{\nu}(X_{\nu},r_{1})dr_{1} 
+\end{eqnarray*} 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_1eke(i_basis,ish,j_basis,jsh,lscr,scr,lke,Ke) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer i_basis ! [input] basis set handle for ish 
+      integer ish     ! [input] i shell/contraction 
+      integer j_basis ! [input] basis set handle for jsh 
+      integer jsh     ! [input] j shell/contraction 
+      integer lscr    ! [input] length of scratch array 
+      double precision scr(lscr) ! [scratch] scratch array 
+      integer lke                ! [input] length of Ke buffer 
+      double precision Ke(lke)   ! [output] kinetic energy integrals 
+\end{verbatim} 
+% this is part of the API Standard Integral routines. 
+\subsection{int\_1epe} 
+This routine computes the 1 electron potential integrals, ($V$): 
+\begin{eqnarray*} 
+V & = & ({\mu}|\sum_{\alpha}\frac{-Z_{\alpha}}{|r_{1}-R_{\alpha}|}|{\nu}) \\ 
+  & = & \int_{-\infty}^{\infty} g_{\mu}(X_{\mu},r_{1})\sum_{\alpha}\frac 
+{-Z_{\alpha}}{|r_{1}-R_{\alpha}|}g_{\nu}(X_{\nu},r_{1})dr_{1} 
+\end{eqnarray*} 
+If an ECP is defined then the ECP integral contributions are summed 
+directly into the V integrals. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_1epe(i_basis,ish,j_basis,jsh,lscr,scr,lpe,Pe) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer i_basis ! [input] basis set handle for ish 
+      integer ish     ! [input] i shell/contraction 
+      integer j_basis ! [input] basis set handle for jsh 
+      integer jsh     ! [input] j shell/contraction 
+      integer lscr    ! [input] length of scratch array 
+      double precision scr(lscr) ! [scratch] scratch array 
+      integer lpe                ! [input] length of Pe buffer 
+      double precision Pe(lpe)   ! [output] kinetic energy integrals 
+\end{verbatim} 
+% this is part of the API Standard Integral routines. 
+\subsection{int\_1eh1} 
+This routine computes the 1 electron hamiltonian, ($H1$). 
+\begin{eqnarray*} 
+H1 & = & T + V      \\ 
+T  & = & ({\mu}|\frac{-1}{2}\nabla^{2}|{\nu}) \\ 
+   & = & \int_{-\infty}^{\infty} g_{\mu}(X_{\mu},r_{1})\frac{-1}{2} 
+\nabla^{2}(r_{1})g_{\nu}(X_{\nu},r_{1})dr_{1} \\ 
+V  & = & ({\mu}|\sum_{\alpha}\frac{-Z_{\alpha}}{|r_{1}-R_{\alpha}|}|{\nu}) \\ 
+   & = & \int_{-\infty}^{\infty} g_{\mu}(X_{\mu},r_{1})\sum_{\alpha}\frac 
+{-Z_{\alpha}}{|r_{1}-R_{\alpha}|}g_{\nu}(X_{\nu},r_{1})dr_{1} 
+\end{eqnarray*} 
+ 
+If an ECP is defined then the ECP integral contributions are summed 
+directly into the $H1$ integrals. 
+ 
+If a relativistic basis is defined then the one-electron integrals for 
+the case where both shells are relativistic are the modified integrals. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_1eh1(i_basis,ish,j_basis,jsh,lscr,scr,lh1,H1) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer i_basis ! [input] basis set handle for ish 
+      integer ish     ! [input] i shell/contraction 
+      integer j_basis ! [input] basis set handle for jsh 
+      integer jsh     ! [input] j shell/contraction 
+      integer lscr    ! [input] length of scratch array 
+      double precision scr(lscr) ! [scratch] scratch array 
+      integer lh1                ! [input] length of H1 buffer. 
+      double precision H1(lh1)   ! [output] one electron 
+\end{verbatim} 
+ 
+% this is part of the API Standard Integral routines. 
+\subsection{int\_1eall} 
+This routine computes the 1 electron integrals S, T, and V: 
+\begin{eqnarray*} 
+S & = & ({\mu}|{\nu}) \\ 
+  & = & \int_{{-}\infty}^{\infty}g_{\mu}(X_{\mu},r_{1})g_{\nu}(X_{\nu},r_{1})dr_{1} \\ 
+T & = & ({\mu}|-\frac{1}{2}{\nabla^{2}}|{\nu}) \\ 
+  & = & \int_{-\infty}^{\infty}g_{\mu}(X_{\mu},r_{1})\frac{-1}{2}{\nabla^{2}}(r_{1})g_{\nu}(X_{\nu},r_{1})dr_{1} \\ 
+V & = & ({\mu}|\sum_{\alpha}\frac{-Z_{\alpha}}{|r_{1}-R_{\alpha}|}|{\nu}) \\ 
+  & = & \int_{-\infty}^{\infty}g_{\mu}(X_{\mu},r_{1})\sum_{\alpha}\frac{-Z_{\alpha}} 
+{|r_{1}-R_{\alpha}|}g_{\nu}(X_{\nu},r_{1})dr_{1} 
+\end{eqnarray*} 
+ 
+ 
+{\it Syntax:} 
+\begin{verbatim}  
+      subroutine int_1eall(i_basis,ish,j_basis,jsh,lscr,scr,lstv,S,T,V) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer i_basis ! [input] basis set handle for ish 
+      integer ish     ! [input] i shell/contraction 
+      integer j_basis ! [input] basis set handle for jsh 
+      integer jsh     ! [input] j shell/contraction 
+      integer lscr    ! [input] length of scratch array 
+      double precision scr(lscr) ! [scratch] scratch array 
+      integer lstv               ! [input] length of one electron buffers 
+      double precision T(lstv)   ! [output] kinetic integral buffer 
+      double precision V(lstv)   ! [output] potential integral buffer 
+      double precision S(lstv)   ! [output] overlap integral buffer 
+\end{verbatim} 
+\begin{verbatim} 
+      integer i_basis ! [input] basis set handle for ish 
+      integer ish     ! [input] i shell/contraction 
+      integer j_basis ! [input] basis set handle for jsh 
+      integer jsh     ! [input] j shell/contraction 
+      integer lscr    ! [input] length of scratch array 
+      integer lstv               ! [input] length of integral buffer 
+      double precision scr(lscr) ! [scratch] scratch array 
+      double precision S(lstv)   ! [output] overlap integrals 
+      double precision T(lstv)   ! [output] kinetic energy integrals 
+      double precision V(lstv)   ! [output] potential energy integrals 
+      logical doS                ! [input] flag for overlap integrals 
+      logical doT                ! [input] flag for kinetic energy integrals 
+      logical doV                ! [input] flag for potential energy integrals 
+\end{verbatim} 
+% This is part of the API Standard Integral routines 
+\subsection{int\_1cg} 
+This routine computes the integral of the one center gaussian. 
+\begin{eqnarray*} 
+({\mu}) = \int_{-\infty}^{\infty} g_{\mu}(X_{\mu},r_{1})dr_{1} 
+\end{eqnarray*} 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_1cg(i_basis,ish,lscr,scr,l1g,G1e) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer i_basis ! [input] basis set handle 
+      integer ish     ! [input] lexical shell/contraction index 
+      integer lscr    ! [input] length of scratch array 
+      double precision scr(lscr)  ! [scratch] scratch space  
+      integer l1g     ! [input] length of integral buffer array 
+      double precision G1e(l1g)   ! [output] one center gaussian integrals 
+\end{verbatim} 
+% this is part of the API Standard Integral routines. 
+\subsection{int\_1e3ov} 
+This routine computes the 3 center overlap integral: 
+\begin{eqnarray*} 
+({\mu}{\nu}{\lambda}) = \int_{-\infty}^{\infty} g_{\mu}(X_{\mu},r_{1})g_{\nu}(X_{\nu},r_{1})g_{\lambda}(X_{\lambda},r_{1})dr
+_{1} 
+\end{eqnarray*} 
+{\it Syntax:}  
+\begin{verbatim} 
+      subroutine int_1e3ov (i_basis, ish, j_basis, jsh, k_basis, ksh, 
+     &       lscr, scr, lov3, OV3) 
+c 
+\end{verbatim} 
+\begin{verbatim}  
+      integer i_basis            ! [input] basis set handle for ish 
+      integer ish                ! [input] i shell/contraction 
+      integer j_basis            ! [input] basis set handle for jsh 
+      integer jsh                ! [input] j shell/contraction 
+      integer k_basis            ! [input] basis set handle for ksh 
+      integer ksh                ! [input] k shell/contraction 
+      integer lscr               ! [input] length of scratch v 
+      double precision scr(lscr) ! [scratch] scratch array 
+      integer lov3               ! [input] length of 3c overlap buffer 
+      double precision OV3(lov3) ! [output] 3c overlap integrals 
+\end{verbatim}  
+% this is part of the API Standard Integral routines. 
+\subsection{int\_l1e3ov} 
+This routine computes the 3 center overlap integral  
+with labels and it removes ``zero'' integrals: 
+\begin{eqnarray*} 
+({\mu}{\nu}{\lambda}) = \int_{-\infty}^{\infty} g_{\mu}(X_{\mu},r_{1})g_{\nu}(X_{\nu},r_{1}g_{\lambda}(X_{\lambda},r_{1})dr_
+{1} 
+\end{eqnarray*} 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_l1e3ov(i_basis, ish, j_basis, jsh, k_basis, ksh, 
+     &       zerotol, lov3, OV3, ilab, jlab, klab, numov3, lscr, scr) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer i_basis            ! [input] basis set handle for ish 
+      integer ish                ! [input] i shell/contraction 
+      integer j_basis            ! [input] basis set handle for jsh 
+      integer jsh                ! [input] j shell/contraction 
+      integer k_basis            ! [input] basis set handle for ksh 
+      integer ksh                ! [input] k shell/contraction 
+      double precision zerotol   ! [input] "zero" tolerance threshold 
+      integer lov3               ! [input] length of 3c overlap array 
+      double precision OV3(lov3) ! [output] 3c overlap integrals 
+      integer ilab(lov3)         ! [output] i labels for 3c overlap ints 
+      integer jlab(lov3)         ! [output] j labels for 3c overlap ints 
+      integer klab(lov3)         ! [output] k labels for 3c overlap ints 
+      integer numov3             ! [output] number of integrals and labels  
+c . . . . . . . . . . . . . . . .!          generated and returned 
+      integer lscr               ! [input] length of scratch array 
+      double precision scr(lscr) ! [input] scratch array 
+\end{verbatim} 
+% this is part of the API Standard Integral routines. 
+\subsection{int\_l1eall} 
+This routine computes the 1 electron integrals S, T, and V  
+with labels and it removes ``zero'' integrals: 
+\begin{eqnarray*}  
+S & = & ({\mu}|{\nu}) \\ 
+  & = & \int_{{-}\infty}^{\infty} g_{\mu}(X_{\mu},r_{1})g_{\nu}(X_{\nu},r_{1})dr_{1} \\ 
+T & = & ({\mu}|\frac{-1}{2}{\nabla^{2}}|{\nu}) \\ 
+  & = & \int_{-\infty}^{\infty} g_{\mu}(X_{\mu},r_{1})\frac{-1}{2}{\nabla^{2}}(r_{1})g_{\nu}(X_{\nu},r_{1})dr_{1} \\ 
+V & = & ({\mu}|\sum_{\alpha}\frac{-Z_{\alpha}}{|r_{1}-R_{\alpha}|}|{\nu}) \\ 
+  & = & \int_{-\infty}^{\infty}g_{\mu}(X_{\mu},r_{1})\sum_{\alpha}\frac{-Z_{\alpha}} 
+{|r_{1}-R_{\alpha}|}g_{\nu}(X_{\nu},r_{1})dr_{1} 
+\end{eqnarray*}  
+ 
+If an ECP is defined then the ECP integral contributions are summed  
+directly into the V integrals.   
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_l1eall(i_basis, ish, j_basis, jsh, zerotol, 
+     &       ilab, jlab, lstv, S, T, V, lscr, scr, numstv)  
+\end{verbatim} 
+\begin{verbatim} 
+      integer i_basis ! [input] basis set handle for ish 
+      integer ish     ! [input] i shell/contraction 
+      integer j_basis ! [input] basis set handle for jsh 
+      integer jsh     ! [input] j shell/contraction 
+      integer lscr    ! [input] length of scratch array 
+      double precision zerotol ! [input] zero threshold for integrals 
+      double precision scr(lscr) ! [scratch] scratch array 
+      integer lstv               ! [input] length of one electron buffers 
+      integer ilab(lstv)         ! [output] i bas. fun. index array 
+      integer jlab(lstv)         ! [output] j bas. fun. index array 
+      double precision T(lstv)   ! [output] kinetic integral buffer 
+      double precision V(lstv)   ! [output] potential integral buffer 
+      double precision S(lstv)   ! [output] overlap integral buffer 
+      integer numstv             ! [output] number of returned integrals 
+\end{verbatim} 
+% This is part of the standard API 
+\subsection{int\_pgen1e} 
+This routine prints a generic one electron block of integrals. 
+This requires the labels be generated and input to this routine. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_pgen1e(msg, i_basis, ish, j_basis, jsh,  
+     &       ilab, jlab, l1e, Gen1e, print_level) 
+\end{verbatim} 
+\begin{verbatim} 
+      character*(*) msg           ! [input] informational message 
+      integer i_basis             ! [input] basis set handle for i shell 
+      integer j_basis             ! [input] basis set handle for j shell 
+      integer ish                 ! [input] i shell 
+      integer jsh                 ! [input] j shell  
+      integer l1e                 ! [input] number of integrals and labels 
+      integer ilab(l1e)           ! [input] i basis functions labels 
+      integer jlab(l1e)           ! [input] j basis functions labels 
+      double precision Gen1e(l1e) ! [input] integrals to be printed 
+      integer print_level         ! [input] print level to be used 
+c. . . . . . . . . . . . . .! print_level = 0 print lables and integrals 
+c. . . . . . . . . . . . . .!             = 1 also print shell info. 
+\end{verbatim} 
+% this is part of the API Standard Integral routines. 
+\subsection{int\_l1eh1} 
+This routine computes the 1 electron hamiltonian, ($H1$) 
+with labels and ``zero'' integrals removed.  
+ 
+\begin{eqnarray*} 
+H1 & = & T + V      \\ 
+T  & = & ({\mu}|\frac{-1}{2}\nabla^{2}|{\nu}) \\ 
+   & = & \int_{-\infty}^{\infty} g_{\mu}(X_{\mu},r_{1})\frac{-1}{2} 
+\nabla^{2}(r_{1})g_{\nu}(X_{\nu},r_{1})dr_{1} \\ 
+V  & = & ({\mu}|\sum_{\alpha}\frac{-Z_{\alpha}}{|r_{1}-R_{\alpha}|}|{\nu}) \\ 
+   & = & \int_{-\infty}^{\infty} g_{\mu}(X_{\mu},r_{1})\sum_{\alpha}\frac 
+{-Z_{\alpha}}{|r_{1}-R_{\alpha}|}g_{\nu}(X_{\nu},r_{1})dr_{1}  
+\end{eqnarray*} 
+ 
+If an ECP is defined then the ECP integral contributions are summed  
+directly into the $H1$ integrals.   
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_l1eh1(i_basis, ish, j_basis, jsh, zerotol, 
+     &       ilab, jlab, lh1, H1, lscr, scr, numgen)  
+\end{verbatim} 
+\begin{verbatim} 
+      integer i_basis ! [input] basis set handle for ish 
+      integer ish     ! [input] i shell/contraction 
+      integer j_basis ! [input] basis set handle for jsh 
+      integer jsh     ! [input] j shell/contraction 
+      integer lscr    ! [input] length of scratch array 
+      double precision zerotol   ! [input] zero threshold  
+      double precision scr(lscr) ! [scratch] scratch array 
+      integer lh1                ! [input] length of 1e buffers. 
+      integer numgen             ! [output] number of H1 integrals 
+      integer ilab(lh1)          ! [output] i bas fun labels array 
+      integer jlab(lh1)          ! [output] j bas fun labels array 
+      double precision H1(lh1)   ! [output] 1e H1 integrals 
+\end{verbatim} 
+% this is part of the API Standard Integral routines. 
+\subsection{int\_l1eke} 
+This routine computes the 1 electron kinetic energy integrals, ($T$). 
+with labels and ``zero'' integrals removed: 
+ 
+\begin{eqnarray*} 
+T & = & ({\mu}|\frac{-1}{2}\nabla^{2}|{\nu}) \\ 
+  & = & \int_{-\infty}^{\infty} g_{\mu}(X_{\mu},r_{1})\frac{-1}{2}\nabla^{2}(r_{1})g_{\nu}(X_{\nu},r_{1})dr_{1} 
+\end{eqnarray*} 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_l1eke(i_basis, ish, j_basis, jsh, zerotol, 
+     &       ilab, jlab, lke, Ke, lscr, scr, numgen)  
+\end{verbatim} 
+\begin{verbatim} 
+      integer i_basis ! [input] basis set handle for ish 
+      integer ish     ! [input] i shell/contraction 
+      integer j_basis ! [input] basis set handle for jsh 
+      integer jsh     ! [input] j shell/contraction 
+      integer lscr    ! [input] length of scratch array 
+      double precision scr(lscr) ! [scratch] scratch array 
+      double precision zerotol   ! [input] zero threshold 
+      integer lke                ! [input] length of 1e buffers 
+      integer numgen             ! [output] number of Ke integrals 
+      integer ilab(lke)          ! [output] i bas fun labels array 
+      integer jlab(lke)          ! [output] j bas fun labels array 
+      double precision Ke(lke)   ! [output] kinetic energy integrals 
+\end{verbatim} 
+% this is part of the API Standard Integral routines. 
+\subsection{int\_l1eov} 
+This routine computes the 1 electron overlap integrals ($S$) 
+with labels and ``zero'' integrals removed: 
+ 
+\begin{eqnarray*} 
+S & = & ({\mu}|{\nu}) \\ 
+  & = & \int_{-\infty}^{\infty} g_{\mu}(X_{\mu},r_{1})g_{\nu}(X_{\nu},r_{1})dr_{1} 
+\end{eqnarray*} 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_l1eov(i_basis, ish, j_basis, jsh, zerotol, 
+     &       ilab, jlab, lov, Ov, lscr, scr, numgen)  
+\end{verbatim} 
+\begin{verbatim} 
+      integer i_basis ! [input] basis set handle for ish 
+      integer ish     ! [input] i shell/contraction 
+      integer j_basis ! [input] basis set handle for jsh 
+      integer jsh     ! [input] j shell/contraction 
+      integer lscr    ! [input] length of scratch array 
+      double precision scr(lscr) ! [scratch] scratch array 
+      double precision zerotol   ! [input] zero threshold 
+      integer lov                ! [input] length of overlap buffer 
+      integer numgen             ! [output] num of ints generated 
+      integer ilab(lov)          ! [output] i bas fun labels array 
+      integer jlab(lov)          ! [output] j bas fun labels array 
+      double precision Ov(lov)   ! [output] overlap integral buffer 
+\end{verbatim} 
+% this is part of the API Standard Integral routines. 
+\subsection{int\_l1epe} 
+This routine computes the 1 electron potential integrals, ($V$): 
+If an ECP is defined then the ECP integral contributions are summed  
+directly into the V integrals.  Integrals are computed with labels  
+and ``zero'' integrals removed.   
+ 
+\begin{eqnarray*} 
+V & = & ({\mu}|\sum_{\alpha}\frac{-Z_{\alpha}}{|r_{1}-R_{\alpha}|}|{\nu}) \\ 
+  & = & \int_{-\infty}^{\infty} g_{\mu}(X_{\mu},r_{1})\sum_{\alpha}\frac 
+{-Z_{\alpha}}{|r_{1}-R_{\alpha}|}g_{\nu}(X_{\nu},r_{1})dr_{1}  
+\end{eqnarray*} 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_l1epe(i_basis, ish, j_basis, jsh, zerotol, 
+     &       ilab, jlab, lpe, Pe, lscr, scr, numgen)  
+\end{verbatim} 
+\begin{verbatim} 
+      integer i_basis ! [input] basis set handle for ish 
+      integer ish     ! [input] i shell/contraction 
+      integer j_basis ! [input] basis set handle for jsh 
+      integer jsh     ! [input] j shell/contraction 
+      integer lscr    ! [input] length of scratch array 
+      double precision scr(lscr) ! [scratch] scratch array 
+      double precision zerotol   ! [input] zero integral threshold 
+      integer lpe                ! [input] length of potential buffer 
+      integer numgen             ! [output] number of integrals generated 
+      integer ilab(lpe)          ! [output] i bas fun labels array 
+      integer jlab(lpe)          ! [output] j bas fun labels array 
+      double precision Pe(lpe)   ! [output] potential integrals 
+\end{verbatim} 
+% this is part of the API Standard Integral routines 
+\subsection{int\_l1gen1e} 
+This routine generates labels for general 2 index one  
+electron integrals.  This is mostly unused since the other  
+integral type specific label routines are now used.  This  
+routine requires that the integral block be computed prior  
+to the label call.  Other routines now integrate label  
+generation with computation.   
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_lgen1e(i_basis, ish, j_basis, jsh, zerotol, 
+     &       ilab, jlab, l1e, Gen1e, lscr, scr, numgen)  
+\end{verbatim} 
+\begin{verbatim} 
+      integer i_basis ! [input] bra basis set handle 
+      integer ish     ! [input] bra shell lexical index 
+      integer j_basis ! [input] ket basis set handle 
+      integer jsh     ! [input] ket shell lexical index 
+      double precision zerotol ! [input] zero threshold 
+      integer l1e       ! [input] length of buffers for integrals 
+      integer ilab(l1e) ! [output] i bas func labels array 
+      integer jlab(l1e) ! [output] j bas func labels array 
+      double precision Gen1e(l1e) ! [input/output] 1e integrals 
+      integer lscr ! [input] length of scratch array 
+      double precision scr(lscr) ! [scratch] array 
+      integer numgen ! [output] number of integrals  
+c . . . . . . . . . .!           saved and returned 
+\end{verbatim} 
+% this is part of the API Standard Integral routines. 
+\subsection{int\_2e2c} 
+this routine computes the 2 center 2 electron integrals:  
+\begin{eqnarray*} 
+({\mu}|{\nu}) = \int_{-\infty}^{\infty} g_{\mu}(X_{\mu},r_{1})\frac{1}{r_{12}}g_{\nu}(X_{\nu},r_{2})dr_{1}dr_{2} 
+\end{eqnarray*} 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_2e2c(brain, ish, ketin, jsh,  
+     &       lscr, scr, leri, eri) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer brain ! [input] bra basis set handle 
+      integer ish   ! [input] shell/contraction index 
+      integer ketin ! [input] ket basis set handle 
+      integer jsh   ! [input] shell/contraction index 
+      integer lscr  ! [input] length of scratch array 
+      double precision scr(lscr) ! [scratch] array 
+      integer leri  ! [input] length of integral array 
+      double precision eri(leri) ! [output] 2e2c integrals 
+\end{verbatim} 
+% this is part of the API Standard Integral routines. 
+\subsection{int\_l2e2c} 
+this routine computes the 2 center 2 electron integrals 
+with labels and ``zero'' integrals removed:  
+\begin{eqnarray*} 
+({\mu}|{\nu}) = \int_{-\infty}^{\infty} g_{\mu}(X_{\mu},r_{1})\frac{1}{r_{12}}g_{\nu}(X_{\nu},r_{2})dr_{1}dr_{2} 
+\end{eqnarray*} 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_l2e2c(brain, ish, ketin, jsh,  
+     &       zerotol, leri, eri, nint, ilab, jlab,  
+     &       lscr, scr) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer brain ! [input] bra basis set handle 
+      integer ish   ! [input] shell/contraction index 
+      integer ketin ! [input] ket basis set handle 
+      integer jsh   ! [input] shell/contraction index 
+      integer lscr  ! [input] length of scratch array 
+      double precision scr(lscr) ! [scratch] array 
+      double precision zerotol   ! [input] zero threshold 
+      integer leri  ! [input] length of integral array 
+      integer nint  ! [output] num of ints computed 
+      integer ilab(leri) ! [output] i bas func label array 
+      integer jlab(leri) ! [output] j bas func label array 
+      double precision eri(leri) ! [output] 2e2c integrals 
+\end{verbatim} 
+% this is part of the API Standard Integral routines. 
+\subsection{int\_l2e3c} 
+this routine computes the 3 center 2 electron integrals 
+with labels and ``zero'' integrals removed:  
+\begin{eqnarray*} 
+({\mu}|{\nu}{\lambda}) = \int_{-\infty}^{\infty} g_{\mu}(X_{\mu},r_{1})\frac{1}{r_{12}} 
+g_{\nu}(X_{\nu},r_{2}g_{\lambda}(X_{\lambda},r_{2})dr_{1}dr_{2} 
+\end{eqnarray*} 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_l2e3c(brain, ish, ketin, jsh, ksh, 
+     &       zerotol, canket, leri, eri, nint, ilab, jlab, klab, 
+     &       lscr, scr) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer brain ! [input] bra basis set handle 
+      integer ish   ! [input] shell/contraction index 
+      integer ketin ! [input] ket basis set handle 
+      integer jsh   ! [input] shell/contraction index 
+      integer ksh   ! [input] shell/contraction index 
+      integer lscr  ! [input] length of scratch array 
+      double precision scr(lscr) ! [scratch] array 
+      double precision zerotol   ! [input] zero threshold 
+      integer leri  ! [input] length of integral array 
+      integer  nint ! [output] number of integrals computed 
+      integer ilab(leri) ! [output] i bas fun labels array 
+      integer jlab(leri) ! [output] j bas fun labels array 
+      integer klab(leri) ! [output] k bas fun labels array 
+      double precision eri(leri) ! [output] 2e3c integrals 
+      logical canket ! [input] canonicalize ket bas. fun. label pairs 
+\end{verbatim} 
+% this is part of the API Standard Integral routines. 
+\subsection{int\_2e3c} 
+this routine computes the 3 center 2 electron integrals:  
+\begin{eqnarray*} 
+({\mu}|{\nu}{\lambda}) = \int_{-\infty}^{\infty} g_{\mu}(X_{\mu},r_{1})\frac{1}{r_{12}} 
+g_{\nu}(X_{\nu},r_{2}g_{\lambda}(X_{\lambda},r_{2})dr_{1}dr_{2} 
+\end{eqnarray*} 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_2e3c(brain, ish, ketin, jsh, ksh, 
+     &       lscr, scr, leri, eri) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer brain ! [input] bra basis set handle 
+      integer ish   ! [input] shell/contraction index 
+      integer ketin ! [input] ket basis set handle 
+      integer jsh   ! [input] shell/contraction index 
+      integer ksh   ! [input] shell/contraction index 
+      integer lscr  ! [input] length of scratch array 
+      double precision scr(lscr) ! [scratch] array 
+      integer leri  ! [input] length of integral array 
+      double precision eri(leri) ! [output] 2e3c integrals 
+\end{verbatim} 
+% this is part of the API Standard Integral routines. 
+\subsection{int\_2e4c} 
+this routine computes the 4 center (traditional) 2 electron integrals:  
+\begin{eqnarray*} 
+({\mu}{\rho}|{\nu}{\lambda}) = \int_{-\infty}^{\infty} g_{\mu}(X_{\mu},r_{1})g_{\rho}(X_{\rho},r_{1})\frac{1}{r_{12}}g_{\nu}
+(X_{\nu},r_{2}g_{\lambda}(X_{\lambda},r_{2})dr_{1}dr_{2} 
+\end{eqnarray*} 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_2e4c(brain, ish, jsh, ketin, ksh, lsh, 
+     &       lscr, scr, leri, eri) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer brain ! [input] bra basis set handle 
+      integer ish   ! [input] shell/contraction index 
+      integer jsh   ! [input] shell/contraction index 
+      integer ketin ! [input] ket basis set handle 
+      integer ksh   ! [input] shell/contraction index 
+      integer lsh   ! [input] shell/contraction index 
+      integer lscr  ! [input] length of scratch array 
+      double precision scr(lscr) ! [scratch] array 
+      integer leri  ! [input] length of integral array 
+      double precision eri(leri) ! [output] 2e4c integrals 
+\end{verbatim} 
+% this is part of the API Standard Integral routines. 
+\subsection{int\_l2e4c} 
+this routine computes the 4 center (traditional) 2 electron integrals 
+with labels and ``zero'' integrals removed:  
+ 
+\begin{eqnarray*} 
+({\mu}{\rho}|{\nu}{\lambda}) = \int_{-\infty}^{\infty} g_{\mu}(X_{\mu},r_{1})g_{\rho}(X_{\rho},r_{1})\frac{1}{r_{12}}g_{\nu}
+(X_{\nu},r_{2}g_{\lambda}(X_{\lambda},r_{2})dr_{1}dr_{2} 
+\end{eqnarray*} 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_l2e4c(brain, ish, jsh, ketin, ksh, lsh, 
+     &       zerotol, canonicalize, leri, eri, nint, ilab, jlab, klab, 
+     &       llab, lscr, scr) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer brain ! [input] bra basis set handle 
+      integer ish   ! [input] shell/contraction index 
+      integer jsh   ! [input] shell/contraction index 
+      integer ketin ! [input] ket basis set handle 
+      integer ksh   ! [input] shell/contraction index 
+      integer lsh   ! [input] shell/contraction index 
+      double precision zerotol ! [input] zero threshold 
+      integer lscr  ! [input] length of scratch array 
+      double precision scr(lscr) ! [scratch] array 
+      integer leri  ! [input] length of integral array 
+      integer nint  ! [output] number of integrals computed 
+      integer ilab(leri) ! [output] i bas fun label array  
+      integer jlab(leri) ! [output] j bas fun label array  
+      integer klab(leri) ! [output] k bas fun label array  
+      integer llab(leri) ! [output] l bas fun label array  
+      double precision eri(leri) ! [output] 2e4c integrals 
+      logical canonicalize ! [input] canonicalize labels 
+\end{verbatim} 
+\subsection{intb\_init4c} 
+This logical function sets up the blocking integral API based on the 
+input of a group of shell quartets (a block).   
+ 
+{\it Return Values:} 
+\begin{tabular}{|c|p{60mm}|} \hline 
+ .true.  & blocking API initialization okay\\ \hline 
+ .false. & blocking API detected a problem \\ \hline 
+\end{tabular} 
+ 
+{\it Side Effects:}  The shell quartet information may be reordered 
+since this routine pulls out blocks that consist of only $s$, $p$,  
+and $sp$ functions.  Thes blocks are computed using the $sp$ rotated 
+axis code since it is faster than even the Texas integral code. 
+ 
+The following code excerpt describes the proper use of the blocking 
+API routines.\\ 
+{\it Pseudo Code:} 
+\begin{verbatim} 
+ 
+* begin atom/shell loops 
+ 
+      call collect_group_of_shells() 
+      okay = intb_init4c($\cdots$) ! with group of shells info      
+      if (.not.okay) stop ' error setting up blocking interface ' 
+00001 continue 
+      more = intb_2e4c($\cdots$) ! with group of shells info 
+      call use_integrals_in_some_way() 
+      if (more) goto 00001 
+ 
+* end atom/shell loops 
+ 
+\end{verbatim} 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      logical function intb_init4c(brain, icl, jcl, ketin, kcl, lcl, 
+     &    num_q, q4, use_q4, lscr, scr, l_erilab, block_eff) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer brain      ! [input] basis set handle for bra basis 
+      integer ketin      ! [input] basis set handle for ket basis 
+      integer num_q      ! [input] number of quartets 
+      integer icl(num_q) ! [input] i-contraction labels for quartets 
+      integer jcl(num_q) ! [input] j-contraction labels for quartets 
+      integer kcl(num_q) ! [input] k-contraction labels for quartets 
+      integer lcl(num_q) ! [input] l-contraction labels for quartets 
+      double precision q4(num_q) ! [input] scaling factors 
+      logical use_q4            ! [input] true if scaling 
+      integer l_erilab   ! [input] size of eri and label arrays that  
+*................................. will be used in intb_2e4c.F 
+      integer lscr       ! [input] length of scratch array 
+      double precision scr(lscr)  ! [input] scratch array 
+      double precision block_eff  ! [output] blocking efficiency  
+\end{verbatim} 
+ 
+\subsection{intb\_2e4c} 
+This logical function returns the integrals and labels based on the 
+input of a group of shell quartets (a block).  This function cannot be 
+called without a call to intb\_init4c using the same block information. 
+``zero'' integrals are removed. 
+ 
+\begin{eqnarray*} 
+({\mu}{\rho}|{\nu}{\lambda}) = \int_{-\infty}^{\infty} g_{\mu}(X_{\mu},r_{1})g_{\rho}(X_{\rho},r_{1})\frac{1}{r_{12}}g_{\nu}
+(X_{\nu},r_{2}g_{\lambda}(X_{\lambda},r_{2})dr_{1}dr_{2} 
+\end{eqnarray*} 
+ 
+{\it Return Values:} 
+\begin{tabular}{|c|p{60mm}|} \hline 
+ .true.  & more integrals from this block another call to intb\_2e4c required \\ \hline 
+ .false. & all integrals from this block computed\\ \hline 
+\end{tabular} 
+ 
+The following code excerpt describes the proper use of the blocking 
+API routines.\\ 
+{\it Pseudo Code:} 
+\begin{verbatim} 
+ 
+* begin atom/shell loops 
+ 
+      call collect_group_of_shells() 
+      okay = intb_init4c($\cdots$) ! with group of shells info      
+      if (.not.okay) stop ' error setting up blocking interface ' 
+00001 continue 
+      more = intb_2e4c($\cdots$) ! with group of shells info 
+      call use_integrals_in_some_way() 
+      if (more) goto 00001 
+ 
+* end atom/shell loops 
+ 
+\end{verbatim} 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      logical function intb_2e4c(brain, icl, jcl, ketin, kcl, lcl, 
+     $     num_q, q4, use_q4, zerotol, canonicalize, 
+     $     ilab, jlab, klab, llab, eri, 
+     $     l_erilab, nints, lscr, scr) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer brain             ! [input]  basis handle for bra  
+      integer ketin             ! [input]  basis handle for ket  
+      integer num_q             ! [input]  number of quartets input 
+      integer icl(num_q)        ! [input]  i-contraction quartet labels 
+      integer jcl(num_q)        ! [input]  j-contraction quartet labels 
+      integer kcl(num_q)        ! [input]  k-contraction quartet labels 
+      integer lcl(num_q)        ! [input]  l-contraction quartet labels 
+      logical use_q4            ! [input]  logical for use of q4 
+      double precision q4(num_q) ! [input] symmetry prefactors for ints 
+*      
+      integer l_erilab          ! [input]  length of eri and label arrays 
+      integer ilab(l_erilab)    ! [output] integral labels for ``i''  
+      integer jlab(l_erilab)    ! [output] integral labels for ``j''  
+      integer klab(l_erilab)    ! [output] integral labels for ``k''  
+      integer llab(l_erilab)    ! [output] integral labels for ``l''  
+      integer nints              ! [output] number of integrals returned 
+      double precision eri(l_erilab) ! [output] integral values 
+      integer lscr              ! [input] length of scratch array 
+      double precision scr(lscr) ! [input] scratch array 
+      double precision zerotol  ! [input] zero integral threshold 
+      logical canonicalize      ! [input] Canonicalize integral labels? 
+\end{verbatim} 
+ 
+\subsection{intb\_nw\_2e4c} 
+This logical function returns the integrals and labels based on the 
+input of a group of shell quartets (a block).  This interfaces to 
+the NWChem McMurchie-Davidson code.  This routine should {\it never} 
+be called directly by an application module!! 
+``zero'' integrals are removed. 
+ 
+\begin{eqnarray*} 
+({\mu}{\rho}|{\nu}{\lambda}) = \int_{-\infty}^{\infty} g_{\mu}(X_{\mu},r_{1})g_{\rho}(X_{\rho},r_{1})\frac{1}{r_{12}}g_{\nu}
+(X_{\nu},r_{2}g_{\lambda}(X_{\lambda},r_{2})dr_{1}dr_{2} 
+\end{eqnarray*} 
+ 
+{\it Return Values:} 
+\begin{tabular}{|c|p{60mm}|} \hline 
+ .true.  & more integrals from this block another call to intb\_2e4c required \\ \hline 
+ .false. & all integrals from this block computed\\ \hline 
+\end{tabular} 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      logical function intb_nw_2e4c(brain, icl, jcl, ketin, kcl, lcl, 
+     $     num_q, q4, use_q4, zerotol, canonicalize, 
+     $     ilab, jlab, klab, llab, eri, 
+     $     l_erilab, nints, lscr, scr) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer brain             ! [input]  basis set handle for bra  
+      integer ketin             ! [input]  basis set handle for ket  
+      integer num_q             ! [input]  number of quartets input 
+      integer icl(num_q)        ! [input]  i-contraction quartet labels 
+      integer jcl(num_q)        ! [input]  j-contraction quartet labels 
+      integer kcl(num_q)        ! [input]  k-contraction quartet labels 
+      integer lcl(num_q)        ! [input]  l-contraction quartet labels 
+      logical use_q4            ! [input]  logical for use of q4 
+      double precision q4(num_q) ! [input] symmetry prefactors for ints 
+*      
+      integer l_erilab          ! [input]  length of eri and label arrays 
+      integer ilab(l_erilab)    ! [output] integral labels for ``i''  
+      integer jlab(l_erilab)    ! [output] integral labels for ``j''  
+      integer klab(l_erilab)    ! [output] integral labels for ``k''  
+      integer llab(l_erilab)    ! [output] integral labels for ``l''  
+      integer nints              ! [output] number of integrals returned 
+      double precision eri(l_erilab) ! [output] integral values 
+      integer lscr              ! [input] length of scratch array 
+      double precision scr(lscr) ! [input] scratch array 
+      double precision zerotol  ! [input] zero integral threshold 
+      logical canonicalize      ! [input] Canonicalize integral labels? 
+\end{verbatim} 
+\section{INT-API: Property Integral Routines} 
+These routines compute and return property integrals based on shell pairs. 
+% 
+ 
+% This is part of the API Standard Integral routines 
+\subsection{int\_mpole} 
+This routine returns multipole integrals up to the level $lmax$ 
+ 
+ The general form is $< shell | pole | shell >$.  
+ Integrals are returned in shell blocks of $<ish|L|jsh>$ $L$=0 to $lmax$ 
+ one block for each $L$ value.   
+ 
+ For example $ish$ = p and $L$ = 1 and $jsh$ = p you would get  
+ (3*1*3)+(3*3*3)=36 integrals. 
+ The order would be:\\ 
+\begin{tabular}{cccccccc} 
+  $<x|x>$   & $<x|y>$   & $<x|z>$   & $<y|x>$   & $<y|y>$  & $\ldots$ & $<z|z>$   & (first nine) \\ 
+  $<x|x|x>$ & $<x|x|y>$ & $<x|x|z>$ & $<x|y|x>$ & $<x|y|y>$ & $\ldots$ & $<x|z|z>$ & (second nine)\\ 
+  $<y|x|x>$ & $<y|x|y>$ & $<y|x|z>$ & $<y|y|x>$ & $<y|y|y>$ & $\ldots$ & $<y|z|z>$ & (third nine)\\ 
+  $<z|x|x>$ & $<z|x|y>$ & $<z|x|z>$ & $<z|y|x>$ & $<z|y|y>$ & $\ldots$ & $<z|z|z>$ & (fourth nine) 
+\end{tabular} 
+ 
+The integral for each L value computed is: 
+\begin{eqnarray*} 
+({\mu}{\hat{L}}{\lambda}) = \int_{-\infty}^{\infty} g_{\mu}(X,r_{1})\hat{L}g_{\lambda}(X,r_{1})dr_{1} 
+\end{eqnarray*} 
+ 
+ 
+ See the int\_order code inside $\ldots$/NWints/int for specific order of a  
+ set of shells and dipole order.  
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_mpole(i_basis, ish, j_basis, jsh, lmax, centerl, 
+     &    lscr, scr, lmpint, MP) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer i_basis             ! [input] basis set handle for ish 
+      integer ish                 ! [input] i shell/contraction 
+      integer j_basis             ! [input] basis set handle for jsh 
+      integer jsh                 ! [input] j shell/contraction 
+      integer lmax                ! [input] maximum lvalue for  
+c . . . . . . . . . . . . . . . . !   multipole integrals in this batch 
+      double precision centerl(3) ! [input] coordinates of multipole 
+      integer lscr                ! [input] length of scratch array 
+      double precision scr(lscr)  ! [input] scratch array 
+      integer lmpint              ! [input] length of multipole ints 
+      double precision MP(lmpint) ! [output] multipole integrals 
+\end{verbatim} 
+% This is part of the standard API routines 
+\subsection{int\_projpole} 
+This routine computes projected multipole integrals up to level  
+lmax (0$\rightarrow$lmax):\\ 
+The general form is $<$pole$|$shell$>$ 
+  
+Integrals are returned in $<$pole$|$shell$>$ blocks one block for each  
+L value 0$\rightarrow$lmax.  
+ 
+For example, a multipole, L = 1 and a d shell  
+would yield (1+3)*6 = 24 integrals. 
+ 
+The order would be:\\ 
+\begin{tabular}{ccccccc} 
+$<0|xx>$ & $<0|xy>$ & $<0|xz>$ & $<0|yy>$ & $\ldots$ & $<0|zz>$ & first six\\ 
+$<x|xx>$ & $<x|xy>$ & $<x|xz>$ & $<x|yy>$ & $\ldots$ & $<x|zz>$ & second six\\ 
+$<y|xx>$ & $<y|xy>$ & $<y|xz>$ & $<y|yy>$ & $\ldots$ & $<y|zz>$ & third six \\ 
+$<z|xx>$ & $<z|xy>$ & $<z|xz>$ & $<z|yy>$ & $\ldots$ & $<z|zz>$ & fourth six 
+\end{tabular} 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_projpole(i_basis, ish, centerl, lmax,  
+     &    lscr, scr, lmpint, MP) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer i_basis             ! [input] basis set handle for ish 
+      integer ish                 ! [input] i shell/contraction 
+      integer lmax                ! [input] maximum lvalue for  
+c . . . . . . . . . . . . . . . . !      multipole ints in this batch 
+      double precision centerl(3) ! [input] coordinates of multipole 
+      integer lscr                ! [input] length of scratch array 
+      double precision scr(lscr)  ! [input] scratch array 
+      integer lmpint              ! [input/output] length of  
+c . . . . . . . . . . . . . . . . !       multipole integrals array 
+      double precision MP(lmpint) ! [output] multipole integrals 
+\end{verbatim} 
+\section{INT-API: Miscellaneous Routines} 
+These routines do a variety of functions mostly internal to the 
+INT-API but may require use by those integrating a new base integral 
+code into NWChem.  These should be used with care and rarely in any 
+application module.  
+% 
+ 
+% part of API Internal Routines 
+\subsection{exact\_mem} 
+This routine computes the memory required by the  
+McMurchie-Davidson integral code developed at PNNL.   
+This calls specific routines listed below for each  
+integral type.  The data is stored in a common block  
+(apiP.fh) for fast retrieval. 
+This routine should never be called directly by a  
+NWChem application module. 
+    
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine exact_mem(rtdb,bases,nbas) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer rtdb        ! [input] the RTDB handle 
+      integer nbas        ! [input] number of basis sets 
+      integer bases(nbas) ! [input] basis set handles 
+\end{verbatim} 
+ 
+{\bf Debugging Note:} using a set directive to set the  
+variable ``int:full\_mem'' to true will force the more  
+expensive $O(N^4)$ algorithm to be used to compute the  
+memory requirements for the 2-electron integrals. 
+ 
+% part of API Internal Routines 
+\subsection{emem\_3ov} 
+This routine computes the memory for the 3-center overlap  
+integrals based on the basis sets used.   
+This routine should never be called directly by a  
+NWChem application module. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine emem_3ov(ibasin,jbasin,kbasin,lsz_buf,memsize) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer ibasin  ! [input] basis set handle for ``i'' contractions 
+      integer jbasin  ! [input] basis set handle for ``j'' contractions 
+      integer kbasin  ! [input] basis set handle for ``k'' contractions 
+      integer lsz_buf ! [output] maximum size of integral buffer  
+      integer memsize ! [output] memory needed for scratch array 
+\end{verbatim} 
+% part of API Internal Routines 
+\subsection{emem\_1e} 
+This routine computes the memory for any type of 1e  
+integrals based on the basis sets used.   
+This routine should never be called directly by a  
+NWChem application module. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine emem_1e(brain, ketin, max1e, memsize) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer brain   ! [input] bra basis set handle 
+      integer ketin   ! [input] ket basis set handle 
+      integer max1e   ! [output] max size of 1e integrals buffer 
+      integer memsize ! [output] max size of scratch space for 1e integral evaluation 
+\end{verbatim} 
+% part of API Internal Routines 
+\subsection{emem\_1e\_dk} 
+This routine computes the memory for the requested type of   
+Douglas-Kroll integrals for the given fitting basis sets. 
+This routine should never be called directly by a  
+NWChem application module. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine emem_1e_dk(brain, ketin, max1e, memsize) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer brain   ! [input] bra basis set handle 
+      integer ketin   ! [input] ket basis set handle 
+      integer max1e   ! [output] max size of 1e integrals buffer 
+      integer memsize ! [output] max size of scratch space for 1e integral evaluation 
+\end{verbatim} 
+% part of API Internal Routines 
+\subsection{emem\_1e\_rel} 
+This routine computes the memory for any type of relativistic 1e  
+integrals based on the basis sets used.   
+This routine should never be called directly by a  
+NWChem application module. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine emem_1e_rel(brain, ketin, max1e, memsize) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer brain   ! [input] bra basis set handle 
+      integer ketin   ! [input] ket basis set handle 
+      integer max1e   ! [output] max size of 1e integrals buffer 
+      integer memsize ! [output] max size of scratch space for 1e integral evaluation 
+\end{verbatim} 
+% part of API Internal Routines 
+\subsection{emem\_2e4c} 
+This routine computes the memory required by the McMurchie-Davidson  
+algorithm for 4 center two electron integrals based on the  
+basis sets used.   
+ 
+The exact algorithm is an N$^4$ and an N$^2$ approximate algorithm  
+is used here.  Exact memory is computed for integrals over the  
+following classes: 
+\begin{itemize} 
+\item Coulumb $(ii|jj)$ 
+\item Exchange $(ij|ij)$ 
+\item Triplet $(ii|ij)$ 
+\item Triplet $(ij|jj)$ 
+\end{itemize} 
+An additional 10\% is added to the maximum exact memory  
+computation for each of these classes.  Additional classes that  
+have been periodically problematic are: 
+\begin{itemize} 
+\item $(ij|jk)$ 
+\item $(ij|kk)$ 
+\end{itemize} 
+This routine should never be called directly by a  
+NWChem application module. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine emem_2e4c(brain, ketin, maxg, memsize) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer brain   ! [input] bra basis set handle 
+      integer ketin   ! [input] ket basis set handle 
+      integer maxg    ! [output] max size of 2e integrals buffer 
+      integer memsize ! [output] max size of scratch space for 2e integral evaluation 
+\end{verbatim} 
+% part of API Internal Routines 
+\subsection{emem\_2e3c} 
+This routine computes the memory required for the the two electron 
+three center integrals using the McMurchie-Davidson algorithm.  
+This routine should never be called directly by a  
+NWChem application module. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine emem_2e3c(brain, ketin, maxg, memsize) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer brain   ! [input] bra basis set handle 
+      integer ketin   ! [input] ket basis set handle 
+      integer maxg    ! [output] max size of 2e integrals buffer 
+      integer memsize ! [output] max size of scratch space for 2e integral evaluation 
+\end{verbatim} 
+% part of API Internal Routines 
+\subsection{emem\_2e2c} 
+This routine computes the memory required for the the two electron 
+two center integrals using the McMurchie-Davidson algorithm.  
+This routine should never be called directly by a  
+NWChem application module. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine emem_2e2c(brain, ketin, maxg, memsize) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer brain   ! [input] bra basis set handle 
+      integer ketin   ! [input] ket basis set handle 
+      integer maxg    ! [output] max size of 2e integrals buffer 
+      integer memsize ! [output] max size of scratch space for 2e integral evaluation 
+\end{verbatim} 
+% part of API Internal Routines 
+\subsection{emem\_2e4c\_full} 
+This routine computes the memory required by the McMurchie-Davidson  
+algorithm for 4 center two electron integrals based on the  
+basis sets used.   
+ 
+The exact algorithm is an N$^4$ and costly.  This routine is used 
+primarily as a debugging tool 
+This routine should never be called directly by a  
+NWChem application module. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine emem_2e4c_full(brain, ketin, maxg, memsize) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer brain   ! [input] bra basis set handle 
+      integer ketin   ! [input] ket basis set handle 
+      integer maxg    ! [output] max size of 2e integrals buffer 
+      integer memsize ! [output] max size of scratch space for 2e integral evaluation 
+\end{verbatim} 
+% Part of the API internal routines. 
+\subsection{int\_nbf\_max} 
+This routine computes the maximum cartesian nbf for a given basis 
+set.  Used in many memory computing routines to deterine maximum 
+buffer sizes needed for integral computations.  This also includes 
+any general contraction information. 
+This routine should never be called directly by a  
+NWChem application module. 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_nbf_max(basisin,nbf_max) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer basisin  ! [input] basis set handle 
+      integer nbf_max  ! [output] maximum number of basis functions 
+\end{verbatim} 
+% Part of the API internal routines. 
+\subsection{int\_mem\_zero} 
+This routine zeros the memory pointers in the apiP.fh common 
+that pertain to the memory utilization of the integral suite. 
+This routine should never be called directly by a  
+NWChem application module. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_mem_zero() 
+\end{verbatim} 
+There are no formal arguments to this routine 
+ 
+% Part of the API internal routines. 
+\subsection{api\_is\_ecp\_basis} 
+This routine identifies basis set handles to INT-API  
+that store ECP information. 
+This routine should never be called directly by a  
+NWChem application module. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      logical function api_is_ecp_basis(basisin) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer basisin ! [input] basis set handle 
+\end{verbatim} 
+Return value is true if ``basisin'' represents an ECP 
+ 
+% part of API Internal Routines 
+\subsection{emem\_1e\_pvp} 
+This routine computes the memory for the p.Vp type 1e 
+integrals based on the basis sets used. These integrals are 
+in essence double derivative potential energy integrals of which 
+only the dot product (diagonal) integrals are included. 
+This routine should never be called directly by a 
+NWChem application module. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine emem_1e_pvp(brain, ketin, max1e, memsize, rel_typ) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer brain   ! [input] bra basis set handle 
+      integer ketin   ! [input] ket basis set handle 
+      integer rel_typ ! [input] type of integrals to be computed 
+      integer max1e   ! [output] max size of 1e integrals buffer 
+      integer memsize ! [output] max size of scratch space for 1e integral evaluation 
+\end{verbatim} 
+% part of the API Internal Routines 
+\subsection{exactd\_mem} 
+This routine computes the memory required by the  
+McMurchie-Davidson integral derivative code developed at PNNL. 
+This calls specific routines listed below for each integral 
+derivative type.  The data is stored in a common block (apiP.fh) 
+for fast retrieval from the int\_mem routines. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine exactd_mem(rtdb,bases,nbas) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer rtdb        ! [input] the RTDB handle 
+      integer nbas        ! [input] number of basis sets 
+      integer bases(nbas) ! [input} array of basis set handles 
+\end{verbatim} 
+ 
+{\bf Debugging Note:} using a set directive to set the  
+variable ``int:full\_mem'' to true will force the more  
+expensive $O(N^4)$ algorithm to be used to compute the  
+memory requirements for the 2-electron integral derivatives. 
+ 
+% part of API Internal Routines 
+\subsection{emem\_d1e} 
+This routine determines the maximum buffer and scratch size for the  
+one electron derivative integrals. 
+This routine should not be called by application code. 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine emem_d1e(brain, ketin, max1e, memsize) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer brain   ! [input] bra basis set handle 
+      integer ketin   ! [input] ket basis set handle 
+      integer max1e   ! [output] max size of 1e integrals buffer 
+      integer memsize ! [output] max size of scratch space for 1e integral evaluation 
+\end{verbatim} 
+% part of API Internal Routines 
+\subsection{emem\_d1e\_rel} 
+This routine determines the maximum buffer and scratch size for the  
+one electron derivative relativistic integrals. 
+This routine should not be called by application code. 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine emem_d1e_rel(brain, ketin, max1e, memsize) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer brain   ! [input] bra basis set handle 
+      integer ketin   ! [input] ket basis set handle 
+      integer max1e   ! [output] max size of 1e integrals buffer 
+      integer memsize ! [output] max size of scratch space for 1e integral evaluation 
+\end{verbatim} 
+% part of the API Internal Routines 
+\subsection{emem\_d2e4c} 
+This routine determines the maximum buffer and scratch size for  
+the given basis sets to compute 2 electron derivative integrals.   
+The logic used is similar to that of the integral routine.   
+This routine should not be called by application code. 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine emem_d2e4c(brain, ketin, maxg, memsize) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer brain   ! [input] bra basis set handle 
+      integer ketin   ! [input] ket basis set handle 
+      integer maxg    ! [output] max size of 2e integrals buffer 
+      integer memsize ! [output] max size of scratch space for 2e integral evaluation 
+\end{verbatim} 
+% part of the API Internal Routines 
+\subsection{emem\_d2e4c\_full} 
+This routine determines the maximum buffer and scratch size for  
+the given basis sets to compute 2 electron derivative integrals.   
+The logic used is similar to that of the integral routine.   
+This routine should not be called by application code.  
+this routine computes the complete memory requirements using 
+an $O(N^4$) algorithm 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine emem_d2e4c_full(brain, ketin, maxg, memsize) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer brain   ! [input] bra basis set handle 
+      integer ketin   ! [input] ket basis set handle 
+      integer maxg    ! [output] max size of 2e integrals buffer 
+      integer memsize ! [output] max size of scratch space for 2e integral evaluation 
+\end{verbatim} 
+% part of the internal API routines 
+\subsection{int\_canon} 
+This routine canonicalizes integral lables such that: 
+$i \geq j$, $k \geq l$, and $ij \geq kl$ 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_canon(i, j, k, l, ii, jj, kk, ll) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer i,j,k,l      ! [input] labels 
+      integer ii,jj,kk,ll  ! [output] canonical labels 
+\end{verbatim} 
+% part of the internal API routines 
+\subsection{int\_chk\_init} 
+This function checks to see that the integral API is initialized. 
+Returns .true. if initialized and .false. if not. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      logical function int_chk_init(msg) 
+\end{verbatim} 
+\begin{verbatim} 
+      character*(*) msg ! [input] usually indentfy calling routine 
+\end{verbatim} 
+% part of the internal API routines 
+\subsection{int\_chk\_sh} 
+This function checks to see that the given shell is valid 
+Returns .true. if so else returns .false. if not. 
+This subroutine call can be replaced by a statement  
+function sequence: 
+\begin{verbatim} 
+#include "basP.fh" 
+#include "geobasmapP.fh" 
+      logical inline_chk_sh 
+      inline_chk_sh(bra,ish) = 
+     1     ((ish.gt.0) .and. (ish.le.ncont_tot_gb(bra))) 
+\end{verbatim} 
+Where bra is the lexical basis index (not the handle). 
+or you could use the following with the handle. 
+\begin{verbatim} 
+      inline_chk_sh(bra,ish) = 
+     1     ((ish.gt.0) .and.  
+     2(ish.le.ncont_tot_gb(bra+Basis_Handle_Offset))) 
+\end{verbatim} 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      logical function int_chk_sh(basisin,shell) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer basisin ! [input] basis set handle 
+      integer shell ! [input] lexical shell index 
+\end{verbatim} 
+% this is an internal API routine 
+\subsection{int\_nospherical\_check} 
+This routine stubs out routines that are not ready for  
+spherical basis functions by forcing an error condition. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_nospherical_check(basisin,tine) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer basisin     ! [input] basis set handle 
+      character*(*) tine  ! [input] routine identifier 
+\end{verbatim} 
+% this is an internal API routine 
+\subsection{int\_nogencont\_check} 
+This routine stubs out routines that are not ready for  
+general contraction basis functions by forcing an error  
+condition. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_nogencont_check(basisin,tine) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer basisin     ! [input] basis set handle 
+      character*(*) tine  ! [input] routine identifier 
+\end{verbatim} 
+% this is an internal API routine 
+\subsection{int\_nospshell\_check} 
+This routine stubs out routines that are not ready for  
+sp shells type basis functions by forcing an error  
+condition. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_nospshell_check(basisin,tine) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer basisin     ! [input] basis set handle 
+      character*(*) tine  ! [input] routine identifier 
+\end{verbatim} 
+% this is an internal API routine 
+\subsection{int\_bothsp\_gc\_check} 
+This routine checks to see if the basis sets used 
+have both sp shells/type basis functions and general 
+contractions.  The 2e integral codes cannot handle this. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_bothsp_gc_check(basesin,nbas,tine) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer nbas           ! [input] number of basis sets 
+      integer basesin(nbas)  ! [input] basis set handles 
+      character*(*) tine     ! [input] routine identifier 
+\end{verbatim} 
+% part of the internal API routines. 
+\subsection{int\_hf1sp} 
+This is a layer routine that calls the  
+McMurchie-Davidson one electron routine.  This layer 
+routine handles all permutations to compute sp integrals. 
+This routine should never be called by an application module. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_hf1sp( 
+     &       xyzi,expi,coefi, i_nprim, i_ngen, Li, ictri, 
+     &       xyzj,expj,coefj, j_nprim, j_ngen, Lj, ictrj, 
+     &       xyz,zan,exinv,nat,S,T,V,lstv,doS,doT,doV,canAB, 
+     &       dryrun,scr,lscr,msg) 
+\end{verbatim} 
+For an integral $<i|Operator|j>$ 
+\begin{verbatim} 
+      integer i_nprim  ! [input] num. prims on function i 
+      integer i_ngen   ! [input] num general conts on func. i 
+      integer Li       ! [input] angular momentum of func. i   
+      integer ictri    ! [input] lexical atom index for function i  
+      integer j_nprim  ! [input] num. prims on function j      
+      integer j_ngen   ! [input] num general conts on func. j  
+      integer Lj       ! [input] angular momentum of func. j   
+      integer ictrj    ! [input] lexical atom index for function j  
+      integer nat      ! [input] number of atoms 
+      integer lscr     ! [input] size of scratch array 
+      integer lstv     ! [input] size of any integral buffer 
+      double precision xyzi(3)  ! [input] position of center i 
+      double precision expi(i_nprim) ! [input] exponents on i 
+      double precision coefi(i_nprim,i_ngen) ! [input] i coeffs 
+      double precision xyzj(3)  ! [input] position of center j 
+      double precision expj(j_nprim)  ! [input] exponents on j 
+      double precision coefj(j_nprim,j_ngen)  ! [input] j coeffs 
+      double precision xyz(3,nat)  ! [input] all atom positions 
+      double precision zan(nat)  ! [input] charges on all atoms 
+      double precision exinv(nat)   ! [input] inverse nuclear exponents 
+      double precision scr(lscr)  ! [scratch] scratch buffers 
+      double precision S(lstv)  ! [output] overlap integrals 
+      double precision T(lstv)  ! [output] kinetic energy integrals 
+      double precision V(lstv)  ! [output] potential integrals 
+      logical doS     ! [input] compute overlap (True/False) 
+      logical doT     ! [input] compute kinetic (True/False) 
+      logical doV     ! [input] compute potential (True/False) 
+      logical canAB   ! [input] compute only canonical ints (false only) 
+      logical dryrun  ! [input] true means only compute required memory 
+      character*(*) msg ![input] calling func. identification message 
+\end{verbatim} 
+% part of the internal API routines. 
+\subsection{int\_hf1sp\_ecp} 
+This is a layer routine that calls the  
+McMurchie-Davidson one electron routine.  This layer 
+routine handles all options for computing ecp integrals. 
+This routine should never be called by an application module. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_hf1sp_ecp( 
+     &       xyzi,expi,coefi, i_nprim, i_ngen, Li, ictri, 
+     &       xyzj,expj,coefj, j_nprim, j_ngen, Lj, ictrj, 
+     &       xyz,zan,exinv,nat,S,T,V,lstv,doS,doT,doV,canAB, 
+     &       dryrun,scr,lscr,msg) 
+\end{verbatim} 
+For an integral $<i|Operator|j>$ 
+\begin{verbatim} 
+      integer i_nprim  ! [input] num. prims on function i 
+      integer i_ngen   ! [input] num general conts on func. i 
+      integer Li       ! [input] angular momentum of func. i   
+      integer ictri    ! [input] lexical atom index for function i  
+      integer j_nprim  ! [input] num. prims on function j      
+      integer j_ngen   ! [input] num general conts on func. j  
+      integer Lj       ! [input] angular momentum of func. j   
+      integer ictrj    ! [input] lexical atom index for function j  
+      integer nat      ! [input] number of atoms 
+      integer lscr     ! [input] size of scratch array 
+      integer lstv     ! [input] size of any integral buffer 
+      double precision xyzi(3)  ! [input] position of center i 
+      double precision expi(i_nprim) ! [input] exponents on i 
+      double precision coefi(i_nprim,i_ngen) ! [input] i coeffs 
+      double precision xyzj(3)  ! [input] position of center j 
+      double precision expj(j_nprim)  ! [input] exponents on j 
+      double precision coefj(j_nprim,j_ngen)  ! [input] j coeffs 
+      double precision xyz(3,nat)  ! [input] all atom positions 
+      double precision zan(nat)  ! [input] charges on all atoms 
+      double precision exinv(nat)   ! [input] inverse nuclear exponents 
+      double precision scr(lscr)  ! [scratch] scratch buffers 
+      double precision S(lstv)  ! [output] overlap integrals 
+      double precision T(lstv)  ! [output] kinetic energy integrals 
+      double precision V(lstv)  ! [output] potential integrals 
+      logical doS     ! [input] compute overlap (True/False) 
+      logical doT     ! [input] compute kinetic (True/False) 
+      logical doV     ! [input] compute potential (True/False) 
+      logical canAB   ! [input] compute only canonical ints (false only) 
+      logical dryrun  ! [input] true means only compute required memory 
+      character*(*) msg ![input] calling func. identification message 
+\end{verbatim} 
+% part of the internal API routines 
+\subsection{int\_1psp} 
+This routine transforms integrals from the way they 
+were computed $(p|s)$, $(p|p)$ to $(p|sp)$. 
+The transformation is done in place as follows: 
+\begin{tabular}{rccc} 
+ & computed & transformed & \\ 
+ &  order   &   order     & \\ 
+~1 & (x$|$s)  &  (x$|$s)  & \\ 
+~2 & (y$|$s)  &  (x$|$x)  & 2 $\rightarrow$ 5\\ 
+~3 & (z$|$s)  &  (x$|$y)  & 3 $\rightarrow$ 9\\ 
+~4 & (x$|$x)  &  (x$|$z)  & 4 $\rightarrow$ 2\\ 
+~5 & (x$|$y)  &  (y$|$s)  & 5 $\rightarrow$ 3\\ 
+~6 & (x$|$z)  &  (y$|$x)  & 6 $\rightarrow$ 4\\ 
+~7 & (y$|$x)  &  (y$|$y)  & 7 $\rightarrow$ 6\\ 
+~8 & (y$|$y)  &  (y$|$z)  & 8 $\rightarrow$ 7\\ 
+~9 & (y$|$z)  &  (z$|$s)  & 9 $\rightarrow$ 8\\ 
+10 & (z$|$x)  &  (z$|$x)  &  \\ 
+11 & (z$|$y)  &  (z$|$y)  &  \\ 
+12 & (z$|$z)  &  (z$|$z)  &  \\ 
+\end{tabular} 
+  
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_1psp(block,num_blocks) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer num_blocks  ! [input] num. blocks to transform 
+      double precision block(12,num_blocks) ! [input/output]  
+c. . . . . . . . . . . . . . . . . . . . . .! integral block 
+\end{verbatim} 
+% part of the internal API routines 
+\subsection{int\_1dsp} 
+This routine transforms integrals from the way they 
+were computed $(d|s)$, $(d|p)$ to $(d|sp)$. 
+The transformation is done in place as follows: 
+\begin{tabular}{rccc}       
+  &  computed  & transformed & \\ 
+  &  ~order    &  order & \\ 
+~1 & (xx$|$s)  &  (xx$|$s)  & \\ 
+~2 & (xy$|$s)  &  (xx$|$x)  &  ~2 $\rightarrow$ 5~~ \\ 
+~3 & (xz$|$s)  &  (xx$|$y)  &  ~3 $\rightarrow$ 9~~ \\ 
+~4 & (yy$|$s)  &  (xx$|$z)  &  ~4 $\rightarrow$ 13~ \\ 
+~5 & (yz$|$s)  &  (xy$|$s)  &  ~5 $\rightarrow$ 17~ \\ 
+~6 & (zz$|$s)  &  (xy$|$x)  &  ~6 $\rightarrow$ 21~ \\ 
+~7 & (xx$|$x)  &  (xy$|$y)  &  ~7 $\rightarrow$ 2~~ \\ 
+~8 & (xx$|$y)  &  (xy$|$z)  &  ~8 $\rightarrow$ 3~~ \\ 
+~9 & (xx$|$z)  &  (xz$|$s)  &  ~9 $\rightarrow$ 4~~ \\ 
+10 & (xy$|$x)  &  (xz$|$x)  &  10 $\rightarrow$ 6~~ \\ 
+11 & (xy$|$y)  &  (xz$|$y)  &  11 $\rightarrow$ 7~~ \\ 
+12 & (xy$|$z)  &  (xz$|$z)  &  12 $\rightarrow$ 8~~ \\ 
+13 & (xz$|$x)  &  (yy$|$s)  &  13 $\rightarrow$ 10~ \\ 
+14 & (xz$|$y)  &  (yy$|$x)  &  14 $\rightarrow$ 11~ \\ 
+15 & (xz$|$z)  &  (yy$|$y)  &  15 $\rightarrow$ 12~ \\ 
+16 & (yy$|$x)  &  (yy$|$z)  &  16 $\rightarrow$ 14~ \\ 
+17 & (yy$|$y)  &  (yz$|$s)  &  17 $\rightarrow$ 15~ \\ 
+18 & (yy$|$z)  &  (yz$|$x)  &  18 $\rightarrow$ 16~ \\ 
+19 & (yz$|$x)  &  (yz$|$y)  &  19 $\rightarrow$ 18~ \\ 
+20 & (yz$|$y)  &  (yz$|$z)  &  20 $\rightarrow$ 19~ \\ 
+21 & (yz$|$z)  &  (zz$|$s)  &  21 $\rightarrow$ 20~ \\ 
+22 & (zz$|$x)  &  (zz$|$x)  & \\ 
+23 & (zz$|$y)  &  (zz$|$y)  & \\ 
+24 & (zz$|$z)  &  (zz$|$z)  & \\ 
+\end{tabular} 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_1dsp(block,num_blocks) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer num_blocks  ! [input] num. blocks to transform 
+      double precision block(24,num_blocks) ! [input/output]  
+c . . . . . . . . . . . . . . . . . . . . . ! integral block 
+\end{verbatim} 
+% part of the internal API routines 
+\subsection{int\_1spsp} 
+This routine transforms integrals from the way they 
+were computed $(s|s)$, $(s|p)$, $(p|s)$, $(p|p)$   
+to $(sp|sp)$. 
+The transformation is done in place as follows: 
+\begin{tabular}{rccc}       
+  &  computed & transformed   &   \\ 
+  &   order   &  order  &   \\ 
+~1 & (s$|$s)  &  (s$|$s)  &   \\ 
+~2 & (s$|$x)  &  (s$|$x)  &   \\ 
+~3 & (s$|$y)  &  (s$|$y)  &   \\ 
+~4 & (s$|$z)  &  (s$|$z)  &   \\ 
+~5 & (x$|$s)  &  (x$|$s)  &   \\ 
+~6 & (y$|$s)  &  (x$|$x)  &  ~6 $\rightarrow$ 9\\ 
+~7 & (z$|$s)  &  (x$|$y)  &  ~7 $\rightarrow$ 13\\ 
+~8 & (x$|$x)  &  (x$|$z)  &  ~8 $\rightarrow$ 6\\ 
+~9 & (x$|$y)  &  (y$|$s)  &  ~9 $\rightarrow$ 7\\ 
+10 & (x$|$z)  &  (y$|$x)  &  10 $\rightarrow$ 8 \\  
+11 & (y$|$x)  &  (y$|$y)  &  11 $\rightarrow$ 10\\ 
+12 & (y$|$y)  &  (y$|$z)  &  12 $\rightarrow$ 11\\ 
+13 & (y$|$z)  &  (z$|$s)  &  13 $\rightarrow$ 12\\ 
+14 & (z$|$x)  &  (z$|$x)  &   \\ 
+15 & (z$|$y)  &  (z$|$y)  &   \\ 
+16 & (z$|$z)  &  (z$|$z)  &   \\ 
+\end{tabular} 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_1spsp(block,num_blocks) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer num_blocks        ! [input] num. blocks to transform 
+      double precision block(16,num_blocks) ! [input/output]  
+c . . . . . . . . . . . . . . . . . . . . . ! integral block 
+\end{verbatim} 
+% part of the internal API routines 
+\subsection{int\_1spa} 
+This routine transforms integrals from the way they 
+were computed $(s|X)$, $(p|X)$, to $(sp|X)$. 
+The transformation is {\bf NOT} done in place: 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_sp1a(sp_block,s_block,p_block,sizeb,num_blocks) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer sizeb  ! [input] size of non sp block 
+      integer num_blocks ! [input] num of blocks to transform 
+* 
+* . . . . . . . . . . . . . . .! [output] (sp|X) transformed integral block 
+      double precision sp_block(sizeb,1:4,num_blocks)  
+* 
+* . . . . . . . . . . . . . . . . . . . . . .! [input] computed (s|X) block 
+      double precision s_block(sizeb,num_blocks) 
+* 
+* . . . . . . . . . . . . . . . . . . . . . .! [input] computed (p|X) block 
+      double precision p_block(sizeb,2:4,num_blocks) 
+\end{verbatim} 
+% part of the internal API routines 
+\subsection{int\_sp1b} 
+This routine transforms integrals from the way they 
+were computed $(X|s)$, $(X|p)$, to $(X|sp)$. 
+The transformation is {\bf NOT} done in place: 
+{\it Syntax:} 
+\begin{verbatim} 
+      subroutine int_sp1b(sp_block,s_block,p_block,sizea,num_blocks) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer sizea ! [input] size of non sp block 
+      integer num_blocks ! [input] num of blocks to transform 
+* 
+* . . . . . . . . . . . . . . .! [output] (X|sp) transformed integral block 
+      double precision sp_block(1:4,sizea,num_blocks) 
+* 
+* . . . . . . . . . . . . . . . . . . . . . .! [input] computed (X|s) block 
+      double precision s_block(sizea,num_blocks) 
+* 
+* . . . . . . . . . . . . . . . . . . . . . .! [input] computed (X|p) block 
+      double precision p_block(2:4,sizea,num_blocks) 
+\end{verbatim} 
+% this is an internal API routine 
+\subsection{int\_nint} 
+This routine computes the number of integrals for a given  
+shell/contraction grouping; if an input shell is zero then  
+the routine ignores this shell.  This routine will work  
+for both cartesian and spherical basis sets. 
+This routine should never be called by an NWChem  
+application module. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      integer function int_nint(ibasin,icnt,jbasin,jcnt, 
+     &       kbasin,kcnt,lbasin,lcnt) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer ibasin   ! [input] basis set handle for icnt 
+      integer icnt     ! [input] contraction index (e.g., ish) 
+      integer jbasin   ! [input] basis set handle for jcnt 
+      integer jcnt     ! [input] contraction index (e.g., jsh) 
+      integer kbasin   ! [input] basis set handle for kcnt 
+      integer kcnt     ! [input] contraction index (e.g., ksh) 
+      integer lbasin   ! [input] basis set handle for lcnt 
+      integer lcnt     ! [input] contraction index (e.g., lsh) 
+\end{verbatim} 
+% this is an internal API routine 
+\subsection{int\_unint} 
+This routine computes the number of integrals for a given  
+shell/contraction grouping; if an input shell is zero then  
+the routine ignores this shell.  The input shell must be a  
+unique shell in the sense of the basis set API.  This  
+routine will work for both cartesian and spherical basis sets. 
+This routine should never be called by an NWChem  
+application module. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      integer function int_unint(ibasin,icnt,jbasin,jcnt, 
+     &       kbasin,kcnt,lbasin,lcnt) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer ibasin   ! [input] basis set handle for icnt 
+      integer icnt     ! [input] unique contraction index (e.g., ish) 
+      integer jbasin   ! [input] basis set handle for jcnt 
+      integer jcnt     ! [input] unique contraction index (e.g., jsh) 
+      integer kbasin   ! [input] basis set handle for kcnt 
+      integer kcnt     ! [input] unique contraction index (e.g., ksh) 
+      integer lbasin   ! [input] basis set handle for lcnt 
+      integer lcnt     ! [input] unique contraction index (e.g., lsh) 
+\end{verbatim} 
+% this is an internal API routine 
+\subsection{int\_nint\_cart} 
+This routine computes the number of integrals for a given  
+shell/contraction grouping; if an input shell is zero then  
+the routine ignores this shell.  This  
+routine will work for both cartesian and spherical basis  
+sets, but {\it returns the cartesian size} (this is how the  
+integrals are computed!). 
+This routine should never be called by an NWChem  
+application module. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      integer function int_nint_cart(ibasin,icnt,jbasin,jcnt, 
+     &       kbasin,kcnt,lbasin,lcnt) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer ibasin   ! [input] basis set handle for icnt 
+      integer icnt     ! [input] contraction index (e.g., ish) 
+      integer jbasin   ! [input] basis set handle for jcnt 
+      integer jcnt     ! [input] contraction index (e.g., jsh) 
+      integer kbasin   ! [input] basis set handle for kcnt 
+      integer kcnt     ! [input] contraction index (e.g., ksh) 
+      integer lbasin   ! [input] basis set handle for lcnt 
+      integer lcnt     ! [input] contraction index (e.g., lsh) 
+\end{verbatim} 
+% this is an internal API routine 
+\subsection{int\_unint\_cart} 
+This routine computes the number of integrals for a given  
+shell/contraction grouping; if an input shell is zero then  
+the routine ignores this shell.  The input shell must be a  
+unique shell in the sense of the basis set API.  This  
+routine will work for both cartesian and spherical basis  
+sets, but {\it returns the cartesian size} (this is how the  
+integrals are computed!). 
+This routine should never be called by an NWChem  
+application module. 
+ 
+{\it Syntax:} 
+\begin{verbatim} 
+      integer function int_unint_cart(ibasin,icnt,jbasin,jcnt, 
+     &       kbasin,kcnt,lbasin,lcnt) 
+\end{verbatim} 
+\begin{verbatim} 
+      integer ibasin   ! [input] basis set handle for icnt 
+      integer icnt     ! [input] unique contraction index (e.g., ish) 
+      integer jbasin   ! [input] basis set handle for jcnt 
+      integer jcnt     ! [input] unique contraction index (e.g., jsh) 
+      integer kbasin   ! [input] basis set handle for kcnt 
+      integer kcnt     ! [input] unique contraction index (e.g., ksh) 
+      integer lbasin   ! [input] basis set handle for lcnt 
+      integer lcnt     ! [input] unique contraction index (e.g., lsh) 
+\end{verbatim} 

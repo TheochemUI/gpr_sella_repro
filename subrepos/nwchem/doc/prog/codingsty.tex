@@ -1,0 +1,412 @@
+\section{Coding Style}
+\label{sec:coding-style}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+In a project this large, it is necessary to impose some standards on
+the coding style employed by developers.  The primary goal of these
+standards is not to constrain developers, but to enhance both the
+quality of the final product and its functionality. 
+
+Code quality is somewhat subjective, but clearly embraces the ideas of
+\begin{itemize}
+\item correctness 
+\item maintainability 
+\item efficiency
+\item readability 
+\item re-usability
+\item modularity 
+\item ease of integration with other packages
+\item speed of development
+\item density of bugs
+\item ease of debugging
+\item detection of errors at run time
+\item exposure of available functionality
+\item ease-of-use of the API
+\end{itemize}
+Compromise is clearly necessary. We are interested in
+high-performance, so some key kernels may sacrifice readability (but
+perhaps not modularity) for efficiency, but most code (i.e., 99.9\%)
+is not an inner loop in need of such optimization, as long as the
+overall structure is correct.
+
+The single most important thing you can do to achieve quality code has
+little to do with programming style. It is the {\em design} --- putting
+in the necessary thought and effort before even a single line of code
+is written. 
+
+The following subsections present the recommended "Do's and Don'ts"
+for programming modules and modifications in NWChem.
+The recommendations are organized by a 'top-down' logic, to reflect the
+most efficient order in thinking about the various considerations
+the developer must keep in mind when designing a new piece of code.
+
+
+\subsection{Version information}
+
+Each source file should include a comment line that contains the CVS
+revision and date information.  This is accomplished by including a
+comment line containing the string \verb+$+\verb+Id+\verb+$+.  CVS
+substitutes the correct version information each time the file is
+checked out or updated.  These lines are processed from the source and can be
+output at runtime to aid in bug-tracking.
+
+\subsection{Standard interface for top-level modules}
+
+In order to allow for automatic configuration of various modules in
+a compilation of NWChem (to control the size of the executable
+in memory-critical situations), all top-level modules must have a
+standard interface.  Currently it looks like this;
+\begin{verbatim}
+  logical function MODULE(rtdb)
+\end{verbatim}
+The argument \verb+rtdb+ is the handle for the run-time database.  The
+function should return \TRUE\ or \FALSE\ on success or failure
+respectively.
+
+The only sources of information for a module are the database, or files
+with names that can be inferred from data in the database or from defaults.
+Futhermore the naming of database entries is standardized such that:
+\begin{itemize}
+\item The string with which database entries are prefixed must be
+  lowercase and match the module name used in the input.  E.g., input
+  for the SCF module appears in the \verb+scf;...;end+ block and the
+  prefix used in the databse is \verb+scf+.  This is so that the user
+  can delete all state information using the \verb+UNSET+ directive.
+\item Common quantities (such as energy, gradient, \ldots) should be
+  stored using that name.  E.g., \verb+scf:energy+.
+\end{itemize}
+
+
+\subsection{No globally defined common blocks}
+
+Use of global variables (e.g., common blocks) is generally a bad idea.
+Such variables break modularity, form hidden dependencies and make
+code hard to reuse and maintain.  {\em Do not use common blocks to
+  pass data between routines}.
+
+However, common blocks are very useful in supporting a modular
+programming style which encourages code reuse and improves
+maintainability.  To this end common blocks can be used to hide data
+behind a subroutine interface so that access to the common is limited
+to a few tightly integrated routines.  The benefits of using common
+blocks (smaller argument lists, static data allocation, contiguous
+memory layout) can thus, with care, be realized without any problems.
+Examples of this include the basis, geometry, RTDB, integral,
+symmetry, global array, message passing, SCF, optimizer, input, and
+MP2 libraries.
+
+\subsection{Naming of routines and common blocks}
+
+To avoid name clashes and for easy identification, prefix all
+subroutine, function and common block names with the name of the
+module they are associated with.  For instance,
+\begin{itemize}
+\item {\tt rtdb\_\ldots} --- run-time database
+\item {\tt ma\_\ldots} --- memory allocator
+\item {\tt ga\_\ldots} --- global array
+\item {\tt scf\_\ldots} --- SCF
+\item {\tt stpr\_\ldots} --- Stepper (geometry optimization)
+\end{itemize}
+
+
+\subsection{Inclusion of common block definitions}
+
+All common block definitions, including typing of variables in the
+common, are to be made once only in a single file (a {\tt.fh} file),
+that is included in other source using the C preprocessor.  The
+\verb+include+ file should document the meaning of all variables.  
+This helps ensure that variables in a common block are consistently named and
+dependencies of routines on common blocks are easily generated
+and maintained.
+
+\subsection{Convention for naming {\tt include} files}
+
+All \verb+include+ files should be named using the following conventions,
+\begin{itemize}
+\item Use \verb+.fh+ for files that can be included only by Fortran routines
+\item Use \verb+.h+ for files that can be included by C routines only, or
+  for files that are included by both C and Fortran routines
+\end{itemize}
+
+\subsection{Syntax for including files using the C preprocessor}
+
+A very important distinction hinges on the seemingly trivial difference between
+the two different \verb+include+ forms,
+\begin{itemize}
+\item \verb+#include "filename"+
+\item \verb+#include <filename>+
+\end{itemize}
+According to Kernighan and Ritchie:
+\begin{quotation}
+ "If the {\em filename} is quoted, searching for the file typically
+ begins where the source program was found; if it is not found there,
+ or if the name is enclosed in \verb+<+ and \verb+>+, searching follows
+ an implementation-defined rule to find the file."
+\end{quotation}
+For this reason, and by common convention, only system-defined \verb+include+
+files are included using angle brackets.  Those \verb+include+ files that are defined
+within an application are included using quotes.  The
+automatic generation of dependencies of source files upon \verb+include+
+files within NWChem {\em relies} upon this convention.
+
+
+\subsection{No implicitly typed variables}
+
+The command {\tt implicit none} should appear at the top of every routine
+in the NWChem code.  No other
+implicit statements are permitted and all variables must be explicitly
+declared.  {\em This rule should be religiously observed in new code.} It
+\begin{itemize}
+\item lets the compiler help you find typos and other errors
+\item makes the code more readable and more maintainable
+\item provides a natural point to document arguments and local
+  variables
+\item makes silly variable names like {\tt iii, ii1} both
+  obvious and even more embarrassing when others catch you doing it
+\end{itemize}
+
+When integrating existing code, this rule may seem to be more work than
+it is worth, but several bugs in existing code have been found in this
+fashion.
+
+\subsection{Use {\tt double precision} rather than {\tt real*8}}
+
+{\tt REAL*8} is not standard Fortran.  {\tt DOUBLE PRECISION} is the
+standard, it is usually what you want, it is more portable, and
+standardization of declarations enables us to perform 
+necessary code transformations more readily.
+
+\subsection{C macro definitions should be in upper case}
+
+NWChem uses the ANSI C preprocessor to handle machine dependencies and
+other conditional compilation requirements.  By forcing all C macros
+to be upper case the code is made more readable and we also avoid
+potential accidental munging of Fortran source.  This practice is
+consistent with conventional use of the preprocessor in C programs.
+
+\subsection{Fortran source should be in lower or mixed case}
+
+This convention is complementary to the above C macro convention.
+If there are no fully upper-case Fortran tokens then there can
+be no accidental conflict with the C preprocessor.
+
+
+\subsection{Naming of variables holding handles/pointers obtained from
+  MA/GA}
+
+So that these critical variables are immediately recognizable, the
+following conventions are recommended.
+\begin{itemize}
+\item handles obtained from MA should be prefaced with {\tt l\_}
+\item pointers (into {\tt dbl\_mb()}, etc.) obtained from MA should be
+  prefaced with {\tt k\_}
+\item handles obtained from GA should be prefaced with {\tt g\_}
+\end{itemize}
+
+Alternatively, you can insert 
+comment lines describing the
+variables at the point of declaration, if you do not want to
+follow these conventions.
+
+\subsection{Fortran unit numbers}
+
+All references to Fortran I/O units should be done with parameters or
+variables instead of hardwired constants.  For the ``standard I/O''
+units, corresponding to the C \verb+stdin+, \verb+stdout+, and \verb+stderr+, you should
+include the file {\tt stdio.fh} and use the variables \verb+luin+,
+\verb+luout+, and \verb+luerr+ instead of 5, 6, and 0.
+
+The code uses very few other files, and there is no organized list 
+of parameter names for
+non-standard I/O units.  Users are free to use parameter names that make sense
+to them, so long as they adhere to the convention.  Using parameters rather
+than hardwired integer constants helps insure that I/O unit designations
+can be changed easily if needed, and may facilitate moving to a
+more general convention in a future version of the code.
+
+\subsection{Use standard print control}
+
+All modules should understand the \verb+PRINT+ directive and
+accept at least the following keywords for this
+\begin{itemize}
+\item \verb+none+ --- no output whatsoever except for error messages
+\item \verb+low+ --- minimal output; e.g., title, critical parameters
+and a final energy
+\item \verb+medium+ = \verb+default+ --- usual output
+\item \verb+high+ --- extra verbose output
+\item \verb+debug+ --- anything useful for diagnosing problems
+\end{itemize}
+
+Ideally all applications should control most printing via the print
+control routines (see Section \ref{sec:print}).  A uniform
+look and feel is important.
+
+\subsection{Error handling}
+
+All fatal errors should result in a call to \verb+errquit()+ (see Section
+\ref{errquit}), which prints out the string and status value to both
+standard error and standard output and attempts to kill all parallel
+processes and to tidy any allocated system resources (e.g., system V
+shared memory).
+
+\subsection{Comments}
+
+The use of comment lines is strongly recommended in all coding.
+Commented code is easier to read, and often is easier to debug, maintain,
+and modify.  Liberal use of comments is particularly important in NWChem, 
+since it is used by a large and diverse group of people, it is constantly being
+modified as capabilities are added and refined, and it has only a limited
+amount of detailed documentation.
+
+Requirements for in-source documentation are given in detail in 
+Chapter \ref{sec:newdoc}
+but the general recommendation for comment lines in the code is
+the more the merrier.  At a minimum the source code should
+be able to provide the following information, 
+\begin{itemize}
+\item terse comments at the top of each subroutine to describe
+  (accurately!) its function,
+\item documentation of dependencies/effects on state that are not passed
+  directly through its argument list (e.g., files, the database, common
+  blocks)
+\item descriptions of all arguments, including the flow of information (i.e.,
+  label arguments as input or output, or input-output)
+\item documentation of local variables with functions that are not apparent
+  from their names, or which have an algorithmic role that is opaque or obscure
+\end{itemize}
+
+In some circumstances, comments at the top of a routine can be quite
+lengthy since this is a {\tt very} good place to store details of the
+algorithm.
+% When an interface is finalized and is to be exported for use by others,
+% it should be documented here in {\tt prog.tex} --- nearly all of the
+% documentation in this file was generated by pasting in existing 
+% comments in the source.  
+Automatic generation of documentation
+from code comments is being designed, 
+but this will produce useful documentation
+{\em only if
+developers write clear and concise commentary in the code as they work.}
+
+The following partial listings show examples of minimalist in-source documentation
+using comment lines.  It would not be difficult to say more.  The rule of 
+thumb should be "from those who have much, more will be expected". The more important
+a routine is to a particular algorithm, the more it does in the way of carrying
+out the solution, the more detailed and voluminous should be it's comment lines.
+
+Example of comments in a simple routine:
+
+\begin{verbatim}
+  logical function bas_numbf(basis,nbf)
+  implicit none
+  integer basis   ! [input] basis set handle         
+  integer nbf     ! [output] number of basis functions
+*
+*  nbf returns the total number of functions.
+*  Returns true on success, false if the handle is invalid
+*  
+\end{verbatim}
+
+Example of comments in a less simple routine:
+
+\begin{verbatim}
+      subroutine sym_symmetrize(geom, basis, odensity, g_a)
+C$Id$
+      implicit none
+      integer geom, basis  ! [input] Handles
+      integer g_a          ! [input] Handle to input/output GA
+      logical odensity     ! [input] True if matrix is a density
+c
+c     Symmetrize a skeleton matrix (in a global array) in the
+c     given basis set.
+c
+c     A <- (1/2h) * sum(R) [RT * (A + AT) * R]
+c
+c     where h = the order of the group and R = operators of the
+c     group (including the identity)
+c
+c     Note that density matrices transform according to slightly
+c     different rules to Hamiltonian matrices if components
+c     of a shell (e.g., Cartesian d's) are not orthonormal.
+c     (see Dupuis and King, IJQC 11, 613-625, 1977)
+\end{verbatim}
+
+\subsection{Message IDs}
+
+The use of tags/IDs/types on messages is strongly suggested.
+If all messages with the program
+have distinct types and the message-passing software forces the types
+of messages to match between sender and receiver, then
+there is a way to prove that messages
+are being sent and received correctly.  If they are not, a 
+runtime error will be detected.
+This is especially important
+to NWChem since the code makes use of many third party linear algebra libraries that
+do a lot of message passing.
+
+Modules which do a significant amount of messaging 
+should reserve a section of the message
+ID space for their own use (e.g., GA or PEIGS).  Most modules, however, do
+only a small amount of messaging.  For these, the \verb+include+ file {\tt
+  msgids.fh} should be used to reserve individual message IDs.  This
+file defines Fortran parameters for message IDs used in most NWChem
+{\em Hardwired message IDs should not be used in any NWChem routine.}
+
+
+\subsection{Bit operations --- {\tt bitops.fh}}
+
+The following bitwise operations (see Table
+\ref{tabbit} for definitions) are the recommended standards for use in
+NWChem.
+\begin{itemize}
+\item \verb+ior(i,j)+ --- inclusive OR
+\item \verb+ieor(i,j)+ --- exlusive OR
+\item \verb+iand(i,j)+ --- AND
+\item \verb+not(i)+ --- NOT or one's complement
+\item \verb+rshift(i,nbits)+ --- right shift with zero fill
+\item \verb+lshift(i,nbits)+ --- left shift with zero fill
+\end{itemize}
+\begin{table}[h]
+\begin{center}
+
+\begin{tabular}{c|c|c|c|c|c}
+ ior   &   ieor   &    iand  &   not  & lshift   & rshift   \\ \hline
+       &          &          &        &          &          \\
+ 110   &   110    &    110   &   10   & 10111011 & 10111011 \\
+ 100   &   100    &    100   &        & 2 bits   & 2 bits   \\ \hline
+ 110   &   010    &    100   &   01   & 11101100 & 00101110 
+\end{tabular}
+\vspace{0.2in}
+\caption{\label{tabbit} Effect of Bit Operations}
+
+
+\end{center}
+\end{table}
+
+These operations are readily generated using
+in-line functions from most other definitions.
+The shift examples in Table 3.1
+use an eight bit word written with the most significant bit on the
+left.
+All operations operate on full integer words (32 or 64 bit as
+necessary) and produce integer results.  The declarations and any
+necessary statement functions are in \verb+bitops.fh+.  The presence
+of data statements makes it impossible to have a single include file
+make declarations and define statement functions.  To circumvent this
+the declarations are in \verb+bitops_decls.fh+ and the statement
+functions are in \verb+bitops_funcs.fh+.
+
+\subsection{Blockdata statements and linking}
+
+At least one machine (the CRAY-T3D) discards all symbols that are not
+explicitly referenced, even if other symbols from the same \verb+.o+
+file are used.  Thus, \verb+BLOCK DATA+ subprograms are not linked in.
+One fix to this is to declare each \verb+BLOCK DATA+ subprogram as an
+undefined external on the link command, but this makes the link
+command depend on the list of modules being built.  An alternative
+mechanism that works on the T3D is to reference each \verb+BLOCK DATA+
+subprogram in an \verb+EXTERNAL+ statement within a \verb+SUBROUTINE+ or
+\verb+FUNCTION+ that is guaranteed to be linked if any reference is to
+be made to the \verb+COMMON+ block being initialized.
+
+

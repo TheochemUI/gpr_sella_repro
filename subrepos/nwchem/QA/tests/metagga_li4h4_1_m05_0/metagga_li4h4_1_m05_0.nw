@@ -1,0 +1,39 @@
+echo
+start metagga_dat
+geometry
+ li     0.01002691    -0.94366842     1.43225550
+ h     -1.37286946     0.02420936     0.52629308
+ h     -0.02940706     3.13404608    -1.03053445
+ h      1.37316029     0.05159532     0.52604548
+ li     1.94807292    -1.21726078    -0.71290509
+ li    -0.01236479     1.28755446     0.09274502
+ li    -1.92253586    -1.25587660    -0.71259553
+ h     -0.03460612     3.40646322    -0.30519899
+end
+charge +1
+
+basis "ao basis" spherical
+  * library def2-svpd
+end
+basis "cd basis" spherical
+ * library "Weigend Coulomb Fitting"
+end
+dft
+  direct
+  odft
+  mult 2
+  grid fine
+  convergence energy 1d-8
+  xc xm05
+  maxiter 100
+  print low
+end
+
+driver
+  clear
+  tight
+  maxiter 100
+end
+
+task dft optimize
+task dft frequencies numerical

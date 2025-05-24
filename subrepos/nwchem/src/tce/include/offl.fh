@@ -1,0 +1,7 @@
+C$Id$
+#define T2V2LENGTH 16000000
+#define OMPCOLLAPSE 3
+CCC#define ASYNC 1
+c k_a_sort t2sub
+c k_b_sort v2sub
+      integer	triplesx_mxlgth

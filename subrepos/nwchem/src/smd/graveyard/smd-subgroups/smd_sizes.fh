@@ -1,0 +1,6 @@
+*
+* $Id$
+*
+      integer smd_nchar_namespace
+      parameter(smd_nchar_namespace=72)
+

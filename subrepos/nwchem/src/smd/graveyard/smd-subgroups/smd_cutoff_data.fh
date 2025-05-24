@@ -1,0 +1,8 @@
+c
+c $Id$
+c
+
+      logical ostatus
+      double precision   rcut, rcut_verlet
+
+      common/smd_cutoff_data/rcut,rcut_verlet,ostatus

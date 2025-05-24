@@ -1,0 +1,10 @@
+#
+#	$Id$	
+#
+
+SUBDIRS = double
+
+LIBRARY = lapack.lib
+
+!INCLUDE ..\config\NTmakefile.h
+!INCLUDE ..\config\NTmakelib.h

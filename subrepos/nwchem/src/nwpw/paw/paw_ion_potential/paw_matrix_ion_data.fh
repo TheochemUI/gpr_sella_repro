@@ -1,0 +1,9 @@
+*
+* $Id$
+*
+
+      integer paw_ion_matrix(4)
+      integer i_paw_ion_matrix(4)
+
+      common /paw_ion_matrix/ paw_ion_matrix,i_paw_ion_matrix
+

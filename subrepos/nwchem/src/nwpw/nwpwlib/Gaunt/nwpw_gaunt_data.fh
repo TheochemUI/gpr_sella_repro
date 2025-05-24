@@ -1,0 +1,10 @@
+c
+c $Id$
+c
+
+c     **** nwpw_gaunt common block ****
+      integer gaunt_lmax
+      integer gaunt_coeff(2)    
+      logical gaunt_complex
+      common / nwpw_gaunt / gaunt_lmax,gaunt_coeff,gaunt_complex
+

@@ -1,0 +1,11 @@
+c
+c $Id$
+c
+
+*     ***** switching_charge common block ******************************
+      real*8  s_sigma
+      common / switching_charge_block /
+     >                s_sigma  ! parameters for switching charge model
+
+*     ******************************************************************
+

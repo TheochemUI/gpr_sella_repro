@@ -1,0 +1,2534 @@
+ argument  1 = /var/lib/gitlab-runner/builds/PH7zszVW/0/edoapra/nwchem/QA/tests/Ne_scs-mp2_cc-vqz/Ne_scs-mp2_cc-vqz.nw
+ 
+
+
+============================== echo of input deck ==============================
+echo
+
+start Ne_scs-mp2_cc-vqz
+
+memory total 1000 mb
+
+geometry
+ Ne     0.0 0.0 0.0
+end
+
+basis "ao basis" spherical
+  * library cc-pvqz
+end
+
+basis "cc-pVQZ-RI" spherical
+#BASIS SET: (8s,7p,6d,5f,3g,1h)
+Ne    S
+    537.49100000             1.0000000
+Ne    S
+    116.22800000             1.0000000
+Ne    S
+     34.986200000            1.0000000
+Ne    S
+      8.0017500000           1.0000000
+Ne    S
+      4.4437800000           1.0000000
+Ne    S
+      2.4229600000           1.0000000
+Ne    S
+      1.1501200000           1.0000000
+Ne    S
+      0.47590500000          1.0000000
+Ne    P
+     99.166000000            1.0000000
+Ne    P
+     28.822000000            1.0000000
+Ne    P
+      8.4094200000           1.0000000
+Ne    P
+      5.5649600000           1.0000000
+Ne    P
+      2.6574400000           1.0000000
+Ne    P
+      1.3281700000           1.0000000
+Ne    P
+      0.73485000000          1.0000000
+Ne    D
+     28.745200000            1.0000000
+Ne    D
+      8.9240100000           1.0000000
+Ne    D
+      5.9214600000           1.0000000
+Ne    D
+      2.7948000000           1.0000000
+Ne    D
+      1.6289400000           1.0000000
+Ne    D
+      0.59989500000          1.0000000
+Ne    F
+     13.309000000            1.0000000
+Ne    F
+      6.5987600000           1.0000000
+Ne    F
+      3.0465600000           1.0000000
+Ne    F
+      2.0938000000           1.0000000
+Ne    F
+      1.0360700000           1.0000000
+Ne    G
+      8.2858100000           1.0000000
+Ne    G
+      4.2402700000           1.0000000
+Ne    G
+      2.2925000000           1.0000000
+Ne    H
+      4.4923100000           1.0000000
+end
+
+set "ri-mp2 basis" "cc-pVQZ-RI"
+
+mp2
+  scs
+  freeze 0
+  scratchdisk 4096
+end
+task mp2 energy
+task direct_mp2 energy
+task rimp2 energy
+
+mp2
+  scs; fos 1.0; fss 1.0
+  freeze 0
+  scratchdisk 4096
+end
+task mp2 energy
+task direct_mp2 energy
+task rimp2 energy
+
+mp2
+  scs; fos 0.0; fss 0.0
+  freeze 0
+  scratchdisk 4096
+end
+task mp2 energy
+task direct_mp2 energy
+task rimp2 energy
+
+mp2
+  scs; fos 1.0; fss 0.0
+  freeze 0
+  scratchdisk 4096
+end
+task mp2 energy
+task direct_mp2 energy
+task rimp2 energy
+
+mp2
+  scs; fos 0.0; fss 1.0
+  freeze 0
+  scratchdisk 4096
+end
+task mp2 energy
+task direct_mp2 energy
+task rimp2 energy
+
+mp2
+  scs; fos 1000.0; fss 1000.0
+  freeze 0
+  scratchdisk 4096
+end
+task mp2 energy
+task direct_mp2 energy
+task rimp2 energy
+
+================================================================================
+
+
+                                         
+                                         
+ 
+ 
+              Northwest Computational Chemistry Package (NWChem) 6.8
+              ------------------------------------------------------
+ 
+ 
+                    Environmental Molecular Sciences Laboratory
+                       Pacific Northwest National Laboratory
+                                Richland, WA 99352
+ 
+                              Copyright (c) 1994-2018
+                       Pacific Northwest National Laboratory
+                            Battelle Memorial Institute
+ 
+             NWChem is an open-source computational chemistry package
+                        distributed under the terms of the
+                      Educational Community License (ECL) 2.0
+             A copy of the license is included with this distribution
+                              in the LICENSE.TXT file
+ 
+                                  ACKNOWLEDGMENT
+                                  --------------
+
+            This software and its documentation were developed at the
+            EMSL at Pacific Northwest National Laboratory, a multiprogram
+            national laboratory, operated for the U.S. Department of Energy
+            by Battelle under Contract Number DE-AC05-76RL01830. Support
+            for this work was provided by the Department of Energy Office
+            of Biological and Environmental Research, Office of Basic
+            Energy Sciences, and the Office of Advanced Scientific Computing.
+
+
+           Job information
+           ---------------
+
+    hostname        = durian
+    program         = /var/lib/gitlab-runner/builds/PH7zszVW/0/edoapra/nwchem/bin/LINUX64/nwchem
+    date            = Fri Sep 27 01:48:04 2019
+
+    compiled        = Thu_Sep_26_22:43:35_2019
+    source          = /var/lib/gitlab-runner/builds/PH7zszVW/0/edoapra/nwchem
+    nwchem branch   = Development
+    nwchem revision = cd4eb9a3
+    ga revision     = 5.7.0
+    use scalapack   = T
+    input           = /var/lib/gitlab-runner/builds/PH7zszVW/0/edoapra/nwchem/QA/tests/Ne_scs-mp2_cc-vqz/Ne_scs-mp2_cc-vqz.nw
+    prefix          = Ne_scs-mp2_cc-vqz.
+    data base       = ./Ne_scs-mp2_cc-vqz.db
+    status          = startup
+    nproc           =        3
+    time left       =     -1s
+
+
+
+           Memory information
+           ------------------
+
+    heap     =   32767998 doubles =    250.0 Mbytes
+    stack    =   32767995 doubles =    250.0 Mbytes
+    global   =   65536000 doubles =    500.0 Mbytes (distinct from heap & stack)
+    total    =  131071993 doubles =   1000.0 Mbytes
+    verify   = yes
+    hardfail = no 
+
+
+           Directory information
+           ---------------------
+ 
+  0 permanent = .
+  0 scratch   = .
+ 
+ 
+ 
+ 
+                                NWChem Input Module
+                                -------------------
+ 
+ 
+
+ Scaling coordinates for geometry "geometry" by  1.889725989
+ (inverse scale =  0.529177249)
+
+ 
+ 
+                             Geometry "geometry" -> ""
+                             -------------------------
+ 
+ Output coordinates in angstroms (scale by  1.889725989 to convert to a.u.)
+ 
+  No.       Tag          Charge          X              Y              Z
+ ---- ---------------- ---------- -------------- -------------- --------------
+    1 Ne                  10.0000     0.00000000     0.00000000     0.00000000
+ 
+      Atomic Mass 
+      ----------- 
+ 
+      Ne                19.992440
+ 
+
+ Effective nuclear repulsion energy (a.u.)       0.0000000000
+
+            Nuclear Dipole moment (a.u.) 
+            ----------------------------
+        X                 Y               Z
+ ---------------- ---------------- ----------------
+     0.0000000000     0.0000000000     0.0000000000
+ 
+ 
+            XYZ format geometry
+            -------------------
+     1
+ geometry
+ Ne                    0.00000000     0.00000000     0.00000000
+ 
+
+
+ Summary of "ao basis" -> "" (spherical)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ *                          cc-pvqz                   on all atoms 
+
+
+                      Basis "cc-pVQZ-RI" -> "" (spherical)
+                      -----
+  Ne (Neon)
+  ---------
+            Exponent  Coefficients 
+       -------------- ---------------------------------------------------------
+  1 S  5.37491000E+02  1.000000
+ 
+  2 S  1.16228000E+02  1.000000
+ 
+  3 S  3.49862000E+01  1.000000
+ 
+  4 S  8.00175000E+00  1.000000
+ 
+  5 S  4.44378000E+00  1.000000
+ 
+  6 S  2.42296000E+00  1.000000
+ 
+  7 S  1.15012000E+00  1.000000
+ 
+  8 S  4.75905000E-01  1.000000
+ 
+  9 P  9.91660000E+01  1.000000
+ 
+ 10 P  2.88220000E+01  1.000000
+ 
+ 11 P  8.40942000E+00  1.000000
+ 
+ 12 P  5.56496000E+00  1.000000
+ 
+ 13 P  2.65744000E+00  1.000000
+ 
+ 14 P  1.32817000E+00  1.000000
+ 
+ 15 P  7.34850000E-01  1.000000
+ 
+ 16 D  2.87452000E+01  1.000000
+ 
+ 17 D  8.92401000E+00  1.000000
+ 
+ 18 D  5.92146000E+00  1.000000
+ 
+ 19 D  2.79480000E+00  1.000000
+ 
+ 20 D  1.62894000E+00  1.000000
+ 
+ 21 D  5.99895000E-01  1.000000
+ 
+ 22 F  1.33090000E+01  1.000000
+ 
+ 23 F  6.59876000E+00  1.000000
+ 
+ 24 F  3.04656000E+00  1.000000
+ 
+ 25 F  2.09380000E+00  1.000000
+ 
+ 26 F  1.03607000E+00  1.000000
+ 
+ 27 G  8.28581000E+00  1.000000
+ 
+ 28 G  4.24027000E+00  1.000000
+ 
+ 29 G  2.29250000E+00  1.000000
+ 
+ 30 H  4.49231000E+00  1.000000
+ 
+
+
+ Summary of "cc-pVQZ-RI" -> "" (spherical)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ Ne                      user specified             30      132   8s7p6d5f3g1h
+
+
+                      Basis "ao basis" -> "ao basis" (spherical)
+                      -----
+  Ne (Neon)
+  ---------
+            Exponent  Coefficients 
+       -------------- ---------------------------------------------------------
+  1 S  9.99200000E+04  0.000086
+  1 S  1.49600000E+04  0.000669
+  1 S  3.39900000E+03  0.003518
+  1 S  9.58900000E+02  0.014667
+  1 S  3.11200000E+02  0.050962
+  1 S  1.11700000E+02  0.143744
+  1 S  4.33200000E+01  0.304562
+  1 S  1.78000000E+01  0.400105
+  1 S  7.50300000E+00  0.218644
+ 
+  2 S  9.99200000E+04 -0.000020
+  2 S  1.49600000E+04 -0.000158
+  2 S  3.39900000E+03 -0.000824
+  2 S  9.58900000E+02 -0.003500
+  2 S  3.11200000E+02 -0.012233
+  2 S  1.11700000E+02 -0.037017
+  2 S  4.33200000E+01 -0.086113
+  2 S  1.78000000E+01 -0.158381
+  2 S  7.50300000E+00 -0.114288
+ 
+  3 S  2.33700000E+00  1.000000
+ 
+  4 S  9.00100000E-01  1.000000
+ 
+  5 S  3.30100000E-01  1.000000
+ 
+  6 P  9.96800000E+01  0.006566
+  6 P  2.31500000E+01  0.045979
+  6 P  7.10800000E+00  0.173419
+ 
+  7 P  2.44100000E+00  1.000000
+ 
+  8 P  8.33900000E-01  1.000000
+ 
+  9 P  2.66200000E-01  1.000000
+ 
+ 10 D  6.47100000E+00  1.000000
+ 
+ 11 D  2.21300000E+00  1.000000
+ 
+ 12 D  7.47000000E-01  1.000000
+ 
+ 13 F  4.65700000E+00  1.000000
+ 
+ 14 F  1.52400000E+00  1.000000
+ 
+ 15 G  2.98300000E+00  1.000000
+ 
+
+
+ Summary of "ao basis" -> "ao basis" (spherical)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ Ne                         cc-pvqz                 15       55   5s4p3d2f1g
+
+
+                                 NWChem SCF Module
+                                 -----------------
+ 
+ 
+
+  ao basis        = "ao basis"
+  functions       =    55
+  atoms           =     1
+  closed shells   =     5
+  open shells     =     0
+  charge          =   0.00
+  wavefunction    = RHF 
+  input vectors   = atomic
+  output vectors  = ./Ne_scs-mp2_cc-vqz.movecs
+  use symmetry    = F
+  symmetry adapt  = F
+
+
+ Summary of "ao basis" -> "ao basis" (spherical)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ Ne                         cc-pvqz                 15       55   5s4p3d2f1g
+
+
+
+ Forming initial guess at       0.2s
+
+ 
+      Superposition of Atomic Density Guess
+      -------------------------------------
+ 
+ Sum of atomic energies:        -128.54346269
+ 
+      Non-variational initial energy
+      ------------------------------
+
+ Total energy =    -128.543470
+ 1-e energy   =    -182.591517
+ 2-e energy   =      54.048048
+ HOMO         =      -0.848959
+ LUMO         =       0.808904
+ 
+
+ Starting SCF solution at       0.4s
+
+
+
+ ----------------------------------------------
+         Quadratically convergent ROHF
+
+ Convergence threshold     :          1.000E-06
+ Maximum no. of iterations :           30
+ Final Fock-matrix accuracy:          1.000E-08
+ ----------------------------------------------
+
+
+              iter       energy          gnorm     gmax       time
+             ----- ------------------- --------- --------- --------
+                 1     -128.5434696591  1.17D-06  8.73D-07      0.3
+                 2     -128.5434696591  9.86D-09  4.77D-09      0.5
+
+
+       Final RHF  results 
+       ------------------ 
+
+         Total SCF energy =   -128.543469659094
+      One-electron energy =   -182.591517776936
+      Two-electron energy =     54.048048117841
+ Nuclear repulsion energy =      0.000000000000
+
+        Time for solution =      0.2s
+
+
+             Final eigenvalues
+             -----------------
+
+              1      
+    1  -32.7715
+    2   -1.9293
+    3   -0.8490
+    4   -0.8490
+    5   -0.8490
+    6    0.8089
+    7    0.8089
+    8    0.8089
+    9    0.9356
+   10    1.9978
+   11    1.9978
+   12    1.9978
+   13    1.9978
+   14    1.9978
+   15    3.9328
+ 
+                       ROHF Final Molecular Orbital Analysis
+                       -------------------------------------
+ 
+ Vector    2  Occ=2.000000D+00  E=-1.929338D+00
+              MO Center= -9.8D-17, -2.6D-16,  5.1D-17, r^2= 2.7D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     4      0.585787  1 Ne s                  2      0.364968  1 Ne s          
+     3      0.298187  1 Ne s                  5      0.272466  1 Ne s          
+ 
+ Vector    3  Occ=2.000000D+00  E=-8.489590D-01
+              MO Center=  2.5D-17, -1.2D-16, -7.5D-18, r^2= 3.4D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+    14      0.392011  1 Ne pz                11      0.326154  1 Ne pz         
+    17      0.216213  1 Ne pz                12     -0.191519  1 Ne px         
+     8      0.186620  1 Ne pz                 9     -0.159344  1 Ne px         
+ 
+ Vector    4  Occ=2.000000D+00  E=-8.489590D-01
+              MO Center=  1.4D-16,  4.9D-16, -2.0D-16, r^2= 3.4D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+    12      0.343000  1 Ne px                 9      0.285377  1 Ne px         
+    13     -0.231861  1 Ne py                10     -0.192909  1 Ne py         
+    15      0.189181  1 Ne px                 6      0.163287  1 Ne px         
+ 
+ Vector    5  Occ=2.000000D+00  E=-8.489590D-01
+              MO Center=  7.6D-17,  5.5D-16, -9.9D-17, r^2= 3.4D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+    13      0.369584  1 Ne py                10      0.307495  1 Ne py         
+    16      0.203844  1 Ne py                12      0.194107  1 Ne px         
+     7      0.175943  1 Ne py                 9      0.161498  1 Ne px         
+ 
+ Vector    6  Occ=0.000000D+00  E= 8.089041D-01
+              MO Center=  2.2D-16,  4.4D-16, -2.1D-16, r^2= 1.6D+00
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+    16      0.961129  1 Ne py                15      0.705920  1 Ne px         
+    13     -0.540485  1 Ne py                17     -0.430636  1 Ne pz         
+    12     -0.396969  1 Ne px                14      0.242165  1 Ne pz         
+ 
+ Vector    7  Occ=0.000000D+00  E= 8.089041D-01
+              MO Center=  5.1D-16, -1.1D-16,  6.6D-16, r^2= 1.6D+00
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+    17      1.081050  1 Ne pz                15      0.662468  1 Ne px         
+    14     -0.607921  1 Ne pz                12     -0.372535  1 Ne px         
+ 
+ Vector    8  Occ=0.000000D+00  E= 8.089041D-01
+              MO Center=  1.4D-14, -1.5D-14, -7.9D-15, r^2= 1.6D+00
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+    16     -0.826901  1 Ne py                15      0.818750  1 Ne px         
+    17     -0.503410  1 Ne pz                13      0.465002  1 Ne py         
+    12     -0.460419  1 Ne px                14      0.283089  1 Ne pz         
+ 
+ Vector    9  Occ=0.000000D+00  E= 9.355999D-01
+              MO Center= -1.5D-14,  1.4D-14,  7.9D-15, r^2= 1.1D+00
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     5     -1.914942  1 Ne s                  4      1.861597  1 Ne s          
+     3     -0.156989  1 Ne s          
+ 
+ Vector   10  Occ=0.000000D+00  E= 1.997811D+00
+              MO Center=  9.8D-16, -1.3D-16,  1.3D-16, r^2= 6.9D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+    32      0.790070  1 Ne d  2              30     -0.535272  1 Ne d  0       
+    31      0.377342  1 Ne d  1              29      0.184024  1 Ne d -1       
+ 
+ Vector   11  Occ=0.000000D+00  E= 1.997811D+00
+              MO Center= -4.7D-16, -3.0D-16,  8.0D-16, r^2= 6.9D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+    30      0.857761  1 Ne d  0              29      0.407433  1 Ne d -1       
+    32      0.399106  1 Ne d  2              28     -0.184191  1 Ne d -2       
+ 
+ Vector   12  Occ=0.000000D+00  E= 1.997811D+00
+              MO Center=  2.7D-16,  4.4D-16,  1.2D-16, r^2= 6.9D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+    28      0.816156  1 Ne d -2              32      0.456974  1 Ne d  2       
+    31     -0.453302  1 Ne d  1       
+ 
+ Vector   13  Occ=0.000000D+00  E= 1.997811D+00
+              MO Center= -9.1D-17,  1.8D-16,  2.0D-17, r^2= 6.9D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+    31      0.854703  1 Ne d  1              28      0.456848  1 Ne d -2       
+    29     -0.341041  1 Ne d -1              30      0.199584  1 Ne d  0       
+ 
+ Vector   14  Occ=0.000000D+00  E= 1.997811D+00
+              MO Center= -2.5D-16, -4.2D-16, -5.9D-16, r^2= 6.9D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+    29      0.878644  1 Ne d -1              28      0.422174  1 Ne d -2       
+    32     -0.321011  1 Ne d  2              30     -0.194199  1 Ne d  0       
+ 
+ Vector   15  Occ=0.000000D+00  E= 3.932819D+00
+              MO Center= -4.8D-16,  1.7D-16,  1.4D-16, r^2= 5.9D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+    12      1.689483  1 Ne px                 9     -1.106903  1 Ne px         
+    15     -0.694785  1 Ne px                13      0.394377  1 Ne py         
+    14      0.306633  1 Ne pz                10     -0.258385  1 Ne py         
+     6     -0.208989  1 Ne px                11     -0.200897  1 Ne pz         
+    16     -0.162184  1 Ne py         
+ 
+
+ center of mass
+ --------------
+ x =   0.00000000 y =   0.00000000 z =   0.00000000
+
+ moments of inertia (a.u.)
+ ------------------
+           0.000000000000           0.000000000000           0.000000000000
+           0.000000000000           0.000000000000           0.000000000000
+           0.000000000000           0.000000000000           0.000000000000
+ 
+  Mulliken analysis of the total density
+  --------------------------------------
+
+    Atom       Charge   Shell Charges
+ -----------   ------   -------------------------------------------------------
+    1 Ne  10    10.00   1.98 -0.02  0.46  1.11  0.47  0.73  1.92  2.41  0.95  0.00  0.00  0.00 -0.00  0.00  0.00
+ 
+       Multipole analysis of the density wrt the origin
+       ------------------------------------------------
+ 
+     L   x y z        total         open         nuclear
+     -   - - -        -----         ----         -------
+     0   0 0 0     -0.000000      0.000000     10.000000
+ 
+     1   1 0 0     -0.000000      0.000000      0.000000
+     1   0 1 0     -0.000000      0.000000      0.000000
+     1   0 0 1      0.000000      0.000000      0.000000
+ 
+     2   2 0 0     -3.110663      0.000000      0.000000
+     2   1 1 0      0.000000      0.000000      0.000000
+     2   1 0 1      0.000000      0.000000      0.000000
+     2   0 2 0     -3.110663      0.000000      0.000000
+     2   0 1 1      0.000000      0.000000      0.000000
+     2   0 0 2     -3.110663      0.000000      0.000000
+ 
+                   NWChem MP2 Semi-direct Energy/Gradient Module
+                   ---------------------------------------------
+ 
+ 
+  Basis functions       =     55
+  Molecular orbitals    =     55
+  Frozen core           =      0
+  Frozen virtuals       =      0
+  Active alpha occupied =      5
+  Active beta occupied  =      5
+  Active alpha virtual  =     50
+  Active beta virtual   =     50
+  Use MO symmetry       = F
+  Use skeleton AO sym   = F
+
+  AO/Fock/Back tols     =   1.0D-09  1.0D-09  1.0D-09
+  SCS-MP2               = T
+  #avail    536870912.000000     
+  #avail    536870912.000000     
+  #avail    536870912.000000     
+
+ GA uses MA = F    GA memory limited = T
+
+ Available: 
+  local mem=  5.73D+07
+ global mem=  6.55D+07
+ local disk=  0.00D+00
+  mp2_memr nvloc                     17
+  nvloc new                     17
+   1 passes of   5:        4194304                      22711                    450303.
+   1 passes of   5: M     57341147           G       65533910           F      53146843.
+ 
+ Semi-direct pass number   1 of   1  for RHF alpha+beta  at        0.8s
+  vrange nnbf                   1540
+  mp2_eaftype                     10  avail_ma_in_mb                    499
+ EAF : mp2_eaftype filesize          10     225151.
+  mp2_eaf for mointskh                      10
+Node 0 wrote      1.0 Mb in      0.0 s     Agg I/O rate:   954.9 Mb/s
+ Done moints_semi at        1.2s
+  mp2_eaftype                     10  avail_ma_in_mb                    489
+ EAF : mp2_eaftype filesize          10     225151.
+  mp2_eaf for kh                     10
+ Done maket at        1.3s
+ Done multipass loop at        1.3s
+
+
+          -------------------------------------------
+          SCF energy                -128.543469659094
+          Correlation energy          -0.326258443642
+          Singlet pairs               -0.205382776546
+          Triplet pairs               -0.120875667096
+          Total MP2 energy          -128.869728102736
+          -------------------------------------------
+
+
+
+          ---------------------------------------------------
+                    Spin Component Scaled (SCS) MP2
+          Same spin pairs                     -0.080583778064
+          Same spin scaling factor             0.333333333333
+          Opposite spin pairs                 -0.245674665578
+          Opposite spin scaling fact.          1.200000000000
+          SCS-MP2 correlation energy          -0.321670858048
+          Total SCS-MP2 energy              -128.865140517142
+          ---------------------------------------------------
+
+ -----------------------
+ Performance information
+ -----------------------
+
+ Timer overhead =  3.67D-07 seconds/call
+
+               Nr. of calls         CPU time (s)                 Wall time (s)                GFlops
+             ---------------    -------------------     ------------------------------   -------------------
+Name         Min   Avg   Max    Min     Avg     Max     Min     Avg     Max   Mx/calls   Min     Max     Sum
+mp2: moin     1     1     1   0.20    0.26    0.33     0.43    0.43    0.43    0.43      0.0     0.0     0.0   
+mp2: make     1     1     1   1.66E-2 2.49E-2 3.55E-2  5.19E-2 5.19E-2 5.20E-2 5.20E-2   0.0     0.0     0.0   
+mp2: tota     1     1     1   0.32    0.41    0.51     0.66    0.66    0.66    0.66      0.0     0.0     0.0   
+
+ The average no. of pstat calls per process was 3.00D+00
+ with a timing overhead of 1.10D-06s
+
+
+ Task  times  cpu:        0.8s     wall:        1.2s
+ 
+ 
+                                NWChem Input Module
+                                -------------------
+ 
+ 
+                                 NWChem SCF Module
+                                 -----------------
+ 
+ 
+
+  ao basis        = "ao basis"
+  functions       =    55
+  atoms           =     1
+  closed shells   =     5
+  open shells     =     0
+  charge          =   0.00
+  wavefunction    = RHF 
+  input vectors   = ./Ne_scs-mp2_cc-vqz.movecs
+  output vectors  = ./Ne_scs-mp2_cc-vqz.movecs
+  use symmetry    = F
+  symmetry adapt  = F
+
+
+ Summary of "ao basis" -> "ao basis" (spherical)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ Ne                         cc-pvqz                 15       55   5s4p3d2f1g
+
+
+
+  The SCF is already converged 
+
+         Total SCF energy =   -128.543469659094
+
+                          Direct MP2
+                          ----------
+          Basis functions:                       55
+          Shells:                                15
+          Block length:                          32
+          Active occupied range:           1 -    5
+          Active virtual range:            6 -   55
+          MO coefficients read from:  ./Ne_scs-mp2_cc-vqz.movec
+          Operator matrices in core:             15
+          AO passes required:                     1
+          Use AO Integral blocking
+          Twofold algorithm used
+
+          SCS-MP2:                                T
+          Same spin scaling factor:         0.33333
+          Opposite spin scaling factor:     1.20000
+
+    0 shell      1 out of     15 in             1.43 secs
+    0 shell      2 out of     15 in             1.43 secs
+    0 shell      3 out of     15 in             1.44 secs
+    0 shell      4 out of     15 in             1.47 secs
+    0 shell      5 out of     15 in             1.48 secs
+    0 shell      6 out of     15 in             1.50 secs
+    0 shell      7 out of     15 in             1.52 secs
+    0 shell      8 out of     15 in             1.53 secs
+    0 shell      9 out of     15 in             1.53 secs
+    0 shell     10 out of     15 in             1.54 secs
+    0 shell     11 out of     15 in             1.56 secs
+    0 shell     12 out of     15 in             1.58 secs
+    0 shell     13 out of     15 in             1.60 secs
+    0 shell     14 out of     15 in             1.61 secs
+    0 shell     15 out of     15 in             1.63 secs
+     Pass:    1     Index range:    1  -    5     Time:      0.21
+
+
+          -----------------------------------------------
+          SCF energy                    -128.543469659094
+          SCS Correlation energy          -0.321670858048
+          Total SCS-MP2 energy          -128.865140517142
+          -----------------------------------------------
+
+
+          Total MP2 time:           0.27
+
+ Task  times  cpu:        0.3s     wall:        0.3s
+ 
+ 
+                                NWChem Input Module
+                                -------------------
+ 
+ 
+                                 NWChem SCF Module
+                                 -----------------
+ 
+ 
+
+  ao basis        = "ao basis"
+  functions       =    55
+  atoms           =     1
+  closed shells   =     5
+  open shells     =     0
+  charge          =   0.00
+  wavefunction    = RHF 
+  input vectors   = ./Ne_scs-mp2_cc-vqz.movecs
+  output vectors  = ./Ne_scs-mp2_cc-vqz.movecs
+  use symmetry    = F
+  symmetry adapt  = F
+
+
+ Summary of "ao basis" -> "ao basis" (spherical)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ Ne                         cc-pvqz                 15       55   5s4p3d2f1g
+
+
+
+  The SCF is already converged 
+
+         Total SCF energy =   -128.543469659094
+
+                               NWChem RI-MP2 Module
+                               --------------------
+
+
+
+ SCF Reference Information:
+            File: './Ne_scs-mp2_cc-vqz.movecs'
+           Title: ''
+    Size (AOxMO):     55 x     55
+       Total Occ:              10.00
+ RI-MP2 Calculation Information:
+          Nr. of AO basis functions:         55
+     Nr. of fitting basis functions:        132
+               Nr. of MO spin cases:          1
+        Nr. of MOs to be correlated:         55
+     Nr. of occupied MOs correlated:          5
+      Nr. of virtual MOs correlated:         50
+ 
+                            SCS-MP2: T
+           Same spin scaling factor:  3.333E-01
+       Opposite spin scaling factor:  1.200E+00
+ 
+          RI integral approximation: 'V'
+    Threshold for Schwarz screening:  1.000E-09
+ Smallest eigenvalue retained in fit  1.000E-08
+     Base file name for MO integrals 'mo3cint'
+    Type of storage for MO integrals 'EAF library'
+ 
+ Transformation block size    5, requiring     1 integral passes.
+ XForm_3cInts: Completed     1:    5 pass.             @Fri Sep 27 01:48:06 2019
+ Energy evaluation using block sizes     5    5
+ RIMP2_V_E2: Approx. ints. done (    1:    5,    1:    5) @Fri Sep 27 01:48:06 2019
+ RIMP2_V_E2: Copy to B done (    1:    5,    1:    5)  @Fri Sep 27 01:48:06 2019
+ RIMP2_V_E2: Denominators done (    1:    5,    1:    5) @Fri Sep 27 01:48:06 2019
+ RIMP2_V_E2: Completed block (    1:    5,    1:    5) @Fri Sep 27 01:48:06 2019
+
+
+          -----------------------------------------------
+          SCF energy                    -128.543469659094
+          SCS Correlation energy          -0.321654186761
+          Total SCS-MP2 energy          -128.865123845855
+          -----------------------------------------------
+
+ -----------------------
+ Performance information
+ -----------------------
+
+ Timer overhead =  3.81D-07 seconds/call
+
+               Nr. of calls         CPU time (s)                 Wall time (s)                GFlops
+             ---------------    -------------------     ------------------------------   -------------------
+Name         Min   Avg   Max    Min     Avg     Max     Min     Avg     Max   Mx/calls   Min     Max     Sum
+Overall       1     1     1   0.15    0.34    0.43     0.47    0.47    0.47    0.47      0.0     0.0     0.0   
+3c integr     1     1     1   4.80E-2 0.11    0.16     0.17    0.17    0.17    0.17      0.0     0.0     0.0   
+Energy        1     1     1   1.26E-2 1.94E-2 2.44E-2  2.87E-2 2.89E-2 2.90E-2 2.90E-2   0.0     0.0     0.0   
+3c integr     1     1     1   2.60E-2 3.53E-2 4.64E-2  3.00E-2 7.97E-2 0.16    0.16      0.0     0.0     0.0   
+First 2/3     3     3     3   1.75E-4 2.15E-4 2.73E-4  1.95E-4 4.01E-4 8.00E-4 2.67E-4   0.0     0.0     0.0   
+Final 1/3     1     1     1   4.43E-4 1.13E-3 1.57E-3  1.57E-3 1.57E-3 1.57E-3 1.57E-3   0.0     0.0     0.0   
+Write 3c      1     1     1   1.10E-4 1.13E-4 1.19E-4  1.19E-4 1.55E-4 2.28E-4 2.28E-4   0.0     0.0     0.0   
+Read 3c i     1     1     1   7.10E-5 8.30E-5 1.01E-4  7.32E-5 1.53E-4 3.10E-4 3.10E-4   0.0     0.0     0.0   
+Fitting b     1     1     1   9.87E-3 3.56E-2 4.87E-2  5.29E-2 5.29E-2 5.29E-2 5.29E-2   0.0     0.0     0.0   
+Schwarz i     1     1     1   7.72E-3 1.47E-2 2.19E-2  2.19E-2 2.20E-2 2.22E-2 2.22E-2   0.0     0.0     0.0   
+Form 4ci      1     1     1    0.0    8.06E-3 1.30E-2  1.49E-2 1.49E-2 1.49E-2 1.49E-2   0.0     0.0     0.0   
+Form A &      1     1     1   7.04E-3 7.85E-3 8.42E-3  9.05E-3 9.06E-3 9.07E-3 9.07E-3   0.0     0.0     0.0   
+Denominat     1     1     1   3.80E-5 4.40E-5 4.80E-5  3.98E-5 4.59E-5 4.89E-5 4.89E-5   0.0     0.0     0.0   
+Pair Ener     1     1     1   3.03E-4 4.48E-4 5.24E-4  5.47E-4 5.49E-4 5.51E-4 5.51E-4   0.0     0.0     0.0   
+
+ The average no. of pstat calls per process was 1.60D+01
+ with a timing overhead of 6.09D-06s
+
+
+ Task  times  cpu:        0.4s     wall:        0.5s
+ 
+ 
+                                NWChem Input Module
+                                -------------------
+ 
+ 
+                                 NWChem SCF Module
+                                 -----------------
+ 
+ 
+
+  ao basis        = "ao basis"
+  functions       =    55
+  atoms           =     1
+  closed shells   =     5
+  open shells     =     0
+  charge          =   0.00
+  wavefunction    = RHF 
+  input vectors   = ./Ne_scs-mp2_cc-vqz.movecs
+  output vectors  = ./Ne_scs-mp2_cc-vqz.movecs
+  use symmetry    = F
+  symmetry adapt  = F
+
+
+ Summary of "ao basis" -> "ao basis" (spherical)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ Ne                         cc-pvqz                 15       55   5s4p3d2f1g
+
+
+
+  The SCF is already converged 
+
+         Total SCF energy =   -128.543469659094
+
+                   NWChem MP2 Semi-direct Energy/Gradient Module
+                   ---------------------------------------------
+ 
+ 
+  Basis functions       =     55
+  Molecular orbitals    =     55
+  Frozen core           =      0
+  Frozen virtuals       =      0
+  Active alpha occupied =      5
+  Active beta occupied  =      5
+  Active alpha virtual  =     50
+  Active beta virtual   =     50
+  Use MO symmetry       = F
+  Use skeleton AO sym   = F
+
+  AO/Fock/Back tols     =   1.0D-09  1.0D-09  1.0D-09
+  SCS-MP2               = T
+  #avail    536870912.000000     
+  #avail    536870912.000000     
+  #avail    536870912.000000     
+
+ GA uses MA = F    GA memory limited = T
+
+ Available: 
+  local mem=  5.73D+07
+ global mem=  6.55D+07
+ local disk=  0.00D+00
+  mp2_memr nvloc                     17
+  nvloc new                     17
+   1 passes of   5:        4194304                      22711                    450303.
+   1 passes of   5: M     57341147           G       65533910           F      53146843.
+ 
+ Semi-direct pass number   1 of   1  for RHF alpha+beta  at        2.5s
+  vrange nnbf                   1540
+  mp2_eaftype                     10  avail_ma_in_mb                    499
+ EAF : mp2_eaftype filesize          10     225151.
+  mp2_eaf for mointskh                      10
+Node 0 wrote      1.0 Mb in      0.0 s     Agg I/O rate:  1462.8 Mb/s
+ Done moints_semi at        3.0s
+  mp2_eaftype                     10  avail_ma_in_mb                    489
+ EAF : mp2_eaftype filesize          10     225151.
+  mp2_eaf for kh                     10
+ Done maket at        3.0s
+ Done multipass loop at        3.0s
+
+
+          -------------------------------------------
+          SCF energy                -128.543469659094
+          Correlation energy          -0.326258443642
+          Singlet pairs               -0.205382776546
+          Triplet pairs               -0.120875667096
+          Total MP2 energy          -128.869728102736
+          -------------------------------------------
+
+
+
+          ---------------------------------------------------
+                    Spin Component Scaled (SCS) MP2
+          Same spin pairs                     -0.080583778064
+          Same spin scaling factor             1.000000000000
+          Opposite spin pairs                 -0.245674665578
+          Opposite spin scaling fact.          1.000000000000
+          SCS-MP2 correlation energy          -0.326258443642
+          Total SCS-MP2 energy              -128.869728102736
+          ---------------------------------------------------
+
+ -----------------------
+ Performance information
+ -----------------------
+
+ Timer overhead =  7.04D-07 seconds/call
+
+               Nr. of calls         CPU time (s)                 Wall time (s)                GFlops
+             ---------------    -------------------     ------------------------------   -------------------
+Name         Min   Avg   Max    Min     Avg     Max     Min     Avg     Max   Mx/calls   Min     Max     Sum
+mp2: moin     1     1     1   0.25    0.26    0.28     0.54    0.54    0.54    0.54      0.0     0.0     0.0   
+mp2: make     1     1     1   1.46E-2 1.87E-2 2.11E-2  3.56E-2 3.56E-2 3.56E-2 3.56E-2   0.0     0.0     0.0   
+mp2: tota     1     1     1   0.42    0.49    0.53     0.90    0.90    0.90    0.90      0.0     0.0     0.0   
+
+ The average no. of pstat calls per process was 3.00D+00
+ with a timing overhead of 2.11D-06s
+
+
+ Task  times  cpu:        0.6s     wall:        0.9s
+ 
+ 
+                                NWChem Input Module
+                                -------------------
+ 
+ 
+                                 NWChem SCF Module
+                                 -----------------
+ 
+ 
+
+  ao basis        = "ao basis"
+  functions       =    55
+  atoms           =     1
+  closed shells   =     5
+  open shells     =     0
+  charge          =   0.00
+  wavefunction    = RHF 
+  input vectors   = ./Ne_scs-mp2_cc-vqz.movecs
+  output vectors  = ./Ne_scs-mp2_cc-vqz.movecs
+  use symmetry    = F
+  symmetry adapt  = F
+
+
+ Summary of "ao basis" -> "ao basis" (spherical)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ Ne                         cc-pvqz                 15       55   5s4p3d2f1g
+
+
+
+  The SCF is already converged 
+
+         Total SCF energy =   -128.543469659094
+
+                          Direct MP2
+                          ----------
+          Basis functions:                       55
+          Shells:                                15
+          Block length:                          32
+          Active occupied range:           1 -    5
+          Active virtual range:            6 -   55
+          MO coefficients read from:  ./Ne_scs-mp2_cc-vqz.movec
+          Operator matrices in core:             15
+          AO passes required:                     1
+          Use AO Integral blocking
+          Twofold algorithm used
+
+          SCS-MP2:                                T
+          Same spin scaling factor:         1.00000
+          Opposite spin scaling factor:     1.00000
+
+    0 shell      1 out of     15 in             3.17 secs
+    0 shell      2 out of     15 in             3.17 secs
+    0 shell      3 out of     15 in             3.21 secs
+    0 shell      4 out of     15 in             3.22 secs
+    0 shell      5 out of     15 in             3.24 secs
+    0 shell      6 out of     15 in             3.28 secs
+    0 shell      7 out of     15 in             3.30 secs
+    0 shell      8 out of     15 in             3.30 secs
+    0 shell      9 out of     15 in             3.31 secs
+    0 shell     10 out of     15 in             3.31 secs
+    0 shell     11 out of     15 in             3.36 secs
+    0 shell     12 out of     15 in             3.37 secs
+    0 shell     13 out of     15 in             3.40 secs
+    0 shell     14 out of     15 in             3.42 secs
+    0 shell     15 out of     15 in             3.44 secs
+     Pass:    1     Index range:    1  -    5     Time:      0.20
+
+
+          -----------------------------------------------
+          SCF energy                    -128.543469659094
+          SCS Correlation energy          -0.326258443642
+          Total SCS-MP2 energy          -128.869728102736
+          -----------------------------------------------
+
+
+          Total MP2 time:           0.26
+
+ Task  times  cpu:        0.3s     wall:        0.4s
+ 
+ 
+                                NWChem Input Module
+                                -------------------
+ 
+ 
+                                 NWChem SCF Module
+                                 -----------------
+ 
+ 
+
+  ao basis        = "ao basis"
+  functions       =    55
+  atoms           =     1
+  closed shells   =     5
+  open shells     =     0
+  charge          =   0.00
+  wavefunction    = RHF 
+  input vectors   = ./Ne_scs-mp2_cc-vqz.movecs
+  output vectors  = ./Ne_scs-mp2_cc-vqz.movecs
+  use symmetry    = F
+  symmetry adapt  = F
+
+
+ Summary of "ao basis" -> "ao basis" (spherical)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ Ne                         cc-pvqz                 15       55   5s4p3d2f1g
+
+
+
+  The SCF is already converged 
+
+         Total SCF energy =   -128.543469659094
+
+                               NWChem RI-MP2 Module
+                               --------------------
+
+
+
+ SCF Reference Information:
+            File: './Ne_scs-mp2_cc-vqz.movecs'
+           Title: ''
+    Size (AOxMO):     55 x     55
+       Total Occ:              10.00
+ RI-MP2 Calculation Information:
+          Nr. of AO basis functions:         55
+     Nr. of fitting basis functions:        132
+               Nr. of MO spin cases:          1
+        Nr. of MOs to be correlated:         55
+     Nr. of occupied MOs correlated:          5
+      Nr. of virtual MOs correlated:         50
+ 
+                            SCS-MP2: T
+           Same spin scaling factor:  1.000E+00
+       Opposite spin scaling factor:  1.000E+00
+ 
+          RI integral approximation: 'V'
+    Threshold for Schwarz screening:  1.000E-09
+ Smallest eigenvalue retained in fit  1.000E-08
+     Base file name for MO integrals 'mo3cint'
+    Type of storage for MO integrals 'EAF library'
+ 
+ Transformation block size    5, requiring     1 integral passes.
+ XForm_3cInts: Completed     1:    5 pass.             @Fri Sep 27 01:48:08 2019
+ Energy evaluation using block sizes     5    5
+ RIMP2_V_E2: Approx. ints. done (    1:    5,    1:    5) @Fri Sep 27 01:48:08 2019
+ RIMP2_V_E2: Copy to B done (    1:    5,    1:    5)  @Fri Sep 27 01:48:08 2019
+ RIMP2_V_E2: Denominators done (    1:    5,    1:    5) @Fri Sep 27 01:48:08 2019
+ RIMP2_V_E2: Completed block (    1:    5,    1:    5) @Fri Sep 27 01:48:08 2019
+
+
+          -----------------------------------------------
+          SCF energy                    -128.543469659094
+          SCS Correlation energy          -0.326249828969
+          Total SCS-MP2 energy          -128.869719488064
+          -----------------------------------------------
+
+ -----------------------
+ Performance information
+ -----------------------
+
+ Timer overhead =  0.00D+00 seconds/call
+
+               Nr. of calls         CPU time (s)                 Wall time (s)                GFlops
+             ---------------    -------------------     ------------------------------   -------------------
+Name         Min   Avg   Max    Min     Avg     Max     Min     Avg     Max   Mx/calls   Min     Max     Sum
+Overall       1     1     1   0.13    0.20    0.24     0.27    0.27    0.27    0.27      0.0     0.0     0.0   
+3c integr     1     1     1   4.12E-2 5.12E-2 5.67E-2  5.69E-2 5.69E-2 5.69E-2 5.69E-2   0.0     0.0     0.0   
+Energy        1     1     1   8.47E-3 1.14E-2 1.65E-2  1.67E-2 1.68E-2 1.68E-2 1.68E-2   0.0     0.0     0.0   
+3c integr     1     1     1   2.98E-2 3.52E-2 3.91E-2  2.99E-2 4.05E-2 5.44E-2 5.44E-2   0.0     0.0     0.0   
+First 2/3     3     3     3   1.73E-4 1.94E-4 2.09E-4  1.74E-4 2.00E-4 2.25E-4 7.50E-5   0.0     0.0     0.0   
+Final 1/3     1     1     1   8.66E-4 1.02E-3 1.11E-3  1.11E-3 1.11E-3 1.11E-3 1.11E-3   0.0     0.0     0.0   
+Write 3c      1     1     1   1.00E-4 1.17E-4 1.31E-4  9.99E-5 1.27E-4 1.58E-4 1.58E-4   0.0     0.0     0.0   
+Read 3c i     1     1     1    0.0    5.80E-5 1.04E-4  7.10E-5 8.50E-5 1.04E-4 1.04E-4   0.0     0.0     0.0   
+Fitting b     1     1     1   7.90E-3 8.98E-3 1.06E-2  1.53E-2 1.53E-2 1.53E-2 1.53E-2   0.0     0.0     0.0   
+Schwarz i     1     1     1   1.37E-2 1.61E-2 1.76E-2  1.76E-2 1.77E-2 1.77E-2 1.77E-2   0.0     0.0     0.0   
+Form 4ci      1     1     1    0.0    1.07E-3 1.82E-3  1.85E-3 1.85E-3 1.85E-3 1.85E-3   0.0     0.0     0.0   
+Form A &      1     1     1   2.78E-3 6.66E-3 8.64E-3  8.75E-3 8.75E-3 8.75E-3 8.75E-3   0.0     0.0     0.0   
+Denominat     1     1     1   2.90E-5 3.60E-5 4.10E-5  3.10E-5 3.74E-5 4.10E-5 4.10E-5   0.0     0.0     0.0   
+Pair Ener     1     1     1   5.34E-4 1.06E-3 1.55E-3  1.57E-3 1.64E-3 1.77E-3 1.77E-3   0.0     0.0     0.0   
+
+ The average no. of pstat calls per process was 1.60D+01
+ with a timing overhead of 0.00D+00s
+
+
+ Task  times  cpu:        0.2s     wall:        0.3s
+ 
+ 
+                                NWChem Input Module
+                                -------------------
+ 
+ 
+                                 NWChem SCF Module
+                                 -----------------
+ 
+ 
+
+  ao basis        = "ao basis"
+  functions       =    55
+  atoms           =     1
+  closed shells   =     5
+  open shells     =     0
+  charge          =   0.00
+  wavefunction    = RHF 
+  input vectors   = ./Ne_scs-mp2_cc-vqz.movecs
+  output vectors  = ./Ne_scs-mp2_cc-vqz.movecs
+  use symmetry    = F
+  symmetry adapt  = F
+
+
+ Summary of "ao basis" -> "ao basis" (spherical)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ Ne                         cc-pvqz                 15       55   5s4p3d2f1g
+
+
+
+  The SCF is already converged 
+
+         Total SCF energy =   -128.543469659094
+
+                   NWChem MP2 Semi-direct Energy/Gradient Module
+                   ---------------------------------------------
+ 
+ 
+  Basis functions       =     55
+  Molecular orbitals    =     55
+  Frozen core           =      0
+  Frozen virtuals       =      0
+  Active alpha occupied =      5
+  Active beta occupied  =      5
+  Active alpha virtual  =     50
+  Active beta virtual   =     50
+  Use MO symmetry       = F
+  Use skeleton AO sym   = F
+
+  AO/Fock/Back tols     =   1.0D-09  1.0D-09  1.0D-09
+  SCS-MP2               = T
+  #avail    536870912.000000     
+  #avail    536870912.000000     
+  #avail    536870912.000000     
+
+ GA uses MA = F    GA memory limited = T
+
+ Available: 
+  local mem=  5.73D+07
+ global mem=  6.55D+07
+ local disk=  0.00D+00
+  mp2_memr nvloc                     17
+  nvloc new                     17
+   1 passes of   5:        4194304                      22711                    450303.
+   1 passes of   5: M     57341147           G       65533910           F      53146843.
+ 
+ Semi-direct pass number   1 of   1  for RHF alpha+beta  at        4.0s
+  vrange nnbf                   1540
+  mp2_eaftype                     10  avail_ma_in_mb                    499
+ EAF : mp2_eaftype filesize          10     225151.
+  mp2_eaf for mointskh                      10
+Node 0 wrote      1.0 Mb in      0.0 s     Agg I/O rate:  2555.3 Mb/s
+ Done moints_semi at        4.6s
+  mp2_eaftype                     10  avail_ma_in_mb                    489
+ EAF : mp2_eaftype filesize          10     225151.
+  mp2_eaf for kh                     10
+ Done maket at        4.7s
+ Done multipass loop at        4.7s
+
+
+          -------------------------------------------
+          SCF energy                -128.543469659094
+          Correlation energy          -0.326258443642
+          Singlet pairs               -0.205382776546
+          Triplet pairs               -0.120875667096
+          Total MP2 energy          -128.869728102736
+          -------------------------------------------
+
+
+
+          ---------------------------------------------------
+                    Spin Component Scaled (SCS) MP2
+          Same spin pairs                     -0.080583778064
+          Same spin scaling factor             0.000000000000
+          Opposite spin pairs                 -0.245674665578
+          Opposite spin scaling fact.          0.000000000000
+          SCS-MP2 correlation energy           0.000000000000
+          Total SCS-MP2 energy              -128.543469659094
+          ---------------------------------------------------
+
+ -----------------------
+ Performance information
+ -----------------------
+
+ Timer overhead =  8.92D-08 seconds/call
+
+               Nr. of calls         CPU time (s)                 Wall time (s)                GFlops
+             ---------------    -------------------     ------------------------------   -------------------
+Name         Min   Avg   Max    Min     Avg     Max     Min     Avg     Max   Mx/calls   Min     Max     Sum
+mp2: moin     1     1     1   0.27    0.29    0.32     0.57    0.57    0.57    0.57      0.0     0.0     0.0   
+mp2: make     1     1     1   8.40E-3 1.79E-2 2.28E-2  2.93E-2 2.93E-2 2.93E-2 2.93E-2   0.0     0.0     0.0   
+mp2: tota     1     1     1   0.37    0.50    0.59     0.88    0.88    0.88    0.88      0.0     0.0     0.0   
+
+ The average no. of pstat calls per process was 3.00D+00
+ with a timing overhead of 2.68D-07s
+
+
+ Task  times  cpu:        0.4s     wall:        0.9s
+ 
+ 
+                                NWChem Input Module
+                                -------------------
+ 
+ 
+                                 NWChem SCF Module
+                                 -----------------
+ 
+ 
+
+  ao basis        = "ao basis"
+  functions       =    55
+  atoms           =     1
+  closed shells   =     5
+  open shells     =     0
+  charge          =   0.00
+  wavefunction    = RHF 
+  input vectors   = ./Ne_scs-mp2_cc-vqz.movecs
+  output vectors  = ./Ne_scs-mp2_cc-vqz.movecs
+  use symmetry    = F
+  symmetry adapt  = F
+
+
+ Summary of "ao basis" -> "ao basis" (spherical)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ Ne                         cc-pvqz                 15       55   5s4p3d2f1g
+
+
+
+  The SCF is already converged 
+
+         Total SCF energy =   -128.543469659094
+
+                          Direct MP2
+                          ----------
+          Basis functions:                       55
+          Shells:                                15
+          Block length:                          32
+          Active occupied range:           1 -    5
+          Active virtual range:            6 -   55
+          MO coefficients read from:  ./Ne_scs-mp2_cc-vqz.movec
+          Operator matrices in core:             15
+          AO passes required:                     1
+          Use AO Integral blocking
+          Twofold algorithm used
+
+          SCS-MP2:                                T
+          Same spin scaling factor:         0.00000
+          Opposite spin scaling factor:     0.00000
+
+    0 shell      1 out of     15 in             4.80 secs
+    0 shell      2 out of     15 in             4.80 secs
+    0 shell      3 out of     15 in             4.83 secs
+    0 shell      4 out of     15 in             4.85 secs
+    0 shell      5 out of     15 in             4.87 secs
+    0 shell      6 out of     15 in             4.89 secs
+    0 shell      7 out of     15 in             4.92 secs
+    0 shell      8 out of     15 in             4.92 secs
+    0 shell      9 out of     15 in             4.92 secs
+    0 shell     10 out of     15 in             4.93 secs
+    0 shell     11 out of     15 in             4.95 secs
+    0 shell     12 out of     15 in             4.97 secs
+    0 shell     13 out of     15 in             4.99 secs
+    0 shell     14 out of     15 in             5.01 secs
+    0 shell     15 out of     15 in             5.02 secs
+     Pass:    1     Index range:    1  -    5     Time:      0.22
+
+
+          -----------------------------------------------
+          SCF energy                    -128.543469659094
+          SCS Correlation energy           0.000000000000
+          Total SCS-MP2 energy          -128.543469659094
+          -----------------------------------------------
+
+
+          Total MP2 time:           0.27
+
+ Task  times  cpu:        0.3s     wall:        0.4s
+ 
+ 
+                                NWChem Input Module
+                                -------------------
+ 
+ 
+                                 NWChem SCF Module
+                                 -----------------
+ 
+ 
+
+  ao basis        = "ao basis"
+  functions       =    55
+  atoms           =     1
+  closed shells   =     5
+  open shells     =     0
+  charge          =   0.00
+  wavefunction    = RHF 
+  input vectors   = ./Ne_scs-mp2_cc-vqz.movecs
+  output vectors  = ./Ne_scs-mp2_cc-vqz.movecs
+  use symmetry    = F
+  symmetry adapt  = F
+
+
+ Summary of "ao basis" -> "ao basis" (spherical)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ Ne                         cc-pvqz                 15       55   5s4p3d2f1g
+
+
+
+  The SCF is already converged 
+
+         Total SCF energy =   -128.543469659094
+
+                               NWChem RI-MP2 Module
+                               --------------------
+
+
+
+ SCF Reference Information:
+            File: './Ne_scs-mp2_cc-vqz.movecs'
+           Title: ''
+    Size (AOxMO):     55 x     55
+       Total Occ:              10.00
+ RI-MP2 Calculation Information:
+          Nr. of AO basis functions:         55
+     Nr. of fitting basis functions:        132
+               Nr. of MO spin cases:          1
+        Nr. of MOs to be correlated:         55
+     Nr. of occupied MOs correlated:          5
+      Nr. of virtual MOs correlated:         50
+ 
+                            SCS-MP2: T
+           Same spin scaling factor:  0.000E+00
+       Opposite spin scaling factor:  0.000E+00
+ 
+          RI integral approximation: 'V'
+    Threshold for Schwarz screening:  1.000E-09
+ Smallest eigenvalue retained in fit  1.000E-08
+     Base file name for MO integrals 'mo3cint'
+    Type of storage for MO integrals 'EAF library'
+ 
+ Transformation block size    5, requiring     1 integral passes.
+ XForm_3cInts: Completed     1:    5 pass.             @Fri Sep 27 01:48:09 2019
+ Energy evaluation using block sizes     5    5
+ RIMP2_V_E2: Approx. ints. done (    1:    5,    1:    5) @Fri Sep 27 01:48:09 2019
+ RIMP2_V_E2: Copy to B done (    1:    5,    1:    5)  @Fri Sep 27 01:48:09 2019
+ RIMP2_V_E2: Denominators done (    1:    5,    1:    5) @Fri Sep 27 01:48:09 2019
+ RIMP2_V_E2: Completed block (    1:    5,    1:    5) @Fri Sep 27 01:48:09 2019
+
+
+          -----------------------------------------------
+          SCF energy                    -128.543469659094
+          SCS Correlation energy           0.000000000000
+          Total SCS-MP2 energy          -128.543469659094
+          -----------------------------------------------
+
+ -----------------------
+ Performance information
+ -----------------------
+
+ Timer overhead =  8.81D-07 seconds/call
+
+               Nr. of calls         CPU time (s)                 Wall time (s)                GFlops
+             ---------------    -------------------     ------------------------------   -------------------
+Name         Min   Avg   Max    Min     Avg     Max     Min     Avg     Max   Mx/calls   Min     Max     Sum
+Overall       1     1     1   0.11    0.21    0.27     0.28    0.28    0.28    0.28      0.0     0.0     0.0   
+3c integr     1     1     1   3.04E-2 7.78E-2 0.11     0.11    0.11    0.11    0.11      0.0     0.0     0.0   
+Energy        1     1     1   3.38E-3 1.60E-2 2.38E-2  2.41E-2 2.41E-2 2.41E-2 2.41E-2   0.0     0.0     0.0   
+3c integr     1     1     1   3.00E-2 3.50E-2 3.87E-2  3.69E-2 6.24E-2 0.10    0.10      0.0     0.0     0.0   
+First 2/3     3     3     3   1.71E-4 2.03E-4 2.29E-4  1.82E-4 4.33E-4 8.97E-4 2.99E-4   0.0     0.0     0.0   
+Final 1/3     1     1     1    0.0    2.30E-3 3.77E-3  3.81E-3 3.82E-3 3.82E-3 3.82E-3   0.0     0.0     0.0   
+Write 3c      1     1     1    0.0    6.50E-5 1.01E-4  9.39E-5 2.25E-4 4.76E-4 4.76E-4   0.0     0.0     0.0   
+Read 3c i     1     1     1    0.0    5.47E-5 8.80E-5  7.58E-5 1.26E-4 2.11E-4 2.11E-4   0.0     0.0     0.0   
+Fitting b     1     1     1   8.97E-3 1.92E-2 2.49E-2  2.56E-2 2.56E-2 2.56E-2 2.56E-2   0.0     0.0     0.0   
+Schwarz i     1     1     1   7.15E-3 1.36E-2 1.69E-2  1.72E-2 1.73E-2 1.74E-2 1.74E-2   0.0     0.0     0.0   
+Form 4ci      1     1     1    0.0    3.44E-3 5.40E-3  5.51E-3 5.51E-3 5.51E-3 5.51E-3   0.0     0.0     0.0   
+Form A &      1     1     1   2.54E-3 9.11E-3 1.34E-2  1.35E-2 1.35E-2 1.36E-2 1.36E-2   0.0     0.0     0.0   
+Denominat     1     1     1   2.40E-5 3.10E-5 4.50E-5  2.41E-5 3.23E-5 4.79E-5 4.79E-5   0.0     0.0     0.0   
+Pair Ener     1     1     1   2.95E-4 3.78E-4 4.89E-4  5.01E-4 5.01E-4 5.02E-4 5.02E-4   0.0     0.0     0.0   
+
+ The average no. of pstat calls per process was 1.60D+01
+ with a timing overhead of 1.41D-05s
+
+
+ Task  times  cpu:        0.1s     wall:        0.3s
+ 
+ 
+                                NWChem Input Module
+                                -------------------
+ 
+ 
+                                 NWChem SCF Module
+                                 -----------------
+ 
+ 
+
+  ao basis        = "ao basis"
+  functions       =    55
+  atoms           =     1
+  closed shells   =     5
+  open shells     =     0
+  charge          =   0.00
+  wavefunction    = RHF 
+  input vectors   = ./Ne_scs-mp2_cc-vqz.movecs
+  output vectors  = ./Ne_scs-mp2_cc-vqz.movecs
+  use symmetry    = F
+  symmetry adapt  = F
+
+
+ Summary of "ao basis" -> "ao basis" (spherical)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ Ne                         cc-pvqz                 15       55   5s4p3d2f1g
+
+
+
+  The SCF is already converged 
+
+         Total SCF energy =   -128.543469659094
+
+                   NWChem MP2 Semi-direct Energy/Gradient Module
+                   ---------------------------------------------
+ 
+ 
+  Basis functions       =     55
+  Molecular orbitals    =     55
+  Frozen core           =      0
+  Frozen virtuals       =      0
+  Active alpha occupied =      5
+  Active beta occupied  =      5
+  Active alpha virtual  =     50
+  Active beta virtual   =     50
+  Use MO symmetry       = F
+  Use skeleton AO sym   = F
+
+  AO/Fock/Back tols     =   1.0D-09  1.0D-09  1.0D-09
+  SCS-MP2               = T
+  #avail    536870912.000000     
+  #avail    536870912.000000     
+  #avail    536870912.000000     
+
+ GA uses MA = F    GA memory limited = T
+
+ Available: 
+  local mem=  5.73D+07
+ global mem=  6.55D+07
+ local disk=  0.00D+00
+  mp2_memr nvloc                     17
+  nvloc new                     17
+   1 passes of   5:        4194304                      22711                    450303.
+   1 passes of   5: M     57341147           G       65533910           F      53146843.
+ 
+ Semi-direct pass number   1 of   1  for RHF alpha+beta  at        5.7s
+  vrange nnbf                   1540
+  mp2_eaftype                     10  avail_ma_in_mb                    499
+ EAF : mp2_eaftype filesize          10     225151.
+  mp2_eaf for mointskh                      10
+Node 0 wrote      1.0 Mb in      0.0 s     Agg I/O rate:  3043.6 Mb/s
+ Done moints_semi at        6.2s
+  mp2_eaftype                     10  avail_ma_in_mb                    489
+ EAF : mp2_eaftype filesize          10     225151.
+  mp2_eaf for kh                     10
+ Done maket at        6.3s
+ Done multipass loop at        6.3s
+
+
+          -------------------------------------------
+          SCF energy                -128.543469659094
+          Correlation energy          -0.326258443642
+          Singlet pairs               -0.205382776546
+          Triplet pairs               -0.120875667096
+          Total MP2 energy          -128.869728102736
+          -------------------------------------------
+
+
+
+          ---------------------------------------------------
+                    Spin Component Scaled (SCS) MP2
+          Same spin pairs                     -0.080583778064
+          Same spin scaling factor             0.000000000000
+          Opposite spin pairs                 -0.245674665578
+          Opposite spin scaling fact.          1.000000000000
+          SCS-MP2 correlation energy          -0.245674665578
+          Total SCS-MP2 energy              -128.789144324672
+          ---------------------------------------------------
+
+ -----------------------
+ Performance information
+ -----------------------
+
+ Timer overhead =  7.09D-07 seconds/call
+
+               Nr. of calls         CPU time (s)                 Wall time (s)                GFlops
+             ---------------    -------------------     ------------------------------   -------------------
+Name         Min   Avg   Max    Min     Avg     Max     Min     Avg     Max   Mx/calls   Min     Max     Sum
+mp2: moin     1     1     1   0.27    0.29    0.31     0.55    0.55    0.55    0.55      0.0     0.0     0.0   
+mp2: make     1     1     1   2.67E-2 2.73E-2 2.79E-2  5.61E-2 5.61E-2 5.61E-2 5.61E-2   0.0     0.0     0.0   
+mp2: tota     1     1     1   0.40    0.53    0.63     0.93    0.93    0.93    0.93      0.0     0.0     0.0   
+
+ The average no. of pstat calls per process was 3.00D+00
+ with a timing overhead of 2.13D-06s
+
+
+ Task  times  cpu:        0.4s     wall:        1.0s
+ 
+ 
+                                NWChem Input Module
+                                -------------------
+ 
+ 
+                                 NWChem SCF Module
+                                 -----------------
+ 
+ 
+
+  ao basis        = "ao basis"
+  functions       =    55
+  atoms           =     1
+  closed shells   =     5
+  open shells     =     0
+  charge          =   0.00
+  wavefunction    = RHF 
+  input vectors   = ./Ne_scs-mp2_cc-vqz.movecs
+  output vectors  = ./Ne_scs-mp2_cc-vqz.movecs
+  use symmetry    = F
+  symmetry adapt  = F
+
+
+ Summary of "ao basis" -> "ao basis" (spherical)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ Ne                         cc-pvqz                 15       55   5s4p3d2f1g
+
+
+
+  The SCF is already converged 
+
+         Total SCF energy =   -128.543469659094
+
+                          Direct MP2
+                          ----------
+          Basis functions:                       55
+          Shells:                                15
+          Block length:                          32
+          Active occupied range:           1 -    5
+          Active virtual range:            6 -   55
+          MO coefficients read from:  ./Ne_scs-mp2_cc-vqz.movec
+          Operator matrices in core:             15
+          AO passes required:                     1
+          Use AO Integral blocking
+          Twofold algorithm used
+
+          SCS-MP2:                                T
+          Same spin scaling factor:         0.00000
+          Opposite spin scaling factor:     1.00000
+
+    0 shell      1 out of     15 in             6.47 secs
+    0 shell      2 out of     15 in             6.53 secs
+    0 shell      3 out of     15 in             6.53 secs
+    0 shell      4 out of     15 in             6.53 secs
+    0 shell      5 out of     15 in             6.56 secs
+    0 shell      6 out of     15 in             6.58 secs
+    0 shell      7 out of     15 in             6.60 secs
+    0 shell      8 out of     15 in             6.60 secs
+    0 shell      9 out of     15 in             6.61 secs
+    0 shell     10 out of     15 in             6.61 secs
+    0 shell     11 out of     15 in             6.63 secs
+    0 shell     12 out of     15 in             6.65 secs
+    0 shell     13 out of     15 in             6.67 secs
+    0 shell     14 out of     15 in             6.69 secs
+    0 shell     15 out of     15 in             6.70 secs
+     Pass:    1     Index range:    1  -    5     Time:      0.22
+
+
+          -----------------------------------------------
+          SCF energy                    -128.543469659094
+          SCS Correlation energy          -0.245674665578
+          Total SCS-MP2 energy          -128.789144324672
+          -----------------------------------------------
+
+
+          Total MP2 time:           0.30
+
+ Task  times  cpu:        0.3s     wall:        0.4s
+ 
+ 
+                                NWChem Input Module
+                                -------------------
+ 
+ 
+                                 NWChem SCF Module
+                                 -----------------
+ 
+ 
+
+  ao basis        = "ao basis"
+  functions       =    55
+  atoms           =     1
+  closed shells   =     5
+  open shells     =     0
+  charge          =   0.00
+  wavefunction    = RHF 
+  input vectors   = ./Ne_scs-mp2_cc-vqz.movecs
+  output vectors  = ./Ne_scs-mp2_cc-vqz.movecs
+  use symmetry    = F
+  symmetry adapt  = F
+
+
+ Summary of "ao basis" -> "ao basis" (spherical)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ Ne                         cc-pvqz                 15       55   5s4p3d2f1g
+
+
+
+  The SCF is already converged 
+
+         Total SCF energy =   -128.543469659094
+
+                               NWChem RI-MP2 Module
+                               --------------------
+
+
+
+ SCF Reference Information:
+            File: './Ne_scs-mp2_cc-vqz.movecs'
+           Title: ''
+    Size (AOxMO):     55 x     55
+       Total Occ:              10.00
+ RI-MP2 Calculation Information:
+          Nr. of AO basis functions:         55
+     Nr. of fitting basis functions:        132
+               Nr. of MO spin cases:          1
+        Nr. of MOs to be correlated:         55
+     Nr. of occupied MOs correlated:          5
+      Nr. of virtual MOs correlated:         50
+ 
+                            SCS-MP2: T
+           Same spin scaling factor:  0.000E+00
+       Opposite spin scaling factor:  1.000E+00
+ 
+          RI integral approximation: 'V'
+    Threshold for Schwarz screening:  1.000E-09
+ Smallest eigenvalue retained in fit  1.000E-08
+     Base file name for MO integrals 'mo3cint'
+    Type of storage for MO integrals 'EAF library'
+ 
+ Transformation block size    5, requiring     1 integral passes.
+ XForm_3cInts: Completed     1:    5 pass.             @Fri Sep 27 01:48:11 2019
+ Energy evaluation using block sizes     5    5
+ RIMP2_V_E2: Approx. ints. done (    1:    5,    1:    5) @Fri Sep 27 01:48:11 2019
+ RIMP2_V_E2: Copy to B done (    1:    5,    1:    5)  @Fri Sep 27 01:48:11 2019
+ RIMP2_V_E2: Denominators done (    1:    5,    1:    5) @Fri Sep 27 01:48:11 2019
+ RIMP2_V_E2: Completed block (    1:    5,    1:    5) @Fri Sep 27 01:48:11 2019
+
+
+          -----------------------------------------------
+          SCF energy                    -128.543469659094
+          SCS Correlation energy          -0.245658742813
+          Total SCS-MP2 energy          -128.789128401907
+          -----------------------------------------------
+
+ -----------------------
+ Performance information
+ -----------------------
+
+ Timer overhead =  4.31D-07 seconds/call
+
+               Nr. of calls         CPU time (s)                 Wall time (s)                GFlops
+             ---------------    -------------------     ------------------------------   -------------------
+Name         Min   Avg   Max    Min     Avg     Max     Min     Avg     Max   Mx/calls   Min     Max     Sum
+Overall       1     1     1   0.12    0.19    0.23     0.24    0.24    0.24    0.24      0.0     0.0     0.0   
+3c integr     1     1     1   3.58E-2 7.44E-2 0.10     0.10    0.10    0.10    0.10      0.0     0.0     0.0   
+Energy        1     1     1   7.52E-3 1.62E-2 2.09E-2  2.13E-2 2.13E-2 2.13E-2 2.13E-2   0.0     0.0     0.0   
+3c integr     1     1     1   3.38E-2 3.70E-2 4.11E-2  3.69E-2 5.69E-2 9.19E-2 9.19E-2   0.0     0.0     0.0   
+First 2/3     3     3     3   1.69E-4 2.08E-4 2.39E-4  1.69E-4 3.44E-4 6.45E-4 2.15E-4   0.0     0.0     0.0   
+Final 1/3     1     1     1   1.16E-3 2.30E-3 3.18E-3  3.21E-3 3.21E-3 3.21E-3 3.21E-3   0.0     0.0     0.0   
+Write 3c      1     1     1   9.40E-5 1.08E-4 1.15E-4  1.03E-4 2.31E-4 4.76E-4 4.76E-4   0.0     0.0     0.0   
+Read 3c i     1     1     1   6.90E-5 8.33E-5 9.10E-5  6.89E-5 1.77E-4 3.74E-4 3.74E-4   0.0     0.0     0.0   
+Fitting b     1     1     1   9.08E-3 1.94E-2 2.51E-2  2.57E-2 2.57E-2 2.57E-2 2.57E-2   0.0     0.0     0.0   
+Schwarz i     1     1     1   7.74E-3 1.23E-2 1.69E-2  1.72E-2 1.73E-2 1.75E-2 1.75E-2   0.0     0.0     0.0   
+Form 4ci      1     1     1   1.87E-3 4.37E-3 5.64E-3  5.65E-3 5.65E-3 5.66E-3 5.66E-3   0.0     0.0     0.0   
+Form A &      1     1     1   4.20E-3 8.25E-3 1.07E-2  1.08E-2 1.08E-2 1.08E-2 1.08E-2   0.0     0.0     0.0   
+Denominat     1     1     1   4.10E-5 4.33E-5 4.80E-5  4.10E-5 8.71E-5 1.72E-4 1.72E-4   0.0     0.0     0.0   
+Pair Ener     1     1     1   2.86E-4 8.49E-4 1.14E-3  1.15E-3 1.15E-3 1.15E-3 1.15E-3   0.0     0.0     0.0   
+
+ The average no. of pstat calls per process was 1.60D+01
+ with a timing overhead of 6.90D-06s
+
+
+ Task  times  cpu:        0.1s     wall:        0.3s
+ 
+ 
+                                NWChem Input Module
+                                -------------------
+ 
+ 
+                                 NWChem SCF Module
+                                 -----------------
+ 
+ 
+
+  ao basis        = "ao basis"
+  functions       =    55
+  atoms           =     1
+  closed shells   =     5
+  open shells     =     0
+  charge          =   0.00
+  wavefunction    = RHF 
+  input vectors   = ./Ne_scs-mp2_cc-vqz.movecs
+  output vectors  = ./Ne_scs-mp2_cc-vqz.movecs
+  use symmetry    = F
+  symmetry adapt  = F
+
+
+ Summary of "ao basis" -> "ao basis" (spherical)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ Ne                         cc-pvqz                 15       55   5s4p3d2f1g
+
+
+
+  The SCF is already converged 
+
+         Total SCF energy =   -128.543469659094
+
+                   NWChem MP2 Semi-direct Energy/Gradient Module
+                   ---------------------------------------------
+ 
+ 
+  Basis functions       =     55
+  Molecular orbitals    =     55
+  Frozen core           =      0
+  Frozen virtuals       =      0
+  Active alpha occupied =      5
+  Active beta occupied  =      5
+  Active alpha virtual  =     50
+  Active beta virtual   =     50
+  Use MO symmetry       = F
+  Use skeleton AO sym   = F
+
+  AO/Fock/Back tols     =   1.0D-09  1.0D-09  1.0D-09
+  SCS-MP2               = T
+  #avail    536870912.000000     
+  #avail    536870912.000000     
+  #avail    536870912.000000     
+
+ GA uses MA = F    GA memory limited = T
+
+ Available: 
+  local mem=  5.73D+07
+ global mem=  6.55D+07
+ local disk=  0.00D+00
+  mp2_memr nvloc                     17
+  nvloc new                     17
+   1 passes of   5:        4194304                      22711                    450303.
+   1 passes of   5: M     57341147           G       65533910           F      53146843.
+ 
+ Semi-direct pass number   1 of   1  for RHF alpha+beta  at        7.3s
+  vrange nnbf                   1540
+  mp2_eaftype                     10  avail_ma_in_mb                    499
+ EAF : mp2_eaftype filesize          10     225151.
+  mp2_eaf for mointskh                      10
+Node 0 wrote      1.0 Mb in      0.0 s     Agg I/O rate:  2960.1 Mb/s
+ Done moints_semi at        7.8s
+  mp2_eaftype                     10  avail_ma_in_mb                    489
+ EAF : mp2_eaftype filesize          10     225151.
+  mp2_eaf for kh                     10
+ Done maket at        7.8s
+ Done multipass loop at        7.8s
+
+
+          -------------------------------------------
+          SCF energy                -128.543469659094
+          Correlation energy          -0.326258443642
+          Singlet pairs               -0.205382776546
+          Triplet pairs               -0.120875667096
+          Total MP2 energy          -128.869728102736
+          -------------------------------------------
+
+
+
+          ---------------------------------------------------
+                    Spin Component Scaled (SCS) MP2
+          Same spin pairs                     -0.080583778064
+          Same spin scaling factor             1.000000000000
+          Opposite spin pairs                 -0.245674665578
+          Opposite spin scaling fact.          0.000000000000
+          SCS-MP2 correlation energy          -0.080583778064
+          Total SCS-MP2 energy              -128.624053437158
+          ---------------------------------------------------
+
+ -----------------------
+ Performance information
+ -----------------------
+
+ Timer overhead =  7.00D-07 seconds/call
+
+               Nr. of calls         CPU time (s)                 Wall time (s)                GFlops
+             ---------------    -------------------     ------------------------------   -------------------
+Name         Min   Avg   Max    Min     Avg     Max     Min     Avg     Max   Mx/calls   Min     Max     Sum
+mp2: moin     1     1     1   0.24    0.28    0.31     0.53    0.53    0.53    0.53      0.0     0.0     0.0   
+mp2: make     1     1     1   1.61E-2 1.88E-2 2.11E-2  4.02E-2 4.02E-2 4.03E-2 4.03E-2   0.0     0.0     0.0   
+mp2: tota     1     1     1   0.35    0.49    0.56     0.85    0.85    0.85    0.85      0.0     0.0     0.0   
+
+ The average no. of pstat calls per process was 3.00D+00
+ with a timing overhead of 2.10D-06s
+
+
+ Task  times  cpu:        0.4s     wall:        0.9s
+ 
+ 
+                                NWChem Input Module
+                                -------------------
+ 
+ 
+                                 NWChem SCF Module
+                                 -----------------
+ 
+ 
+
+  ao basis        = "ao basis"
+  functions       =    55
+  atoms           =     1
+  closed shells   =     5
+  open shells     =     0
+  charge          =   0.00
+  wavefunction    = RHF 
+  input vectors   = ./Ne_scs-mp2_cc-vqz.movecs
+  output vectors  = ./Ne_scs-mp2_cc-vqz.movecs
+  use symmetry    = F
+  symmetry adapt  = F
+
+
+ Summary of "ao basis" -> "ao basis" (spherical)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ Ne                         cc-pvqz                 15       55   5s4p3d2f1g
+
+
+
+  The SCF is already converged 
+
+         Total SCF energy =   -128.543469659094
+
+                          Direct MP2
+                          ----------
+          Basis functions:                       55
+          Shells:                                15
+          Block length:                          32
+          Active occupied range:           1 -    5
+          Active virtual range:            6 -   55
+          MO coefficients read from:  ./Ne_scs-mp2_cc-vqz.movec
+          Operator matrices in core:             15
+          AO passes required:                     1
+          Use AO Integral blocking
+          Twofold algorithm used
+
+          SCS-MP2:                                T
+          Same spin scaling factor:         1.00000
+          Opposite spin scaling factor:     0.00000
+
+    0 shell      1 out of     15 in             7.96 secs
+    0 shell      2 out of     15 in             7.96 secs
+    0 shell      3 out of     15 in             7.99 secs
+    0 shell      4 out of     15 in             8.03 secs
+    0 shell      5 out of     15 in             8.05 secs
+    0 shell      6 out of     15 in             8.08 secs
+    0 shell      7 out of     15 in             8.14 secs
+    0 shell      8 out of     15 in             8.14 secs
+    0 shell      9 out of     15 in             8.15 secs
+    0 shell     10 out of     15 in             8.15 secs
+    0 shell     11 out of     15 in             8.20 secs
+    0 shell     12 out of     15 in             8.24 secs
+    0 shell     13 out of     15 in             8.28 secs
+    0 shell     14 out of     15 in             8.30 secs
+    0 shell     15 out of     15 in             8.31 secs
+     Pass:    1     Index range:    1  -    5     Time:      0.27
+
+
+          -----------------------------------------------
+          SCF energy                    -128.543469659094
+          SCS Correlation energy          -0.080583778064
+          Total SCS-MP2 energy          -128.624053437158
+          -----------------------------------------------
+
+
+          Total MP2 time:           0.31
+
+ Task  times  cpu:        0.3s     wall:        0.5s
+ 
+ 
+                                NWChem Input Module
+                                -------------------
+ 
+ 
+                                 NWChem SCF Module
+                                 -----------------
+ 
+ 
+
+  ao basis        = "ao basis"
+  functions       =    55
+  atoms           =     1
+  closed shells   =     5
+  open shells     =     0
+  charge          =   0.00
+  wavefunction    = RHF 
+  input vectors   = ./Ne_scs-mp2_cc-vqz.movecs
+  output vectors  = ./Ne_scs-mp2_cc-vqz.movecs
+  use symmetry    = F
+  symmetry adapt  = F
+
+
+ Summary of "ao basis" -> "ao basis" (spherical)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ Ne                         cc-pvqz                 15       55   5s4p3d2f1g
+
+
+
+  The SCF is already converged 
+
+         Total SCF energy =   -128.543469659094
+
+                               NWChem RI-MP2 Module
+                               --------------------
+
+
+
+ SCF Reference Information:
+            File: './Ne_scs-mp2_cc-vqz.movecs'
+           Title: ''
+    Size (AOxMO):     55 x     55
+       Total Occ:              10.00
+ RI-MP2 Calculation Information:
+          Nr. of AO basis functions:         55
+     Nr. of fitting basis functions:        132
+               Nr. of MO spin cases:          1
+        Nr. of MOs to be correlated:         55
+     Nr. of occupied MOs correlated:          5
+      Nr. of virtual MOs correlated:         50
+ 
+                            SCS-MP2: T
+           Same spin scaling factor:  1.000E+00
+       Opposite spin scaling factor:  0.000E+00
+ 
+          RI integral approximation: 'V'
+    Threshold for Schwarz screening:  1.000E-09
+ Smallest eigenvalue retained in fit  1.000E-08
+     Base file name for MO integrals 'mo3cint'
+    Type of storage for MO integrals 'EAF library'
+ 
+ Transformation block size    5, requiring     1 integral passes.
+ XForm_3cInts: Completed     1:    5 pass.             @Fri Sep 27 01:48:12 2019
+ Energy evaluation using block sizes     5    5
+ RIMP2_V_E2: Approx. ints. done (    1:    5,    1:    5) @Fri Sep 27 01:48:12 2019
+ RIMP2_V_E2: Copy to B done (    1:    5,    1:    5)  @Fri Sep 27 01:48:12 2019
+ RIMP2_V_E2: Denominators done (    1:    5,    1:    5) @Fri Sep 27 01:48:12 2019
+ RIMP2_V_E2: Completed block (    1:    5,    1:    5) @Fri Sep 27 01:48:12 2019
+
+
+          -----------------------------------------------
+          SCF energy                    -128.543469659094
+          SCS Correlation energy          -0.080591086156
+          Total SCS-MP2 energy          -128.624060745251
+          -----------------------------------------------
+
+ -----------------------
+ Performance information
+ -----------------------
+
+ Timer overhead =  4.14D-07 seconds/call
+
+               Nr. of calls         CPU time (s)                 Wall time (s)                GFlops
+             ---------------    -------------------     ------------------------------   -------------------
+Name         Min   Avg   Max    Min     Avg     Max     Min     Avg     Max   Mx/calls   Min     Max     Sum
+Overall       1     1     1   0.13    0.14    0.14     0.15    0.15    0.15    0.15      0.0     0.0     0.0   
+3c integr     1     1     1   3.97E-2 4.23E-2 4.50E-2  4.51E-2 4.51E-2 4.52E-2 4.52E-2   0.0     0.0     0.0   
+Energy        1     1     1   4.60E-3 7.26E-3 1.02E-2  1.13E-2 1.13E-2 1.13E-2 1.13E-2   0.0     0.0     0.0   
+3c integr     1     1     1   3.20E-2 3.67E-2 4.10E-2  3.31E-2 3.75E-2 4.25E-2 4.25E-2   0.0     0.0     0.0   
+First 2/3     3     3     3   1.58E-4 1.82E-4 2.08E-4  1.58E-4 1.86E-4 2.08E-4 6.92E-5   0.0     0.0     0.0   
+Final 1/3     1     1     1   2.72E-4 9.82E-4 1.37E-3  1.37E-3 1.37E-3 1.37E-3 1.37E-3   0.0     0.0     0.0   
+Write 3c      1     1     1   1.01E-4 1.14E-4 1.24E-4  1.00E-4 1.15E-4 1.23E-4 1.23E-4   0.0     0.0     0.0   
+Read 3c i     1     1     1    0.0    3.03E-5 9.10E-5  7.20E-5 8.10E-5 9.20E-5 9.20E-5   0.0     0.0     0.0   
+Fitting b     1     1     1   3.13E-3 7.34E-3 9.82E-3  9.82E-3 9.82E-3 9.82E-3 9.82E-3   0.0     0.0     0.0   
+Schwarz i     1     1     1   1.43E-2 1.56E-2 1.63E-2  1.62E-2 1.63E-2 1.64E-2 1.64E-2   0.0     0.0     0.0   
+Form 4ci      1     1     1    0.0    5.28E-4 1.43E-3  2.03E-3 2.03E-3 2.03E-3 2.03E-3   0.0     0.0     0.0   
+Form A &      1     1     1   3.46E-3 5.67E-3 7.19E-3  7.69E-3 7.69E-3 7.69E-3 7.69E-3   0.0     0.0     0.0   
+Denominat     1     1     1   3.90E-5 4.43E-5 5.50E-5  4.01E-5 4.54E-5 5.51E-5 5.51E-5   0.0     0.0     0.0   
+Pair Ener     1     1     1   2.50E-4 2.54E-4 2.59E-4  2.67E-4 2.67E-4 2.67E-4 2.67E-4   0.0     0.0     0.0   
+
+ The average no. of pstat calls per process was 1.60D+01
+ with a timing overhead of 6.62D-06s
+
+
+ Task  times  cpu:        0.1s     wall:        0.2s
+ 
+ 
+                                NWChem Input Module
+                                -------------------
+ 
+ 
+                                 NWChem SCF Module
+                                 -----------------
+ 
+ 
+
+  ao basis        = "ao basis"
+  functions       =    55
+  atoms           =     1
+  closed shells   =     5
+  open shells     =     0
+  charge          =   0.00
+  wavefunction    = RHF 
+  input vectors   = ./Ne_scs-mp2_cc-vqz.movecs
+  output vectors  = ./Ne_scs-mp2_cc-vqz.movecs
+  use symmetry    = F
+  symmetry adapt  = F
+
+
+ Summary of "ao basis" -> "ao basis" (spherical)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ Ne                         cc-pvqz                 15       55   5s4p3d2f1g
+
+
+
+  The SCF is already converged 
+
+         Total SCF energy =   -128.543469659094
+
+                   NWChem MP2 Semi-direct Energy/Gradient Module
+                   ---------------------------------------------
+ 
+ 
+  Basis functions       =     55
+  Molecular orbitals    =     55
+  Frozen core           =      0
+  Frozen virtuals       =      0
+  Active alpha occupied =      5
+  Active beta occupied  =      5
+  Active alpha virtual  =     50
+  Active beta virtual   =     50
+  Use MO symmetry       = F
+  Use skeleton AO sym   = F
+
+  AO/Fock/Back tols     =   1.0D-09  1.0D-09  1.0D-09
+  SCS-MP2               = T
+  #avail    536870912.000000     
+  #avail    536870912.000000     
+  #avail    536870912.000000     
+
+ GA uses MA = F    GA memory limited = T
+
+ Available: 
+  local mem=  5.73D+07
+ global mem=  6.55D+07
+ local disk=  0.00D+00
+  mp2_memr nvloc                     17
+  nvloc new                     17
+   1 passes of   5:        4194304                      22711                    450303.
+   1 passes of   5: M     57341147           G       65533910           F      53146843.
+ 
+ Semi-direct pass number   1 of   1  for RHF alpha+beta  at        8.7s
+  vrange nnbf                   1540
+  mp2_eaftype                     10  avail_ma_in_mb                    499
+ EAF : mp2_eaftype filesize          10     225151.
+  mp2_eaf for mointskh                      10
+Node 0 wrote      1.0 Mb in      0.0 s     Agg I/O rate:  2676.5 Mb/s
+ Done moints_semi at        9.1s
+  mp2_eaftype                     10  avail_ma_in_mb                    489
+ EAF : mp2_eaftype filesize          10     225151.
+  mp2_eaf for kh                     10
+ Done maket at        9.2s
+ Done multipass loop at        9.2s
+
+
+          -------------------------------------------
+          SCF energy                -128.543469659094
+          Correlation energy          -0.326258443642
+          Singlet pairs               -0.205382776546
+          Triplet pairs               -0.120875667096
+          Total MP2 energy          -128.869728102736
+          -------------------------------------------
+
+
+
+          ---------------------------------------------------
+                    Spin Component Scaled (SCS) MP2
+          Same spin pairs                     -0.080583778064
+          Same spin scaling factor          1000.000000000000
+          Opposite spin pairs                 -0.245674665578
+          Opposite spin scaling fact.       1000.000000000000
+          SCS-MP2 correlation energy        -326.258443641632
+          Total SCS-MP2 energy              -454.801913300726
+          ---------------------------------------------------
+
+ -----------------------
+ Performance information
+ -----------------------
+
+ Timer overhead =  3.73D-07 seconds/call
+
+               Nr. of calls         CPU time (s)                 Wall time (s)                GFlops
+             ---------------    -------------------     ------------------------------   -------------------
+Name         Min   Avg   Max    Min     Avg     Max     Min     Avg     Max   Mx/calls   Min     Max     Sum
+mp2: moin     1     1     1   0.20    0.29    0.33     0.37    0.37    0.37    0.37      0.0     0.0     0.0   
+mp2: make     1     1     1   9.91E-3 1.95E-2 3.70E-2  3.69E-2 3.70E-2 3.70E-2 3.70E-2   0.0     0.0     0.0   
+mp2: tota     1     1     1   0.29    0.49    0.60     0.67    0.67    0.67    0.67      0.0     0.0     0.0   
+
+ The average no. of pstat calls per process was 3.00D+00
+ with a timing overhead of 1.12D-06s
+
+
+ Task  times  cpu:        0.3s     wall:        0.7s
+ 
+ 
+                                NWChem Input Module
+                                -------------------
+ 
+ 
+                                 NWChem SCF Module
+                                 -----------------
+ 
+ 
+
+  ao basis        = "ao basis"
+  functions       =    55
+  atoms           =     1
+  closed shells   =     5
+  open shells     =     0
+  charge          =   0.00
+  wavefunction    = RHF 
+  input vectors   = ./Ne_scs-mp2_cc-vqz.movecs
+  output vectors  = ./Ne_scs-mp2_cc-vqz.movecs
+  use symmetry    = F
+  symmetry adapt  = F
+
+
+ Summary of "ao basis" -> "ao basis" (spherical)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ Ne                         cc-pvqz                 15       55   5s4p3d2f1g
+
+
+
+  The SCF is already converged 
+
+         Total SCF energy =   -128.543469659094
+
+                          Direct MP2
+                          ----------
+          Basis functions:                       55
+          Shells:                                15
+          Block length:                          32
+          Active occupied range:           1 -    5
+          Active virtual range:            6 -   55
+          MO coefficients read from:  ./Ne_scs-mp2_cc-vqz.movec
+          Operator matrices in core:             15
+          AO passes required:                     1
+          Use AO Integral blocking
+          Twofold algorithm used
+
+          SCS-MP2:                                T
+          Same spin scaling factor:      1000.00000
+          Opposite spin scaling factor:  1000.00000
+
+    0 shell      1 out of     15 in             9.35 secs
+    0 shell      2 out of     15 in             9.35 secs
+    0 shell      3 out of     15 in             9.39 secs
+    0 shell      4 out of     15 in             9.41 secs
+    0 shell      5 out of     15 in             9.44 secs
+    0 shell      6 out of     15 in             9.48 secs
+    0 shell      7 out of     15 in             9.54 secs
+    0 shell      8 out of     15 in             9.55 secs
+    0 shell      9 out of     15 in             9.55 secs
+    0 shell     10 out of     15 in             9.56 secs
+    0 shell     11 out of     15 in             9.60 secs
+    0 shell     12 out of     15 in             9.63 secs
+    0 shell     13 out of     15 in             9.66 secs
+    0 shell     14 out of     15 in             9.67 secs
+    0 shell     15 out of     15 in             9.69 secs
+     Pass:    1     Index range:    1  -    5     Time:      0.24
+
+
+          -----------------------------------------------
+          SCF energy                    -128.543469659094
+          SCS Correlation energy        -326.258443641632
+          Total SCS-MP2 energy          -454.801913300726
+          -----------------------------------------------
+
+
+          Total MP2 time:           0.31
+
+ Task  times  cpu:        0.3s     wall:        0.6s
+ 
+ 
+                                NWChem Input Module
+                                -------------------
+ 
+ 
+                                 NWChem SCF Module
+                                 -----------------
+ 
+ 
+
+  ao basis        = "ao basis"
+  functions       =    55
+  atoms           =     1
+  closed shells   =     5
+  open shells     =     0
+  charge          =   0.00
+  wavefunction    = RHF 
+  input vectors   = ./Ne_scs-mp2_cc-vqz.movecs
+  output vectors  = ./Ne_scs-mp2_cc-vqz.movecs
+  use symmetry    = F
+  symmetry adapt  = F
+
+
+ Summary of "ao basis" -> "ao basis" (spherical)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ Ne                         cc-pvqz                 15       55   5s4p3d2f1g
+
+
+
+  The SCF is already converged 
+
+         Total SCF energy =   -128.543469659094
+
+                               NWChem RI-MP2 Module
+                               --------------------
+
+
+
+ SCF Reference Information:
+            File: './Ne_scs-mp2_cc-vqz.movecs'
+           Title: ''
+    Size (AOxMO):     55 x     55
+       Total Occ:              10.00
+ RI-MP2 Calculation Information:
+          Nr. of AO basis functions:         55
+     Nr. of fitting basis functions:        132
+               Nr. of MO spin cases:          1
+        Nr. of MOs to be correlated:         55
+     Nr. of occupied MOs correlated:          5
+      Nr. of virtual MOs correlated:         50
+ 
+                            SCS-MP2: T
+           Same spin scaling factor:  1.000E+03
+       Opposite spin scaling factor:  1.000E+03
+ 
+          RI integral approximation: 'V'
+    Threshold for Schwarz screening:  1.000E-09
+ Smallest eigenvalue retained in fit  1.000E-08
+     Base file name for MO integrals 'mo3cint'
+    Type of storage for MO integrals 'EAF library'
+ 
+ Transformation block size    5, requiring     1 integral passes.
+ XForm_3cInts: Completed     1:    5 pass.             @Fri Sep 27 01:48:14 2019
+ Energy evaluation using block sizes     5    5
+ RIMP2_V_E2: Approx. ints. done (    1:    5,    1:    5) @Fri Sep 27 01:48:14 2019
+ RIMP2_V_E2: Copy to B done (    1:    5,    1:    5)  @Fri Sep 27 01:48:14 2019
+ RIMP2_V_E2: Denominators done (    1:    5,    1:    5) @Fri Sep 27 01:48:14 2019
+ RIMP2_V_E2: Completed block (    1:    5,    1:    5) @Fri Sep 27 01:48:14 2019
+
+
+          -----------------------------------------------
+          SCF energy                    -128.543469659094
+          SCS Correlation energy        -326.249828969500
+          Total SCS-MP2 energy          -454.793298628595
+          -----------------------------------------------
+
+ -----------------------
+ Performance information
+ -----------------------
+
+ Timer overhead =  8.28D-07 seconds/call
+
+               Nr. of calls         CPU time (s)                 Wall time (s)                GFlops
+             ---------------    -------------------     ------------------------------   -------------------
+Name         Min   Avg   Max    Min     Avg     Max     Min     Avg     Max   Mx/calls   Min     Max     Sum
+Overall       1     1     1   0.15    0.17    0.19     0.23    0.23    0.23    0.23      0.0     0.0     0.0   
+3c integr     1     1     1   3.74E-2 5.20E-2 5.98E-2  6.00E-2 6.00E-2 6.00E-2 6.00E-2   0.0     0.0     0.0   
+Energy        1     1     1   9.55E-3 1.13E-2 1.22E-2  1.24E-2 1.24E-2 1.24E-2 1.24E-2   0.0     0.0     0.0   
+3c integr     1     1     1   2.96E-2 3.42E-2 3.71E-2  2.97E-2 4.19E-2 5.79E-2 5.79E-2   0.0     0.0     0.0   
+First 2/3     3     3     3   1.59E-4 1.82E-4 1.95E-4  1.59E-4 1.85E-4 2.05E-4 6.83E-5   0.0     0.0     0.0   
+Final 1/3     1     1     1   8.37E-4 1.02E-3 1.10E-3  1.10E-3 1.15E-3 1.24E-3 1.24E-3   0.0     0.0     0.0   
+Write 3c      1     1     1   9.50E-5 1.03E-4 1.13E-4  9.49E-5 1.04E-4 1.13E-4 1.13E-4   0.0     0.0     0.0   
+Read 3c i     1     1     1   6.80E-5 7.70E-5 8.40E-5  6.79E-5 7.84E-5 8.82E-5 8.82E-5   0.0     0.0     0.0   
+Fitting b     1     1     1   6.96E-3 9.07E-3 1.11E-2  1.12E-2 1.12E-2 1.12E-2 1.12E-2   0.0     0.0     0.0   
+Schwarz i     1     1     1   1.06E-2 1.43E-2 1.62E-2  1.62E-2 1.63E-2 1.63E-2 1.63E-2   0.0     0.0     0.0   
+Form 4ci      1     1     1   1.46E-3 1.73E-3 1.97E-3  1.97E-3 1.97E-3 1.97E-3 1.97E-3   0.0     0.0     0.0   
+Form A &      1     1     1   6.52E-3 7.78E-3 8.41E-3  8.42E-3 8.42E-3 8.43E-3 8.43E-3   0.0     0.0     0.0   
+Denominat     1     1     1   3.90E-5 4.43E-5 5.40E-5  3.98E-5 4.55E-5 5.70E-5 5.70E-5   0.0     0.0     0.0   
+Pair Ener     1     1     1   2.94E-4 3.99E-4 4.57E-4  4.59E-4 4.59E-4 4.60E-4 4.60E-4   0.0     0.0     0.0   
+
+ The average no. of pstat calls per process was 1.60D+01
+ with a timing overhead of 1.32D-05s
+
+
+ Task  times  cpu:        0.2s     wall:        0.2s
+ 
+ 
+                                NWChem Input Module
+                                -------------------
+ 
+ 
+ Summary of allocated global arrays
+-----------------------------------
+  No active global arrays
+
+
+
+                         GA Statistics for process    0
+                         ------------------------------
+
+       create   destroy   get      put      acc     scatter   gather  read&inc
+calls:  309      309     5.25e+04 4166     3.61e+04   18        0      854     
+number of processes/call -7.66e+13 3.36e+14 2.39e+13 0.00e+00 0.00e+00
+bytes total:             1.35e+07 2.31e+07 1.86e+07 9.25e+03 0.00e+00 6.83e+03
+bytes remote:            5.93e+06 1.06e+07 1.16e+07 -4.35e+03 0.00e+00 0.00e+00
+Max memory consumed for GA by this process: 4090528 bytes
+ 
+MA_summarize_allocated_blocks: starting scan ...
+MA_summarize_allocated_blocks: scan completed: 0 heap blocks, 0 stack blocks
+MA usage statistics:
+
+	allocation statistics:
+					      heap	     stack
+					      ----	     -----
+	current number of blocks	         0	         0
+	maximum number of blocks	        23	        22
+	current total bytes		         0	         0
+	maximum total bytes		  10506016	  49076920
+	maximum total K-bytes		     10507	     49077
+	maximum total M-bytes		        11	        50
+ 
+ 
+                                     CITATION
+                                     --------
+                Please cite the following reference when publishing
+                           results obtained with NWChem:
+ 
+                 M. Valiev, E.J. Bylaska, N. Govind, K. Kowalski,
+              T.P. Straatsma, H.J.J. van Dam, D. Wang, J. Nieplocha,
+                        E. Apra, T.L. Windus, W.A. de Jong
+                 "NWChem: a comprehensive and scalable open-source
+                  solution for large scale molecular simulations"
+                      Comput. Phys. Commun. 181, 1477 (2010)
+                           doi:10.1016/j.cpc.2010.04.018
+ 
+                                      AUTHORS
+                                      -------
+          E. Apra, E. J. Bylaska, W. A. de Jong, N. Govind, K. Kowalski,
+       T. P. Straatsma, M. Valiev, H. J. J. van Dam, D. Wang, T. L. Windus,
+        J. Hammond, J. Autschbach, K. Bhaskaran-Nair, J. Brabec, K. Lopata,
+    S. A. Fischer, S. Krishnamoorthy, M. Jacquelin, W. Ma, M. Klemm, O. Villa,
+      Y. Chen, V. Anisimov, F. Aquino, S. Hirata, M. T. Hackler, V. Konjkov,
+            D. Mejia-Rodriguez, T. Risthaus, M. Malagoli, A. Marenich,
+   A. Otero-de-la-Roza, J. Mullin, P. Nichols, R. Peverati, J. Pittner, Y. Zhao,
+        P.-D. Fan, A. Fonari, M. J. Williamson, R. J. Harrison, J. R. Rehr,
+      M. Dupuis, D. Silverstein, D. M. A. Smith, J. Nieplocha, V. Tipparaju,
+    M. Krishnan, B. E. Van Kuiken, A. Vazquez-Mayagoitia, L. Jensen, M. Swart,
+      Q. Wu, T. Van Voorhis, A. A. Auer, M. Nooijen, L. D. Crosby, E. Brown,
+      G. Cisneros, G. I. Fann, H. Fruchtl, J. Garza, K. Hirao, R. A. Kendall,
+      J. A. Nichols, K. Tsemekhman, K. Wolinski, J. Anchell, D. E. Bernholdt,
+      P. Borowski, T. Clark, D. Clerc, H. Dachsel, M. J. O. Deegan, K. Dyall,
+    D. Elwood, E. Glendening, M. Gutowski, A. C. Hess, J. Jaffe, B. G. Johnson,
+     J. Ju, R. Kobayashi, R. Kutteh, Z. Lin, R. Littlefield, X. Long, B. Meng,
+      T. Nakajima, S. Niu, L. Pollack, M. Rosing, K. Glaesemann, G. Sandrone,
+      M. Stave, H. Taylor, G. Thomas, J. H. van Lenthe, A. T. Wong, Z. Zhang.
+
+ Total times  cpu:        5.9s     wall:       10.0s

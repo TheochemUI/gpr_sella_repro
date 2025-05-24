@@ -1,0 +1,7 @@
+*
+* $Id$
+*
+      integer maxsize,ispin,nbasis
+      common / lcao_diis / maxsize,ispin,nbasis
+
+

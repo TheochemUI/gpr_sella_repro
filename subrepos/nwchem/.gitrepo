@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:HaoZeke/nwchem
+	branch = gprd_sella
+	commit = a5da3618c022943f28134444069a1526f3be8d2f
+	parent = 3c216ba038c1d9ed715b521c06654f5eb95bd549
+	method = merge
+	cmdver = 0.4.9

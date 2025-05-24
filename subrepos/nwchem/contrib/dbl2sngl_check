@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# script that checks the dbl_to_sngl then sngl_to_dbl name
+# conversion.  Any file that does not conform to the 
+# all lower case conversion will be flagged as modified 
+# on the second update_look
+# 
+echo " dbl2sngl_check @ `hostname` `date`"
+cd
+if [ -z "$NWCHEM_TOP" ]; then
+   echo " NWCHEM_TOP not set "
+   exit 1
+fi
+cd $NWCHEM_TOP/src
+make directories
+make nwchem_config NWCHEM_MODULES="all"
+ startdate=`date`
+#
+$NWCHEM_TOP/contrib/update_look
+/usr/bin/time make dbl_to_sngl
+/usr/bin/time make sngl_to_dbl
+$NWCHEM_TOP/contrib/update_look
+#
+set finaldate = (`date`)
+echo "start: $startdate    finished: $finaldate"

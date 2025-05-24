@@ -1,0 +1,9 @@
+c
+c     $Id$
+c
+      integer max_list
+      parameter (max_list=40)
+      real*8  c(max_list),d(max_list),B(max_list,max_list)
+      integer npack1,neall,nsize,max_m,m
+      common / nwpw_diis_block / B,c,d,npack1,neall,nsize,max_m,m
+

@@ -1,0 +1,9 @@
+*
+* $Id$
+*
+      integer well_separated
+      parameter (well_separated = 2)
+c
+      integer leveloff(0:9)
+      common /csigh/leveloff
+

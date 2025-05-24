@@ -1,0 +1,7 @@
+*
+* $Id$
+*
+      integer dnerror(2),maxsize
+      common / lcao_diis / dnerror,maxsize
+
+

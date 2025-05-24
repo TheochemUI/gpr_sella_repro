@@ -1,0 +1,9 @@
+*
+*     $Id$
+*
+      real*8 rho(40)
+      integer ispin,ne(2),npack1,neall,nbrill
+      integer nsize,max_m,m
+      common / c_lmbfgs_common / rho,ne,ispin,npack1,neall,nbrill,
+     >                           nsize,max_m,m
+

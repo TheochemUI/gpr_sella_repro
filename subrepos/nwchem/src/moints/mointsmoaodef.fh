@@ -1,0 +1,10 @@
+*
+* $Id$
+*
+      integer MOINTS_IOBUFLEN
+      integer MOINTS_NBLKINFO
+      parameter(MOINTS_IOBUFLEN=8192)
+      parameter(MOINTS_NBLKINFO=15)
+c
+
+

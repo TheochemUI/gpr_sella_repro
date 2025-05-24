@@ -1,0 +1,201 @@
+%
+% $Id$
+%
+\label{sec:mcscf}
+
+The NWChem multiconfiguration SCF (MCSCF) module can currently perform
+complete active space SCF (CASSCF) calculations with at most 20 active
+orbitals and about 500 basis functions.  It is planned to extend it to 
+handle 1000+ basis functions.
+
+\begin{verbatim}
+  MCSCF
+    STATE <string state>
+    ACTIVE <integer nactive>
+    ACTELEC <integer nactelec>
+    MULTIPLICITY <integer multiplicity>
+    [SYMMETRY <integer symmetry default 1>]
+    [VECTORS [[input] <string input_file default $file_prefix$.movecs>] 
+           [swap <integer vec1 vec2> ...] \
+           [output <string output_file default input_file>] \
+           [lock]
+    [HESSIAN (exact||onel)]
+    [MAXITER <integer maxiter default 20>]
+    [THRESH  <real thresh default 1.0e-4>]
+    [TOL2E <real tol2e default 1.0e-9>]
+    [LEVEL <real shift default 0.1d0>]
+  END
+\end{verbatim}
+Note that the \verb+ACTIVE+, \verb+ACTELEC+, and \verb+MULTIPLICITY+
+directives are {\em required}.  The symmetry and multiplicity may
+alternatively be entered using the \verb+STATE+ directive.
+
+\section{{\tt ACTIVE} --- Number of active orbitals}
+
+The number of orbitals in the CASSCF active space must be specified
+using the {\tt ACTIVE} directive.
+
+E.g.,
+\begin{verbatim}
+  active 10
+\end{verbatim}
+
+The input molecular orbitals (see the vectors directive, Sections
+\ref{sec:mcscfvectors} and \ref{sec:vectors}) must be arranged in
+order
+\begin{enumerate}
+\item doubly occupied orbitals,
+\item active orbitals, and
+\item unoccupied orbitals.
+\end{enumerate}
+
+\section{{\tt ACTELEC} --- Number of active electrons}
+
+The number of electrons in the CASSCF active space must be specified
+using the the {\tt ACTELEC} directive.  An error is reported if the
+number of active electrons and the multiplicity are inconsistent.
+
+The number of closed shells is determined by subtracting the number
+of active electrons from the total number of electrons (which in turn
+is derived from the sum of the nuclear charges minus the total system
+charge).
+
+\section{{\tt MULTIPLICITY}}
+
+The spin multiplicity must be specified and is enforced by projection
+of the determinant wavefunction.
+
+E.g., to obtain a triplet state
+\begin{verbatim}
+  multiplicity 3
+\end{verbatim}
+
+\section{{\tt SYMMETRY} --- Spatial symmetry of the wavefunction}
+
+This species the irreducible representation of the wavefunction as an
+integer in the range 1---8 using the same numbering of representations
+as output by the SCF program.  Note that only Abelian point groups are
+supported.
+
+E.g., to specify a $B_1$ state when using the $C_{2v}$ group
+\begin{verbatim}
+  symmetry 3
+\end{verbatim}
+
+\section{{\tt STATE} --- Symmetry and multiplicity}
+
+The electronic state (spatial symmetry and multiplicity) may
+alternatively be specified using the conventional notation for an
+electronic state, such as $^3B_2$ for a triplet state of $B_2$
+symmetry.  This would be accomplished with the input
+\begin{verbatim}
+  state 3b2
+\end{verbatim}
+which is equivalent to 
+\begin{verbatim}
+  symmetry 4
+  multiplicity 3
+\end{verbatim}
+
+\section{{\tt VECTORS} --- Input/output of MO vectors}
+\label{sec:mcscfvectors}
+
+Calculations are best started from RHF/ROHF molecular orbitals (see
+Section \ref{sec:scf}), and by default vectors are taken from the
+previous MCSCF or SCF calculation.  To specify another input file use
+the \verb+VECTORS+ directive.  Vectors are by default output to the
+input file, and may be redirected using the \verb+output+ keyword.
+The \verb+swap+ keyword of the \verb+VECTORS+ directive may be
+used to reorder orbitals to obtain the correct active space.
+See Section \ref{sec:vectors} for an example.
+
+The \verb+LOCK+ keyword allows the user to specify that the ordering
+of orbitals will be locked to that of the initial vectors, insofar as
+possible. The default is to order by ascending orbital energies within
+each orbital space. One application where locking might be desirable
+is a calculation where it is necessary to preserve the ordering of a
+previous geometry, despite flipping of the orbital energies.  For such
+a case, the \verb+LOCK+ directive can be used to prevent the SCF
+calculation from changing the ordering, even if the orbital energies
+change.
+
+Output orbitals of a converged MCSCF calculation are canonicalized as
+follows:
+\begin{itemize}
+\item Doubly occupied and unoccupied orbitals diagonalize the
+  corresponding blocks of an effective Fock operator.  Note that in
+  the case of degenerate orbital energies this does not fully
+  determine the orbtials.
+\item Active-space orbitals are chosen as natural orbitals by
+  diagonalization of the active space 1-particle density matrix.
+  Note that in the case of degenerate occupations that this
+  does not fully determine the orbitals.
+\end{itemize}
+
+\section{{\tt HESSIAN} --- Select preconditioner}
+\label{sec:mcscfhessian}
+
+The MCSCF will use a one-electron approximation to the orbital-orbital
+Hessian until some degree of convergence is obtained, whereupon it
+will attempt to use the exact orbital-orbital Hessian which makes the
+micro iterations more expensive but potentially reduces the total
+number of macro iterations.  Either choice may be forced throughout
+the calculation by specifying the appropriate keyword on the
+\verb+HESSIAN+ directive.
+
+E.g., to specify the one-electron approximation throughout
+\begin{verbatim}
+  hessian onel
+\end{verbatim}
+
+\section{{\tt LEVEL} --- Level shift for convergence}
+
+The Hessian (Section \ref{sec:mcscfhessian}) used in the MCSCF
+optimization is by default level shifted by 0.1 until the orbital
+gradient norm falls below 0.01, at which point the level shift is
+reduced to zero.  The initial value of $0.1$ may be changed using
+the \verb+LEVEL+ directive.  Increasing the level shift may make
+convergence more stable in some instances.
+
+E.g., to set the initial level shift to 0.5
+\begin{verbatim}
+  level 0.5
+\end{verbatim}
+
+\section{{\tt PRINT} and {\tt NOPRINT}}
+
+Specific output items can be selectively enabled or disabled using the
+\verb+print+ control mechanism~(\ref{sec:printcontrol}) with the
+available print options listed in table(\ref{MCSCF_print_options}).
+
+\begin{table}[htb]
+
+\label{MCSCF_print_options}
+
+\center
+
+\vspace{.2in}
+\begin{tabular}{lrl}
+\hline\hline
+Option                          & Class    &  Synopsis \\
+\hline
+\verb+ci energy+                & default  &  CI energy eigenvalue \\
+\verb+fock energy+              & default  &  Energy derived from Fock matrices \\
+\verb+gradient norm+            & default  &  Gradient norm \\
+\verb+movecs+                   & default  &  Converged occupied MO vectors \\
+\verb+trace energy+             & high     &  Trace Energy \\
+\verb+converge info+            & high     &  Convergence data and monitoring \\
+\verb+precondition+             & high     &  Orbital preconditioner iterations \\
+\verb+microci+                  & high     &  CI iterations in line search \\
+\verb+canonical+                & high     &  Canonicalization information \\
+\verb+new movecs+               & debug    &  MO vectors at each macro-iteration \\
+\verb+ci guess+                 & debug    &  Initial guess CI vector \\
+\verb+density matrix+           & debug    &  One- and Two-particle density matrices \\
+\hline\hline
+\end{tabular}
+
+\caption{MCSCF Print Options}
+
+\end{table}
+
+

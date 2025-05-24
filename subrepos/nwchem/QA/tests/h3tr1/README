@@ -1,0 +1,4 @@
+$Id$
+This tests the DIRDYVTST capability.  It is not part of the doqmtests because
+nwparse.pl does not parse anything from the output file.  When the proper
+testing mechanisms are in place, this will be part of the automatic test suite.

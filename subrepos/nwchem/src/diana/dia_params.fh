@@ -1,0 +1,9 @@
+c
+c $Id$
+c
+      real*8 zero,half,one,two,three
+      parameter(zero=0.0d0)
+      parameter(half=5.0d-1)
+      parameter(one=1.0d0)
+      parameter(two=2.0d0)
+      parameter(three=3.0d0)

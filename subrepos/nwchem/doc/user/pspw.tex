@@ -1,0 +1,2967 @@
+%
+% $Id$
+%
+\label{sec:pspw}
+
+\newcounter{algcounter}[chapter]
+\def\thealgcounter{\thechapter.\arabic{algcounter}}
+\newenvironment{algorithm}[1]
+               { \refstepcounter{algcounter}
+                \begin{center}
+                  {\bf Algorithm} \thealgcounter: #1
+                \end{center}
+               \begin{center}\begin{enumerate} \begin{em}}
+               {\end{em}\end{enumerate}\end{center}}
+ 
+
+The NWChem plane-wave (NWPW) module uses pseudopotentials and
+plane-wave basis sets to perform Density Functional Theory
+calculations.  This module complements the capabilities of the more
+traditional Gaussian function based approaches by having an accuracy at least as good 
+for many applications, yet is still fast enough to treat systems containing hundreds of
+atoms.  Another significant advantage is its ability to simulate
+dynamics on a ground state potential surface directly at run-time
+using the Car-Parrinello algorithm.  This method's efficiency and
+accuracy make it a desirable first principles method of simulation in
+the study of complex molecular, liquid, and solid state systems.
+Applications for this first principles method include the calculation
+of free energies, search for global minima, explicit simulation of
+solvated molecules, and simulations of complex vibrational modes that
+cannot be described within the harmonic  approximation.
+
+The NWPW module is a collection of three modules.
+\begin{itemize}
+   \item PSPW - (PSeudopotential Plane-Wave) A gamma point code for
+     calculating molecules, liquids, crystals, and  surfaces.  
+   \item Band - A band structure code for calculating
+     crystals and surfaces with small band gaps (e.g. semi-conductors
+     and metals).
+   \item PAW - a (gamma point) projector augmented plane-wave code
+     for calculating molecules, crystals, and surfaces 
+\end{itemize}
+The PSPW, Band, and PAW modules can be used to compute the energy and  optimize the
+geometry.  Both the PSPW and Band modules can also be used to find saddle points, and 
+compute numerical second derivatives.  In addition the PSPW module can also be used 
+to perform Car-Parrinello molecular  dynamics.
+
+Section \ref{sec:pspw_tasks} describes the tasks contained within the
+PSPW module, section \ref{sec:band_tasks} describes the tasks
+contained within the Band module, section \ref{sec:paw_tasks} describes
+the tasks contained within the PAW module, and section \ref{sec:psp_library}
+describes the pseudopotential library included with NWChem.  The
+datafiles used by the PSPW module are described in section
+\ref{sec:pspw_data}.  Car-Parrinello output data files are described
+in section \ref{sec:pspw_cp_data}, and the minimization and
+Car-Parrinello algorithms are described in 
+% sections \ref{sec:pspw_Minimize}-\ref{sec:pspw_Car-Parrinello}. 
+section \ref{sec:pspw_Car-Parrinello}. 
+Examples of how
+to setup and run a PSPW geometry optimization, a Car-Parrinello
+simulation, a band structure minimization, and a PAW geometry
+optimization are presented in sections \ref{sec:pspw_sd}, \ref{sec:pspw_cp}, and
+\ref{sec:band_tutorial1}, and \ref{sec:paw_tutorial}.  
+Finally in section \ref{sec:pspw_limits} the capabilities and limitations of the NWPW module are  discussed.
+
+If you are a first time user of this module it is recommended that you skip the next five sections and proceed directly to the tutorials in sections 
+\ref{sec:pspw_sd}-\ref{sec:paw_tutorial}.
+
+\section{PSPW Tasks}
+\label{sec:pspw_tasks}
+
+All input to the PSPW Tasks is contained within the compound PSPW block,
+\begin{verbatim}
+PSPW
+   ...
+END
+\end{verbatim}
+
+To perform an actual calculation a TASK PSPW directive is used
+(Section \ref{sec:task}).  
+\begin{verbatim}
+  TASK PSPW
+\end{verbatim} 
+In addition to the directives listed in Section \ref{sec:task}, i.e.
+\begin{verbatim}
+TASK pspw energy          
+TASK pspw gradient         
+TASK pspw optimize         
+TASK pspw saddle           
+TASK pspw freqencies       
+TASK pspw vib
+\end{verbatim}
+there are additional directives that are specific to the PSPW module, which are:
+\begin{verbatim}
+TASK PSPW [Car-Parrinello             ||
+           pspw_dplot                 ||
+           wannier                    ||
+           psp_generator              ||
+           steepest_descent           ||
+           psp_formatter              ||
+           wavefunction_initializer   ||
+           v_wavefunction_initializer ||
+           wavefunction_expander       ]
+\end{verbatim}
+
+
+Once a user has specified a geometry, the PSPW module can be invoked
+with no input  directives (defaults invoked throughout).  However, the
+user will probably always specify the  simulation cell used in the
+computation, since the default simulation cell is not well suited for
+most systems.  There are sub-directives which allow for customized
+application; those currently provided as options for the PSPW module are:
+\begin{verbatim}
+PSPW
+  CELL_NAME <string cell_name default 'cell_default'>
+  INPUT_WAVEFUNCTION_FILENAME  <string input_wavefunctions  default input_movecs>
+  OUTPUT_WAVEFUNCTION_FILENAME <string output_wavefunctions default input_movecs>
+  FAKE_MASS <real fake_mass default 400000.0>
+  TIME_STEP <real time_step default 5.8>
+  LOOP <integer inner_iteration outer_iteration default 10 100>
+  TOLERANCES <real tole tolc default 1.0e-7 1.0e-7>
+  CUTOFF              <real cutoff>
+  ENERGY_CUTOFF       <real ecut default (see input description)>
+  WAVEFUNCTION_CUTOFF <real wcut default (see input description)>
+  EWALD_NCUT <integer ncut default 1>]
+  EWALD_RCUT <real rcut default (see input description)>
+  XC (Vosko || LDA || PBE96 || revPBE || HF || PBE0 || revPBE0 || 
+     LDA-SIC    || LDA-SIC/2    ||  LDA-0.4SIC    || LDA-SIC/4    || LDA-0.2SIC ||
+     PBE96-SIC  || PBE96-SIC/2  ||  PBE96-0.4SIC  || PBE96-SIC/4  || PBE96-0.2SIC ||
+     revPBE-SIC || revPBE-SIC/2 ||  revPBE-0.4SIC || revPBE-SIC/4 || revPBE-0.2SIC ||
+     default Vosko)
+  DFT||ODFT||RESTRICTED||UNRESTRICTED
+  MULT <integer mult default 1>
+  MULLIKEN
+  EFIELD
+  ALLOW_TRANSLATION
+  CG
+  LMBFGS
+  SCF [Anderson|| simple || Broyden] 
+      [CG || RMM-DIIS]
+      [density || potential] 
+      [ALPHA real alpha default 0.25] 
+      [ITERATIONS integer inner_iterations default 5]
+      [OUTER_ITERATIONS integer outer_iterations default 0]
+
+  SIMULATION_CELL            ... (see input description) END
+  DPLOT                      ... (see input description) END
+  WANNIER                    ... (see input description) END
+  CAR-PARRINELLO             ... (see input description) END
+  PSP_GENERATOR              ... (see input description) END
+  WAVEFUNCTION_INITIALIZER   ... (see input description) END
+  V_WAVEFUNCTION_INITIATIZER ... (see input description) END
+  WAVEFUNCTION_EXPANDER      ... (see input description) END
+  STEEPEST_DESCENT           ... (see input description) END
+
+  MAPPING <integer mapping default 1>
+
+  ROTATION (ON || OFF)
+  TRANSLATION (ON || OFF)
+
+END 
+\end{verbatim}
+
+The following list describes the keywords contained in the PSPW input block.
+\begin{itemize}
+        \item $<$cell\_name$>$ - name of
+              the simulation\_cell named $<$cell\_name$>$.  See section \ref{sec:pspw_cell}.
+        \item $<$input\_wavefunctions$>$ - name of the
+              file containing one-electron orbitals
+        \item $<$output\_wavefunctions$>$ - name of the
+              file that will contain the one-electron orbitals at the
+              end of the run. 
+        \item $<$fake\_mass$>$ - value for the electronic
+              fake mass ($\mu$). This parameter is not presently used in a 
+              conjugate gradient simulation
+        \item $<$time\_step$>$ - value for the time step ($\Delta t$).  This
+              parameter is not presently used in a conjugate gradient simulation.
+        \item $<$inner\_iteration$>$ - number of iterations between the 
+              printing out of energies and tolerances
+        \item $<$outer\_iteration$>$ - number of outer iterations
+        \item $<$tole$>$ - value for the energy tolerance.
+        \item $<$tolc$>$ - value for the one-electron orbital tolerance.
+        \item $<$cutoff$>$ - value for the cutoff energy used to define the wavefunction.  In addition
+                             using the CUTOFF keyword automatically sets the cutoff energy for the density
+                             to be twice the wavefunction cutoff.
+        \item $<$ecut$>$ - value for the cutoff energy used
+                           to define the density. Default is set
+                           to be the maximum value that will fit
+                           within the simulation\_cell $<$cell\_name$>$.
+        \item $<$wcut$>$ - value for the cutoff energy used
+                           to define the one-electron orbitals.
+                           Default is set to be the maximum value that 
+                           will fit within the simulation\_cell $<$cell\_name$>$.
+        \item $<$ncut$>$ - value for the number of unit cells
+                          to sum over (in each direction) for the real space
+                          part of the Ewald summation. Note Ewald summation
+                          is only used if the simulation\_cell is periodic.
+        \item $<$rcut$>$ - value for the cutoff radius used
+                          in the Ewald summation. Note Ewald summation
+                          is only used if the simulation\_cell is periodic. \\
+                           Default set to be
+                          $\frac{MIN(\left| \vec{a_i} \right|)}{\pi}, i=1,2,3$.
+        \item (Vosko $||$ PBE96 $||$ revPBE $||$ ...) - Choose between Vosko et al's LDA 
+                               parameterization or the orginal and revised Perdew, Burke, 
+                               and Ernzerhof GGA functional.  In addition, several hybrid options.
+        \item MULT - optional keyword which if specified allows the user to define the spin multiplicity
+                     of the system
+        \item MULLIKEN - optional keyword which if specified
+                         causes a Mulliken analysis to be performed at
+                         the end of the simulation.  
+        \item ALLOW\_TRANSLATION - By default the the center of mass forces are projected out of the 
+                                  computed forces. This optional keyword if specified allows the 
+                                  center of mass forces to not be zero.
+        \item CG - optional keyword which sets the minimizer to 1
+        \item LMBFGS - optional keyword which sets the minimizer to 2
+        \item SCF - optional keyword which sets the minimizer to be a band by band minimizer.  Several
+                    options are available for setting the density or potential mixing, and the type of
+                    Kohn-Sham minimizer.
+        \item SIMULATION\_CELL (see section \ref{sec:pspw_cell})
+        \item DPLOT (see section \ref{sec:pspw_dplot})
+        \item WANNIER (see section \ref{sec:pspw_wannier})
+        \item CAR-PARRINELLO(see section \ref{sec:pspw_CP})
+        \item PSP\_GENERATOR (see section \ref{sec:pspw_psp_generator})
+        \item WAVEFUNCTION\_INITIALIZER (see section \ref{sec:pspw_wavefunction_initializer})
+        \item V\_WAVEFUNCTION\_INITIALIZER (see section \ref{sec:pspw_v_wavefunction_initializer})
+        \item WAVEFUNCTION\_EXPANDER (see section \ref{sec:pspw_wavefunction_expander}).
+        \item STEEPEST\_DESCENT (see section \ref{sec:pspw_steepest_descent})
+
+        \item $<$mapping$>$ - for a value of 1 slab FFT is used, for a value of 2 a 2d-hilbert FFT is used.
+\end{itemize}
+
+A prototype limited memory BFGS (LMBFGS) minimizer can be used to minimize the energy.  To
+use this new optimizer the following SET directive needs to be specified:
+\begin{verbatim}
+set nwpw:mimimizer 1  # Default - Grassman conjugate gradient minimizer is used to minimize the energy.
+set nwpw:mimimizer 2  # Grassman LMBFGS minimimzer is used to minimize the energy.
+set nwpw:minimizer 4  # Stiefel conjugate gradient minimizer is used to minimize the energy. 
+set nwpw:minimizer 5  # Band-by-band minimizer is used to minimize the energy.
+\end{verbatim}
+Limited testing suggests that the Grassman LMBFGS minimizer is about twice as fast as
+the conjugate gradient minimizer.  However, there are several known cases
+where this optimizer fails, so it is currently not a default option, and
+should be used with caution.
+
+In addition the following SET directives can be specified:
+\begin{verbatim}
+set nwpw:lcao_skip .false. # Default - initial wavefunctions generated using an LCAO guess. 
+set nwpw:lcao_skip .true.  # Initial wavefunctions generated using a random plane-wave guess.
+
+set nwpw:lcao_print .false. # Default - Ouput not produced during the generation of the LCAO guess. 
+set nwpw:lcao_print .true.  # Output produced during the generation of the LCAO guess.
+
+set nwpw:lcao_iterations 2  #specifies the number of LCAO iterations 
+\end{verbatim}
+
+
+\subsection{Simulation Cell}
+\label{sec:pspw_cell}
+The  simulation cell parameters
+are entered by  defining a simulation\_cell sub-block within the PSPW 
+block.  Listed below is the format of a simulation\_cell sub-block.
+\begin{verbatim}
+PSPW
+...
+   SIMULATION_CELL
+      CELL_NAME <string name default 'cell_default'>
+      BOUNDARY_CONDITIONS (periodic || aperiodic default periodic)
+      LATTICE_VECTORS
+        <real a1.x a1.y a1.z default 20.0  0.0  0.0>
+        <real a2.x a2.y a2.z default  0.0 20.0  0.0>
+        <real a3.x a3.y a3.z default  0.0  0.0 20.0>
+      NGRID <integer na1 na2 na3 default 32 32 32>
+   END
+...
+END
+\end{verbatim}
+Basically, the user needs to enter the dimensions, gridding and boundary
+conditions of the simulation cell.  The following list describes the 
+input in detail.
+\begin{itemize}
+        \item $<$name$>$ - user-supplied name for the simulation block.
+        \item periodic - keyword specifying that the simulation cell 
+                         has periodic boundary conditions.      
+        \item aperiodic - keyword specifying that the simulation cell
+                          has free-space boundary conditions. 
+        \item $<$a1.x a1.y a1.z$>$ - user-supplied values for the first 
+                                   lattice vector 
+        \item $<$a2.x a2.y a2.z$>$ - user-supplied values for the second 
+                                   lattice vector
+        \item $<$a3.x a3.y a3.z$>$ - user-supplied values for the third 
+                                   lattice vector
+        \item $<$na1 na2 na3$>$ - user-supplied values for discretization 
+                                along lattice vector directions.
+\end{itemize}
+
+Alternatively, instead of explicitly entering lattice vectors, users can
+enter the unit cell using the standard cell parameters, a, b, c, $\alpha$, 
+$\beta$, and $\gamma$, by using the LATTICE block.  The format for input
+is as follows:
+\begin{verbatim}
+PSPW
+...
+   SIMULATION_CELL
+      ...
+      LATTICE
+        [lat_a <real a default 20.0>]
+        [lat_b <real b default 20.0>]
+        [lat_c <real c default 20.0>]
+        [alpha <real alpha default 90.0>]
+        [beta  <real beta  default 90.0>]
+        [gamma <real gamma default 90.0>]
+      END
+      ...
+   END
+...
+END
+\end{verbatim}
+
+
+The user can also enter the lattice vectors of standard unit cells using the
+keywords SC, FCC, BCC, for simple cubic, face-centered cubic, and body-centered cubic
+respectively.  Listed below is an example of the format of this type of input.
+\begin{verbatim}
+PSPW
+...
+   SIMULATION_CELL
+      SC 20.0
+      ....
+   END
+...
+END
+\end{verbatim}
+
+Finally, the lattice vectors from the unit cell can also be defined using
+the fractional coordinate input in the GEOMETRY input (see section \ref{sec:latticeparam}).   
+Listed below is an example of the format of this type of input for an 8 atom silicon carbide unit cell.
+\begin{verbatim}
+geometry units au 
+  system crystal
+    lat_a 8.277d0
+    lat_b 8.277d0
+    lat_c 8.277d0
+    alpha 90.0d0
+    beta  90.0d0
+    gamma 90.0d0
+  end
+Si    -0.50000d0  -0.50000d0  -0.50000d0
+Si     0.00000d0   0.00000d0  -0.50000d0
+Si     0.00000d0  -0.50000d0   0.00000d0
+Si    -0.50000d0   0.00000d0   0.00000d0
+C     -0.25000d0  -0.25000d0  -0.25000d0
+C      0.25000d0   0.25000d0  -0.25000d0
+C      0.25000d0  -0.25000d0   0.25000d0
+C     -0.25000d0   0.25000d0   0.25000d0
+end
+\end{verbatim}
+
+
+
+\subsection{\tt Unit Cell Optimization}
+\label{sec:pspw_cell_optimization}
+
+The PSPW module using the DRIVER geometry optimizer can optimize a crystal unit cell.
+Currently this type of optimization works only if the geometry is specified in fractional
+coordinates.  The following SET directive is used to tell the DRIVER geometry optimizer to
+optimize the crystal unit cell in addition to the geometry.
+\begin{verbatim}
+set includestress .true.
+\end{verbatim}
+
+\normalsize
+\subsection{\tt DPLOT}
+\label{sec:pspw_dplot}
+The pspw dplot task is used to generate plots of various types of electron
+densities (or orbitals) of a molecule.  The electron density is calculated on the 
+specified set of grid points from a PSPW calculation.  The output file
+generated is in the Gaussian Cube format.
+Input to the DPLOT task is contained
+within the DPLOT sub-block.
+\begin{verbatim}
+PSPW
+  ...
+  DPLOT
+     ...
+  END
+  ...
+END
+\end{verbatim}
+To run a DPLOT calculation the following directive 
+is used:
+\begin{verbatim}
+TASK PSPW PSPW_DPLOT
+\end{verbatim}
+Listed below is the format of a DPLOT sub-block.
+\begin{verbatim}
+PSPW
+... 
+   DPLOT
+     VECTORS <string input_wavefunctions  default input_movecs>
+     DENSITY [total||difference||alpha||beta||laplacian||potential default total] <string density_name no default>
+     ELF [restricted|alpha|beta] <string elf_name no default>
+     ORBITAL <integer orbital_number no default> <string orbital_name no default>
+
+
+     [LIMITXYZ [units <string Units default angstroms>]
+     <real X_From> <real X_To> <integer No_Of_Spacings_X>
+     <real Y_From> <real Y_To> <integer No_Of_Spacings_Y>
+     <real Z_From> <real Z_To> <integer No_Of_Spacings_Z>]
+
+   END
+
+...
+END
+\end{verbatim}
+
+The following list describes the input for the DPLOT
+sub-block.
+
+\begin{verbatim}
+     VECTORS <string input_wavefunctions  default input_movecs>  
+\end{verbatim}
+ This sub-directive specifies the name of the molecular orbital file. If the second file is optionally given the density is computed as the difference between the corresponding electron densities. The vector files have to match. 
+
+\begin{verbatim}
+     DENSITY [total||difference||alpha||beta||laplacian||potential default total] <string density_name no default>
+\end{verbatim}
+This sub-directive specifies, what kind of density is to be plotted. The known names for total, difference, alpha, beta, laplacian, and potential. 
+
+\begin{verbatim}
+     ELF [restricted|alpha|beta] <string elf_name no default>
+\end{verbatim}
+This sub-directive specifies that an electron localization function (ELF) is to be plotted.
+
+\begin{verbatim}
+     ORBITAL <integer orbital_number no default> <string orbital_name no default>
+\end{verbatim}
+This sub-directive specifies the molecular orbital number that is to be plotted.
+
+\begin{verbatim}
+     LIMITXYZ [units <string Units default angstroms>]
+     <real X_From> <real X_To> <integer No_Of_Spacings_X>
+     <real Y_From> <real Y_To> <integer No_Of_Spacings_Y>
+     <real Z_From> <real Z_To> <integer No_Of_Spacings_Z>
+\end{verbatim}
+By default the grid spacing and the limits of the cell to be plotted are defined by the input wavefunctions.  Alternatively the user can use the LIMITXYZ sub-directive to specify other limits.   The grid is generated using No\_Of\_Spacings + 1 points along each direction. The known names for Units are angstroms, au and bohr. 
+
+
+
+\subsection{\tt Wannier}
+\label{sec:pspw_wannier}
+The pspw wannier task is generate maximally localized (Wannier) molecular orbitals.  The
+algorithm proposed by Silvestrelli et al is use to generate the Wannier orbitals.  The
+current version of this code works only for cubic cells. 
+
+
+Input to the Wannier task is contained within the Wannier sub-block.
+\begin{verbatim}
+PSPW
+  ...
+  Wannier
+     ...
+  END
+  ...
+END
+\end{verbatim}
+To run a Wannier calculation the following directive 
+is used:
+\begin{verbatim}
+TASK PSPW Wannier
+\end{verbatim}
+Listed below is the format of a Wannier sub-block.
+\begin{verbatim}
+PSPW
+... 
+   Wannier
+     OLD_WAVEFUNCTION_FILENAME <string input_wavefunctions  default input_movecs>  
+     NEW_WAVEFUNCTION_FILENAME <string output_wavefunctions default input_movecs>
+   END
+...
+END
+\end{verbatim}
+The following list describes the input for the Wannier
+sub-block.
+\begin{itemize}
+        \item $<$input\_wavefunctions$>$ - name of pspw wavefunction file.
+        \item $<$output\_wavefunctions$>$ - name of pspw wavefunction file that
+              will contain the Wannier orbitals. 
+\end{itemize}
+
+
+
+\subsection{\tt Self-Interaction Corrections}
+\label{sec:pspw_SIC}
+
+The SET directive is used to specify the molecular orbitals 
+contribute to the self-interaction-correction (SIC) term.
+\begin{verbatim}
+set pspw:SIC_orbitals  <integer list_of_molecular_orbital_numbers>
+\end{verbatim}
+This defines only the molecular orbitals in the list as SIC active.  All
+other molecular orbitals will not contribute to the SIC term.
+
+For example the following directive specifies that the molecular orbitals numbered
+1,5,6,7,8, and 15 are SIC active.
+\begin{verbatim}
+set pspw:SIC_orbitals  1 5:8 15
+\end{verbatim}
+or equivalently
+\begin{verbatim}
+set pspw:SIC_orbitals  1 5 6 7 8 15
+\end{verbatim}
+
+The following directive turns on self-consistent SIC.
+\begin{verbatim}
+set pspw:SIC_relax      .false.  # Default - Perturbative SIC calculation
+set pspw:SIC_relax      .true.   # Self-consistent SIC calculation
+\end{verbatim}
+
+Two types of solvers can be used and they are specified using the following
+SET directive
+\begin{verbatim}
+set pspw:SIC_solver_type 1  # Default - cutoff coulomb kernel
+set pspw:SIC_solver_type 2  # Free-space boundary condition kernel
+\end{verbatim}
+The parameters for the cutoff coulomb kernel are defined by the following
+SET directives:
+\begin{verbatim}
+set pspw:SIC_screening_radius <real rcut>
+set pspw:SIC_screening_power  <real rpower>
+\end{verbatim}
+
+
+
+\subsection{\tt Point Charge Analysis}
+\label{sec:pspw_point_charge_analysis}
+
+The MULLIKEN option can be used to generate derived atomic point charges
+from a plane-wave density.  This analysis is based on a strategy suggested in the work of
+P.E. Blochl, J. Chem. Phys. vol. 103, page 7422 (1995).  In this strategy
+the low-frequency components a plane-wave density are fit to a linear
+combination of atom centered Gaussian functions.
+
+The following SET directives are used to define the fitting.
+\begin{verbatim}
+set pspw_APC:Gc <real Gc_cutoff>  # specifies the maximum frequency component of the density to be used in the fitting in units of au.
+
+set pspw_APC:nga <integer number_gauss> # specifies the the number of Gaussian functions per
+atom.
+
+set pspw_APC:gamma <real gamma_list> # specifies the decay lengths of each atom centered Gaussian. 
+\end{verbatim}
+
+We suggest using the following parameters.
+\begin{verbatim}
+set pspw_APC:Gc 2.5
+set pspw_APC:nga 3
+set pspw_APC:gamma 0.6 0.9 1.35 
+\end{verbatim}
+
+
+\subsection{\tt Car-Parrinello}
+\label{sec:pspw_CP}
+The Car-Parrinello task is used to perform ab initio molecular dynamics
+using the scheme developed by Car and Parrinello.  In this unified ab
+initio molecular dynamics scheme the motion of the ion cores is coupled to
+a fictitious motion for the Kohn-Sham orbitals of density functional
+theory.  Constant energy or constant temperature simulations can be
+performed.  A detailed description of this method
+is described in section \ref{sec:pspw_Car-Parrinello}.
+
+Input to the Car-Parrinello simulation is contained within the
+Car-Parrinello sub-block.
+\begin{verbatim}
+PSPW
+  ...
+  Car-Parrinello
+     ...
+  END
+  ...
+END
+\end{verbatim}
+To run a Car-Parrinello calculation the following directive is used:
+\begin{verbatim}
+TASK PSPW Car-Parrinello 
+\end{verbatim}
+The Car-Parrinello sub-block contains a great deal
+of input, including pointers to data, as well as
+parameter input.  Listed below is the format of a Car-Parrinello sub-block.
+\begin{verbatim}
+PSPW
+...
+   Car-Parrinello
+      CELL_NAME <string cell_name default 'cell_default'>
+      INPUT_WAVEFUNCTION_FILENAME    <string input_wavefunctions    default input_movecs>
+      OUTPUT_WAVEFUNCTION_FILENAME   <string output_wavefunctions   default input_movecs>
+      INPUT_V_WAVEFUNCTION_FILENAME  <string input_v_wavefunctions  default input_vmovecs>
+      OUTPUT_V_WAVEFUNCTION_FILENAME <string output_v_wavefunctions default input_vmovecs>
+      FAKE_MASS <real fake_mass default default 1000.0>
+      TIME_STEP <real time_step default 5.0>
+      LOOP <integer inner_iteration outer_iteration default 10 1>
+      SCALING <real scale_c scale_r default 1.0 1.0>
+      ENERGY_CUTOFF       <real ecut default (see input description)>
+      WAVEFUNCTION_CUTOFF <real wcut default (see input description)>
+      EWALD_NCUT <integer ncut default 1>
+      EWALD_RCUT <real rcut    default (see input description)>
+      XC (Vosko || LDA || PBE96 || revPBE || HF || PBE0 || revPBE0 || 
+          LDA-SIC    || LDA-SIC/2    ||  LDA-0.4SIC    || LDA-SIC/4    || LDA-0.2SIC ||
+          PBE96-SIC  || PBE96-SIC/2  ||  PBE96-0.4SIC  || PBE96-SIC/4  || PBE96-0.2SIC ||
+          revPBE-SIC || revPBE-SIC/2 ||  revPBE-0.4SIC || revPBE-SIC/4 || revPBE-0.2SIC ||
+          default Vosko)
+      [Nose-Hoover <real Period_electron Temperature_electrion Period_ion Temperature_ion 
+                          default 100.0 298.15 100.0 298.15>]
+      [SA_decay <real sa_scale_c sa_scale_r default 1.0 1.0>]
+      XYZ_FILENAME <string xyz_filename default XYZ>
+      EMOTION_FILENAME <string emotion_filename default EMOTION>
+      HMOTION_FILENAME <string hmotion_filename default HMOTION>
+      OMOTION_FILENAME <string omotion_filename default OMOTION>
+      EIGMOTION_FILENAME <string eigmotion_filename default EIGMOTION>
+      ION_MOTION_FILENAME <string ion_motion_filename default MOTION>
+
+   END
+...
+
+END
+\end{verbatim}
+The following list describes the input for the Car-Parrinello
+sub-block.
+\begin{itemize}
+        \item $<$cell\_name$>$ - name of the
+              the simulation\_cell named $<$cell\_name$>$.  See section \ref{sec:pspw_cell}.
+        \item $<$input\_wavefunctions$>$ - name of the 
+              file containing one-electron orbitals
+        \item $<$output\_wavefunctions$>$ - name of the
+              file that will contain the one-electron orbitals at the
+              end of the run. 
+        \item $<$input\_v\_wavefunctions$>$ - name of the file
+              containing one-electron orbital velocities.
+        \item $<$output\_v\_wavefunctions$>$ - name of the
+              file that will contain the one-electron orbital velocities
+              at the end of the run. 
+        \item $<$fake\_mass$>$ - value for the electronic
+              fake mass ($\mu$).
+        \item $<$time\_step$>$ - value for the Verlet integration 
+               time step ($\Delta t$).
+        \item $<$inner\_iteration$>$ - number of iterations between the
+              printing out of energies.
+        \item $<$outer\_iteration$>$ - number of outer iterations
+        \item $<$scale\_c$>$ - value for the initial velocity
+                              scaling of the one-electron orbital velocities.
+        \item $<$scale\_r$>$ - value for the initial velocity
+                              scaling of the ion velocities.
+        \item $<$ecut$>$ - value for the cutoff energy used
+                           to define the density.  Default is set
+                           to be the maximum value that will fit
+                           within the simulation\_cell $<$cell\_name$>$.
+        \item $<$wcut$>$ - value for the cutoff energy used
+                           to define the one-electron orbitals.  Default is set
+                           to be the maximum value that will fit
+                           within the simulation\_cell $<$cell\_name$>$.
+        \item $<$ncut$>$ - value for the number of unit cells
+                          to sum over (in each direction) for the real space
+                          part of the Ewald summation. Note Ewald summation
+                          is only used if the simulation\_cell is periodic.
+        \item $<$rcut$>$ - value for the cutoff radius used
+                          in the Ewald summation.  Note Ewald summation
+                          is only used if the simulation\_cell is periodic. \\
+                          Default set to be
+                          $\frac{MIN(\left| \vec{a_i} \right|)}{\pi}, i=1,2,3$.
+        \item (Vosko $||$ PBE96 $||$ revPBE $||$ ...) - Choose between Vosko et al's LDA 
+                               parameterization or the orginal and revised Perdew, Burke, 
+                               and Ernzerhof GGA functional.  In addition, several hybrid options.
+        \item Nose-Hoover - optional subblock which if specified
+                         causes the simulation to perform Nose-Hoover dynamics.
+                         If this subblock is not specified the 
+                         simulation performs constant energy dynamics.
+                         See section \ref{sec:pspw_nose} for a description of the parameters.
+                         \begin{itemize}
+                             \item $<$Period\_electron$>$ $\equiv$ $P_{electron}$ 
+                                    - estimated period for fictitious electron thermostat.
+                             \item $<$Temperature\_electron$>$ $\equiv$ $T_{electron}$ 
+                                    - temperature for fictitious electron motion
+                             \item $<$Period\_ion$>$ $\equiv$ $P_{ion}$ 
+                                    - estimated period for ionic thermostat
+                             \item $<$Temperature\_ion$>$ $\equiv$ $T_{ion}$ 
+                                    - temperature for ion motion
+                         \end{itemize}
+        \item SA\_decay - optional subblock which if specified
+                         causes the simulation to run a simulated annealing simulation.
+                         For simulated annealing to work the Nose-Hoover subblock needs 
+                         to be specified.  The initial temperature are taken from the
+                         Nose-Hoover subblock.
+                         See section \ref{sec:pspw_nose} for a description of the parameters.
+                         \begin{itemize}
+                             \item $<$sa\_scale\_c$>$ $\equiv$ $\tau_{electron}$ 
+                                    - decay rate in atomic units for electronic temperature.
+                             \item $<$sa\_scale\_r$>$ $\equiv$ $\tau_{ionic}$ 
+                                    - decay rate in atomic units for the ionic temperature.
+                         \end{itemize}
+
+        \item $<$xyz\_filename$>$ - name of the XYZ motion file
+                                generated
+        \item $<$emotion\_filename$>$ - name of the emotion motion file.
+                                See section \ref{sec:pspw_cp_data} for a 
+                                description of the datafile.
+        \item $<$hmotion\_filename$>$ - name of the hmotion motion file.
+                                See section \ref{sec:pspw_cp_data} for a 
+                                description of the datafile.
+        \item $<$eigmotion\_filename$>$ - name of the eigmotion motion file.
+                                See section \ref{sec:pspw_cp_data} for a 
+                                description of the datafile.
+       \item $<$ion\_motion\_filename$>$ - name of the ion\_motion motion file.
+                                See section \ref{sec:pspw_cp_data} for a 
+                                description of the datafile.
+       \item MULLIKEN - optional keyword which if specified causes an omotion motion file to be created. 
+        \item $<$omotion\_filename$>$ - name of the omotion motion file.
+                                See section \ref{sec:pspw_cp_data} for a 
+                                description of the datafile.
+\end{itemize}
+
+When a DPLOT sub-block is specified the following SET directive can be used 
+to output dplot data during a Car-Parrinello simulation:
+\begin{verbatim}
+set pspw_dplot:iteration_list <integer list_of_iteration_numbers>
+\end{verbatim}
+The Gaussian cube files specified in the DPLOT sub-block are appended
+with the specified iteration number. 
+
+For example, the following directive specifies that at the 
+3,10,11,12,13,14,15, and 50 iterations Gaussian cube files are to be produced.
+
+\begin{verbatim}
+set pspw_dplot:iteration_list 3,10:15,50
+\end{verbatim}
+
+\subsection{\tt Adding Geometry Constraints To A Car-Parrinello Simulation}
+\label{sec:pspw_CP_constraint}
+The Car-Parrinello module allows users to freeze the cartesian coordinates 
+in a simulation (Note - the Car-Parrinello code recognizes Cartesian
+constraints, but it does not recognize internal coordinate constraints).  
+The \verb+SET+ directive (Section \ref{sec:activeatoms}) is used to freeze
+atoms, by specifying a directive of the form:
+\begin{verbatim}
+  set geometry:actlist <integer list_of_center_numbers>
+\end{verbatim}
+This defines only the centers in the list as active.  All other
+centers will have zero force assigned to them, and will remain frozen
+at their starting coordinates during a Car-Parrinello simulation.
+
+For example, the following directive specifies that atoms numbered 1,
+5, 6, 7, 8, and 15 are active and all other atoms are frozen:
+\begin{verbatim}
+  set geometry:actlist 1 5:8 15
+\end{verbatim}
+or equivalently,
+\begin{verbatim}
+  set geometry:actlist 1 5 6 7 8 15
+\end{verbatim}
+
+If this option is not specified by entering a \verb+SET+ directive,
+the default behavior in the code is to treat all atoms as active.  To
+revert to this default behavior after the option to define frozen
+atoms has been invoked, the \verb+UNSET+ directive must be used (since
+the database is persistent, see Section \ref{sec:persist}).  The form
+of the \verb+UNSET+ directive is as follows:
+\begin{verbatim}
+  unset geometry:actlist
+\end{verbatim}
+
+
+In addition, the Car-Parrinello module allows users to freeze bond
+lengths via a Shake algorithm.  The following \verb+SET+ directive 
+shows how to do this.
+\begin{verbatim}
+  set nwpw:shake_constraint "2 6 L 6.9334"
+\end{verbatim}
+This input fixes the bond length between atoms 2 and 6 to be
+6.9334 bohrs.  Note that this input only recognizes bohrs.  
+
+When using constraints it is usually necessary to turn off
+center of mass shifting. This can be done by the following \verb+SET+ directive.
+\begin{verbatim}
+  set nwpw:com_shift .false.
+\end{verbatim}
+
+\subsection{\tt QM/MM}
+\label{sec:pspw_qmmm}
+A preliminary QM/MM capability that can run Car-Parrinello molecular dynamics  has been integrated 
+into the PSPW module.  Currently, the input is  not very robust but it is straightforward.  The first 
+step to run a QM/MM simulations is to define the MM atoms in the geometry block.  The MM atoms must be
+at the end of the geometry and a carat, " \^\ ", must be appended to the end of the atom name, e.g.
+\begin{verbatim}
+geometry units angstrom nocenter noautosym noautoz print xyz
+C       -0.000283    0.000106    0.000047
+Cl      -0.868403    1.549888    0.254229
+Cl       0.834043   -0.474413    1.517103
+Cl      -1.175480   -1.275747   -0.460606
+Cl       1.209940    0.200235   -1.310743
+
+O^       0.3226E+01 -0.4419E+01 -0.5952E+01 
+H^       0.3193E+01 -0.4836E+01 -0.5043E+01 
+H^       0.4167E+01 -0.4428E+01 -0.6289E+01
+O^       0.5318E+01 -0.3334E+01 -0.1220E+01
+H^       0.4978E+01 -0.3040E+01 -0.2113E+01
+H^       0.5654E+01 -0.2540E+01 -0.7127E+00
+end
+\end{verbatim}
+Next the pseudopotentials have be defined for the every type of MM atom contained in the geometry blocks.  The
+following local pseudopotential suggested by Laio, VandeVondele and Rothlisberger can be automatically generated.
+\begin{eqnarray}
+V(\vec{r}) = -Z_{ion}\frac{{r_c}^{n_{\sigma}} - r^{n_{\sigma}}}{-sign(Z_{ion})*{r_c}^{n_{\sigma}+1}-r^{n_{\sigma}+1}}
+\end{eqnarray}
+The following input To define this pseudopo the O\^\ MM atom using the following input
+\begin{verbatim}
+NWPW
+   QMMM
+     mm_psp O^ -0.8476 4 0.70
+   END
+END
+\end{verbatim}
+defines the local pseudopotential for the O\^\  MM atom , where $Z_{ion}=-0.8476$, $n_{\sigma}=4$, and $r_c=0.7$.  
+The following input can be used to define the local pseudopotentials for all the MM atoms in the geometry
+block defined above
+\begin{verbatim}
+NWPW
+   QMMM
+     mm_psp O^ -0.8476 4 0.70
+     mm_psp H^  0.4238 4 0.40
+   END
+END
+\end{verbatim}
+Next the Lenard-Jones potentials for the QM and MM atoms need to be defined.  This is done as as follows
+\begin{verbatim}
+NWPW
+   QMMM
+      lj_ion_parameters C  3.41000000d0 0.10d0
+      lj_ion_parameters Cl 3.45000000d0 0.16d0
+      lj_ion_parameters O^ 3.16555789d0 0.15539425d0
+   END
+END
+\end{verbatim}
+Note that the Lenard-Jones potential is not defined for the MM H atoms in this example.  
+The final step is to define the MM fragments in the simulation.  MM fragments are a set of 
+atoms in which bonds and angle harmonic potentials are defined, or alternatively shake constraints are defined.  
+The following input defines the fragments for the two water molecules in the above geometry,
+\begin{verbatim}
+NWPW
+   QMMM
+      fragment spc
+         size 3                  #size of fragment
+         index_start 6:9:3       #atom index list that defines the start of 
+                                 # the fragments (start:final:stride)
+
+         bond_spring 1 2    0.467307856 1.889726878  #bond i j    Kspring r0
+         bond_spring 1 3    0.467307856 1.889726878  #bond i j    Kspring r0
+         angle_spring 2 1 3 0.07293966  1.910611932  #angle i j k Kspring theta0
+      end
+   END
+END
+\end{verbatim}
+The fragments can be defined using shake constraints as
+\begin{verbatim}
+NWPW
+   QMMM
+      fragment spc
+         size 3                  #size of fragment
+         index_start 6:9:3       #atom index list that defines the start of 
+                                 # the fragments (start:final:stride)
+
+         shake units angstroms 1 2 3 cyclic 1.0 1.632993125 1.0
+      end
+   END
+END
+\end{verbatim}
+Alternatively, each water could be defined independently as follows.
+\begin{verbatim}
+NWPW
+   QMMM
+      fragment spc1
+         size 3                  #size of fragment
+         index_start 6           #atom index list that defines the start of 
+                                 #the fragments 
+
+         bond_spring 1 2    0.467307856 1.889726878  #bond i j    Kspring r0
+         bond_spring 1 3    0.467307856 1.889726878  #bond i j    Kspring r0
+         angle_spring 2 1 3 0.07293966  1.910611932  #angle i j k Kspring theta0
+      end
+      fragment spc2
+         size 3                 #size of fragment
+         index_start 9          #atom index list that defines the start of 
+                                #the fragments
+         shake units angstroms 1 2 3 cyclic 1.0 1.632993125 1.0
+      end
+   END
+END
+\end{verbatim}
+
+
+\subsection{\tt PSP\_GENERATOR}
+\label{sec:pspw_psp_generator}
+A one-dimensional pseudopotential code has been integrated into NWChem.
+This code allows the user to modify and develop pseudopotentials.  Currently, 
+only the Hamann and Troullier-Martins norm-conserving pseudopotentials can be
+generated.  In future releases, the pseudopotential library (section \ref{sec:psp_library})
+will be more complete, so that the user will not have explicitly generate
+pseudopotentials using this module.
+
+Input to the PSP\_GENERATOR task is contained within the
+PSP\_GENERATOR  sub-block.
+\begin{verbatim}
+PSPW
+  ...
+  PSP_GENERATOR
+     ...
+  END
+  ...
+END
+\end{verbatim}
+To run a PSP\_GENERATOR calculation the following directive 
+is used:
+\begin{verbatim}
+TASK PSPW PSP_GENERATOR
+\end{verbatim}
+Listed below is the format of a PSP\_GENERATOR sub-block.
+\begin{verbatim}
+PSPW
+... 
+   PSP_GENERATOR
+      PSEUDOPOTENTIAL_FILENAME: <string psp_name>
+      ELEMENT: <string element>
+      CHARGE: <real charge>
+      MASS_NUMBER: <real mass_number>
+      ATOMIC_FILLING: <integer ncore nvalence>
+      ( (1||2||...) (s||p||d||f||...) <real filling> \
+         ...)
+      
+      [CUTOFF: <integer lmax> 
+         ( (s||p||d||f||g) <real rcut>\
+         ...)
+      ]
+      PSEUDOPOTENTIAL_TYPE: (TROULLIER-MARTINS || HAMANN default HAMANN)
+      SOLVER_TYPE: (PAULI || SCRHODINGER default PAULI)
+      EXCHANGE_TYPE: (dirac || PBE96 default DIRAC)
+      CORRELATION_TYPE: (VOSKO || PBE96 default VOSKO)
+      [SEMICORE_RADIUS: <real rcore>]
+      
+   end
+... 
+END
+\end{verbatim}
+The following list describes the input for the PSP\_GENERATOR
+sub-block.
+\begin{itemize}
+
+        \item $<$psp\_name$>$ - name that points to a.
+        \item $<$element$>$ - Atomic symbol.
+        \item $<$charge$>$ - charge of the atom
+        \item $<$mass$>$ - mass number for the atom
+        \item $<$ncore$>$ - number of core states
+        \item $<$nvalence$>$ - number of valence states.
+        \item ATOMIC\_FILLING:.....(see below)
+        \item $<$filling$>$ - occupation of atomic state
+        \item CUTOFF:....(see below) 
+        \item $<$rcore$>$ - value for the semicore radius (see below) 
+\end{itemize}
+
+
+\subsubsection{\tt ATOMIC\_FILLING Block}
+This required block is used to define the reference atom which is used
+to define the pseudopotential. After the ATOMIC\_FILLING: $<$ncore$>$
+$<$nvalence$>$ line, the core states are listed (one per line), and
+then the valence states are listed (one per line). 
+Each state contains two integer and a value.  The first integer
+specifies the radial quantum number, $n$,
+The second integer specifies the angular momentum quantum number, $l$,
+and the third value specifies the occupation of the state.
+
+For example to define a pseudopotential
+for the Neon atom in the $1s^2 2s^2 2p^6$ state
+could have the block
+\begin{verbatim}
+ATOMIC_FILLING: 1 2
+        1  s  2.0   #core state    - 1s^2 
+        2  s  2.0   #valence state - 2s^2
+        2  p  6.0   #valence state - 2p^6
+\end{verbatim}
+for a pseudopotential with a $2s$ and $2p$ valence electrons
+or the block
+\begin{verbatim}
+ATOMIC_FILLING: 3 0
+        1  s  2.0    #core state
+        2  s  2.0    #core state
+        2  p  6.0    #core state
+\end{verbatim}
+could be used for a pseudopotential with no valence electrons.
+
+
+\subsubsection{{\tt CUTOFF} Block}
+This optional block specifies the cutoff distances used
+to match the all-electron atom to the pseudopotential atom.  For
+Hamann pseudopotentials $r_{cut}(l)$ defines the distance
+where the all-electron potential is matched to the pseudopotential, and
+for Troullier-Martins pseudopotentials $r_{cut}(l)$ defines the distance
+where the all-electron orbital is matched to the pseudowavefunctions. 
+Thus the definition of the radii depends on the type of pseudopotential.  
+The cutoff radii used in Hamann pseudopotentials will be smaller than
+the cutoff radii used in Troullier-Martins pseudopotentials.  
+
+For example to define a softened Hamann pseudopotential for
+Carbon would be
+\begin{verbatim}
+ATOMIC_FILLING: 1 2
+  1  s  2.0
+  2  s  2.0
+  2  p  2.0
+CUTOFF: 2
+  s  0.8
+  p  0.85
+  d  0.85
+\end{verbatim}
+while a similarly softened Troullier-Marting pseudopotential
+for Carbon would be
+\begin{verbatim}
+ATOMIC_FILLING: 1 2
+  1  s  2.0
+  2  s  2.0
+  2  p  2.0
+CUTOFF: 2
+  s  1.200
+  p  1.275
+  d  1.275
+\end{verbatim}
+
+
+\subsubsection{{\tt SEMICORE\_RADIUS} Option}
+Specifying the SEMICORE\_RADIUS option turns on the semicore correction approximation proposed
+by Louie et al (S.G. Louie, S. Froyen, and M.L. Cohen, Phys. Rev. B, \textbf{26}, 1738, (1982)).  
+This approximation is known to dramatically improve results for systems containing 
+alkali and transition metal atoms.  
+
+The implementation in the PSPW module defines the semi-core density, $\rho_{semicore}$ in terms of 
+the core density, $\rho_{core}$, by using the sixth-order polynomial
+\begin{eqnarray}
+\rho_{semicore}(r) = \left\{ \begin{array}{ll}
+                              \rho_{core} & \mbox{if $r \geq r_{semicore}$} \\
+                              c_0 + c_3 r^3 + c_4 r^4 + c_5 r^5 + c_6 r^6 &  \mbox{if $r < r_{semicore}$}
+                            \end{array}
+                     \right.
+\end{eqnarray}
+This expansion was suggested by Fuchs and Scheffler 
+(M. Fuchs, and M. Scheffler, Comp. Phys. Comm.,\textbf{119},67 (1999)), 
+and is better behaved for taking derivatives (i.e. calculating ionic forces) than the expansion suggested 
+by Louie et al.
+
+
+
+
+\subsection{\tt WAVEFUNCTION\_INITIALIZER}
+\label{sec:pspw_wavefunction_initializer}
+The functionality of this task is now performed automatically. For backward 
+compatibility, we provide a description of the input to this task.
+
+The wavefunction\_initializer task is used to generate an initial wavefunction
+datafile.
+Input to the WAVEFUNCTION\_INITIALIZER task is contained
+within the WAVEFUNCTION\_INITIALIZER sub-block.
+\begin{verbatim}
+PSPW
+  ...
+  WAVEFUNCTION_INITIALIZER
+     ...
+  END
+  ...
+END
+\end{verbatim}
+To run a WAVEFUNCTION\_INITIALIZER calculation the following directive 
+is used:
+\begin{verbatim}
+TASK PSPW WAVEFUNCTION_INITIALIZER
+\end{verbatim}
+Listed below is the format of a WAVEFUNCTION\_INITIALIZER sub-block.
+\begin{verbatim}
+PSPW
+... 
+   WAVEFUNCTION_INITIALIZER
+     CELL_NAME: <string cell_name>
+     WAVEFUNCTION_FILENAME: <string wavefunction_name default input_movecs>
+     (RESTRICTED||UNRESTRICTED)
+     if (RESTRICTED)   
+        RESTRICTED_ELECTRONS: <integer restricted electrons>
+     if (UNRESTRICTED) 
+        UP_ELECTRONS: <integer up_electrons>
+        DOWN_ELECTRONS: <integer down_electrons>
+   END
+...
+END
+\end{verbatim}
+The following list describes the input for the WAVEFUNCTION\_INITIALIZER
+sub-block.
+\begin{itemize}
+        \item $<$cell\_name$>$ - name of
+                the simulation\_cell named $<$cell\_name$>$.  See section \ref{sec:pspw_cell}.
+        \item $<$wavefunction\_name$>$ - name that will point
+              to a wavefunction file.
+        \item RESTRICTED - keyword specifying that the calculation is restricted.
+        \item UNRESTRICTED - keyword specifying that the calculation is unrestricted.
+
+        \item $<$restricted\_electrons$>$ - number of restricted electrons.
+               Not used if an UNRESTRICTED calculation. 
+         \item $<$up\_electrons$>$ - number of spin-up electrons.
+               Not used if a RESTRICTED calculation.
+        \item $<$down\_electrons$>$ - number of spin-down electrons.
+              Not used if a RESTRICTED calculation.
+\end{itemize}
+
+\subsubsection{Old Style Input (version 3.3) to {\tt WAVEFUNCTION\_INITIALIZER}}
+
+For backward compatibility, the input to the WAVEFUNCTION\_INITIALIZER 
+sub-block can also be of the form
+\begin{verbatim}
+PSPW
+... 
+   WAVEFUNCTION_INITIALIZER
+     CELL_NAME: <string cell_name>
+     WAVEFUNCTION_FILENAME: <string wavefunction_name default input_movecs>
+     (RESTRICTED||UNRESTRICTED)
+     
+     [UP_FILLING: <integer up_filling>
+        [0 0 0   0]
+        {<integer kx ky kz> (-2||-1||1||2)}]
+     [DOWN_FILLING: <integer down_filling>
+        [0 0 0   0]
+        {<integer kx ky kz> (-2||-1||1||2)}]
+   END
+...
+END
+\end{verbatim}
+where
+\begin{itemize}
+        \item $<$cell\_name$>$ - name of the
+                simulation\_cell named $<$cell\_name$>$.  See section \ref{sec:pspw_cell}.
+        \item $<$wavefunction\_name$>$ - name that will point
+              to a wavefunction file.
+        \item RESTRICTED - keyword specifying that the calculation is restricted.
+        \item UNRESTRICTED - keyword specifying that the calculation is unrestricted.
+        \item $<$up\_filling$>$ - number of restricted molecular orbitals if
+              RESTRICTED and number of spin-up molecular orbitals if 
+              UNRESTRICTED.
+        \item $<$down\_filling$>$ - number of spin-down molecular orbitals if
+              UNRESTRICTED.  Not used if a RESTRICTED calculation.
+        \item $<$kx ky kz$>$ - specifies which planewave is to be filled. 
+\end{itemize}
+
+The values for the planewave $(-2||-1||1||2)$ are used to represent whether
+the specified planewave is a cosine or a sine function, in addition
+random noise can be added to these base functions. That is $+1$ 
+represents a cosine function, and $-1$ represents a sine function.
+The $+2$ and $-2$ values are used to represent a cosine function with
+random components added and a sine function with random components
+added respectively.  
+
+
+\subsection{\tt V\_WAVEFUNCTION\_INITIALIZER}
+\label{sec:pspw_v_wavefunction_initializer}
+The functionality of this task is now performed automatically. For backward 
+compatibility, we provide a description of the input to this task.
+
+The v\_wavefunction\_initializer task is used to generate an initial velocity 
+wavefunction datafile.
+Input to the V\_WAVEFUNCTION\_INITIALIZER task is contained
+within the V\_WAVEFUNCTION\_INITIALIZER sub-block.
+\begin{verbatim}
+PSPW
+  ...
+  V_WAVEFUNCTION_INITIALIZER
+     ...
+  END
+  ...
+END
+\end{verbatim}
+To run a V\_WAVEFUNCTION\_INITIALIZER calculation the following directive 
+is used:
+\begin{verbatim}
+TASK PSPW WAVEFUNCTION_INITIALIZER
+\end{verbatim}
+Listed below is the format of a V\_WAVEFUNCTION\_INITIALIZER sub-block.
+\begin{verbatim}
+PSPW
+... 
+   V_WAVEFUNCTION_INITIALIZER
+     V_WAVEFUNCTION_FILENAME: <string v_wavefunction_name default input_vmovecs>
+     CELL_NAME: <string cell_name>
+     (RESTRICTED||UNRESTRICTED)
+     UP_FILLING: <integer up_filling>
+     DOWN_FILLING: <integer down_filling>
+   END
+...
+END
+\end{verbatim}
+The following list describes the input for the V\_WAVEFUNCTION\_INITIALIZER
+sub-block.
+\begin{itemize}
+        \item $<$cell\_name$>$ - name of the
+                simulation\_cell named $<$cell\_name$>$.  See section \ref{sec:pspw_cell}.
+        \item $<$wavefunction\_name$>$ - name that will point
+              to a velocity wavefunction file.
+        \item RESTRICTED - keyword specifying that the calculation is restricted.
+        \item UNRESTRICTED - keyword specifying that the calculation is unrestricted.
+        \item $<$up\_filling$>$ - number of restricted velocity molecular 
+              orbitals if RESTRICTED and number of spin-up velocity molecular 
+              orbitals if UNRESTRICTED.
+        \item $<$down\_filling$>$ - number of spin-down velocity molecular 
+              orbitals if UNRESTRICTED.  Not used if a RESTRICTED calculation.
+\end{itemize}
+
+
+
+\subsection{\tt WAVEFUNCTION\_EXPANDER}
+\label{sec:pspw_wavefunction_expander}
+The functionality of this task is now performed automatically. For backward
+compatibility, we provide a description of the input to this task.
+
+The wavefunction\_expander task is used to convert a new wavefunction
+file that spans a larger grid space from an old wavefunction file.
+Input to the WAVEFUNCTION\_EXPANDER task is contained
+within the WAVEFUNCTION\_EXPANDER sub-block.
+\begin{verbatim}
+PSPW
+  ...
+  WAVEFUNCTION_EXPANDER
+     ...
+  END
+  ...
+END
+\end{verbatim}
+To run a WAVEFUNCTION\_EXPANDER calculation the following directive 
+is used:
+\begin{verbatim}
+TASK PSPW WAVEFUNCTION_EXPANDER
+\end{verbatim}
+Listed below is the format of a WAVEFUNCTION\_EXPANDER sub-block.
+\begin{verbatim}
+PSPW
+... 
+   WAVEFUNCTION_EXPANDER   
+     OLD_WAVEFUNCTION_FILENAME: <string old_wavefunction_name default input_movecs>
+     NEW_WAVEFUNCTION_FILENAME: <string new_wavefunction_name default input_movecs>
+     NEW_NGRID: <integer na1 na2 na3>
+    
+   END
+...
+END
+\end{verbatim}
+The following list describes the input for the WAVEFUNCTION\_EXPANDER
+sub-block.
+\begin{itemize}
+        \item $<$old\_wavefunction\_name$>$ - name of the
+              wavefunction file.
+        \item $<$new\_wavefunction\_name$>$ - name that will 
+              point to a wavefunction file.
+        \item $<$na1 na2 na3$>$ - number of grid points in each dimension
+              for the new wavefunction file. 
+\end{itemize}
+
+\subsection{\tt STEEPEST\_DESCENT} 
+\label{sec:pspw_steepest_descent}
+The functionality of this task is now performed automatically by the PSPW minimizer. 
+For backward compatibility, we provide a description of the input to this task.
+
+The steepest\_descent task is used to optimize the one-electron orbitals
+with respect to the total energy.  In addition it can also be used to optimize
+geometries.   This method is meant to be used for coarse optimization of
+the one-electron orbitals.
+% ref does not exist
+%  A detailed description of the this method
+%is described in section \ref{sec:pspw_sd2}
+
+Input to the steepest\_descent simulation is contained
+within the steepest\_descent sub-block.
+\begin{verbatim}
+PSPW
+  ...
+  STEEPEST_DESCENT
+     ...
+  END
+  ...
+END
+\end{verbatim}
+To run a steepest\_descent calculation the following directive is used:
+\begin{verbatim}
+TASK PSPW steepest_descent 
+\end{verbatim}
+The steepest\_descent sub-block contains a great deal
+of input, including pointers to data, as well as
+parameter input.  Listed below is the format of a STEEPEST\_DESCENT sub-block.
+\begin{verbatim}
+PSPW
+...
+   STEEPEST_DESCENT
+      CELL_NAME <string cell_name>
+      [GEOMETRY_OPTIMIZE]
+      INPUT_WAVEFUNCTION_FILENAME  <string input_wavefunctions  default input_movecs>
+      OUTPUT_WAVEFUNCTION_FILENAME <string output_wavefunctions default input_movecs>
+      FAKE_MASS <real fake_mass default 400000.0>
+      TIME_STEP <real time_step default 5.8>
+      LOOP <integer inner_iteration outer_iteration default 10 1>
+      TOLERANCES <real tole tolc tolr default 1.0d-9 1.0d-9 1.0d-4>
+      ENERGY_CUTOFF       <real ecut default (see input desciption)>
+      WAVEFUNCTION_CUTOFF <real wcut default (see input description)>
+      EWALD_NCUT <integer ncut default 1>
+      EWALD_RCUT <real rcut default (see input description)>
+      XC (Vosko || LDA || PBE96 || revPBE || HF || PBE0 || revPBE0 || 
+          LDA-SIC    || LDA-SIC/2    ||  LDA-0.4SIC    || LDA-SIC/4    || LDA-0.2SIC ||
+          PBE96-SIC  || PBE96-SIC/2  ||  PBE96-0.4SIC  || PBE96-SIC/4  || PBE96-0.2SIC ||
+          revPBE-SIC || revPBE-SIC/2 ||  revPBE-0.4SIC || revPBE-SIC/4 || revPBE-0.2SIC ||
+          default Vosko)
+      [MULLIKEN]
+
+   END
+...
+
+END
+\end{verbatim}
+The following list describes the input for the STEEPEST\_DESCENT
+sub-block.
+\begin{itemize}
+        \item $<$cell\_name$>$ - name of
+              the simulation\_cell named $<$cell\_name$>$. See section \ref{sec:pspw_cell}.
+        \item GEOMETRY\_OPTIMIZE - optional keyword which if specified
+              turns on geometry optimization.   
+        \item $<$input\_wavefunctions$>$ - name of the
+              file containing one-electron orbitals
+        \item $<$output\_wavefunctions$>$ - name of the
+              file tha will contain the one-electron orbitals at the
+              end of the run. 
+        \item $<$fake\_mass$>$ - value for the electronic
+              fake mass ($\mu$).
+        \item $<$time\_step$>$ - value for the time step ($\Delta t$).
+        \item $<$inner\_iteration$>$ - number of iterations between the 
+              printing out of energies and tolerances
+        \item $<$outer\_iteration$>$ - number of outer iterations
+        \item $<$tole$>$ - value for the energy tolerance.
+        \item $<$tolc$>$ - value for the one-electron orbital tolerance.
+        \item $<$tolr$>$ - value for the ion position tolerance.
+        \item $<$ecut$>$ - value for the cutoff energy used
+                           to define the density.  Default is set
+                           to be the maximum value that will fit
+                           within the simulation\_cell $<$cell\_name$>$.
+        \item $<$wcut$>$ - value for the cutoff energy used
+                           to define the one-electron orbitals. Default is set
+                           to be the maximum value that will fit
+                           within the simulation\_cell $<$cell\_name$>$.
+        \item $<$ncut$>$ - value for the number of unit cells
+                          to sum over (in each direction) for the real space
+                          part of the Ewald summation.  Note Ewald summation
+                          is only used if the simulation\_cell is periodic.
+        \item $<$rcut$>$ - value for the cutoff radius used
+                          in the Ewald summation.  Note Ewald summation
+                          is only used if the simulation\_cell is periodic. \\
+                          Default set to be
+                          $\frac{MIN(\left| \vec{a_i} \right|)}{\pi}, i=1,2,3$.
+        \item (Vosko $||$ PBE96 $||$ revPBE $||$ ...) - Choose between Vosko et al's LDA 
+                               parameterization or the orginal and revised Perdew, Burke, 
+                               and Ernzerhof GGA functional.  In addition, several hybrid options.
+        \item MULLIKEN - optional keyword which if specified
+                         causes a Mulliken analysis to be performed at
+                         the end of the simulation.  
+\end{itemize}
+
+
+
+
+
+\section{Band Tasks}
+\label{sec:band_tasks}
+
+All input to the Band Tasks is contained within the compound NWPW block,
+\begin{verbatim}
+NWPW
+   ...
+END
+\end{verbatim}
+
+To perform an actual calculation a TASK Band directive is used (Section \ref{sec:task}).  
+\begin{verbatim}
+  TASK Band
+\end{verbatim} 
+
+Once a user has specified a geometry, the Band module can be invoked with no input directives (defaults invoked throughout).  There are sub-directives which allow for customized application; those currently provided as options for the Band module are:
+\begin{verbatim}
+NWPW
+  CELL_NAME <string cell_name default 'cell_default'>
+  ZONE_NAME <string zone_name default 'zone_default'>
+  INPUT_WAVEFUNCTION_FILENAME  <string input_wavefunctions  default input_movecs>
+  OUTPUT_WAVEFUNCTION_FILENAME <string output_wavefunctions default input_movecs>
+  FAKE_MASS <real fake_mass default 400000.0>
+  TIME_STEP <real time_step default 5.8>
+  LOOP <integer inner_iteration outer_iteration default 10 100>
+  TOLERANCES <real tole tolc default 1.0e-7 1.0e-7>
+  CUTOFF              <real cutoff>
+  ENERGY_CUTOFF       <real ecut default (see input description)>
+  WAVEFUNCTION_CUTOFF <real wcut default (see input description)>
+  EWALD_NCUT <integer ncut default 1>]
+  EWALD_RCUT <real rcut default (see input description)>
+  XC (Vosko || PBE96  || revPBE default Vosko)
+  DFT||ODFT||RESTRICTED||UNRESTRICTED
+  MULT <integer mult default 1>
+  CG
+  LMBFGS
+  SCF [Anderson|| simple || Broyden]
+      [CG || RMM-DIIS]
+      [density || potential]
+      [ALPHA real alpha default 0.25]
+      [ITERATIONS integer inner_iterations default 5]
+      [OUTER_ITERATIONS integer outer_iterations default 0]
+
+  
+  SIMULATION_CELL ... (see input description) END
+  BRILLOUIN_ZONE  ... (see input description) END
+  MONKHORST-PACK <real n1 n2 n3 default 1 1 1>
+
+  BAND_DPLOT    ... (see input description) END
+
+  MAPPING <integer mapping default 1>
+  SMEAR <sigma default 0.001> [TEMPERATURE <temperature>] [FERMI || GAUSSIAN default FERMI] 
+                              [ORBITALS <integer orbitals default 4>]
+
+END 
+\end{verbatim}
+The following list describes these keywords.
+\begin{itemize}
+        \item $<$cell\_name$>$ - name of
+              the simulation\_cell named $<$cell\_name$>$.  See section \ref{sec:pspw_cell}.
+        \item $<$input\_wavefunctions$>$ - name of the
+              file containing one-electron orbitals
+        \item $<$output\_wavefunctions$>$ - name that will
+              point to file containing the one-electron orbitals at the
+              end of the run. 
+        \item $<$fake\_mass$>$ - value for the electronic
+              fake mass ($\mu$). This parameter is not presently used in a 
+              conjugate gradient simulation
+        \item $<$time\_step$>$ - value for the time step ($\Delta t$).  This
+              parameter is not presently used in a conjugate gradient simulation.
+        \item $<$inner\_iteration$>$ - number of iterations between the 
+              printing out of energies and tolerances
+        \item $<$outer\_iteration$>$ - number of outer iterations
+        \item $<$tole$>$ - value for the energy tolerance.
+        \item $<$tolc$>$ - value for the one-electron orbital tolerance.
+        \item $<$cutoff$>$ - value for the cutoff energy used to define the wavefunction.  In addition
+                             using the CUTOFF keyword automatically sets the cutoff energy for the density
+                             to be twice the wavefunction cutoff.
+        \item $<$ecut$>$ - value for the cutoff energy used
+                           to define the density. Default is set
+                           to be the maximum value that will fit
+                            within the simulation\_cell $<$cell\_name$>$.
+        \item $<$wcut$>$ - value for the cutoff energy used
+                           to define the one-electron orbitals.
+                           Default is set to be the maximum value that 
+                           will fix within the simulation\_cell $<$cell\_name$>$.
+        \item $<$ncut$>$ - value for the number of unit cells
+                          to sum over (in each direction) for the real space
+                          part of the Ewald summation. Note Ewald summation
+                          is only used if the simulation\_cell is periodic.
+        \item $<$rcut$>$ - value for the cutoff radius used
+                          in the Ewald summation. Note Ewald summation
+                          is only used if the simulation\_cell is periodic. \\
+                           Default set to be
+                          $\frac{MIN(\left| \vec{a_i} \right|)}{\pi}, i=1,2,3$.
+        \item (Vosko $||$ PBE96 $||$ revPBE) - Choose between Vosko et al's LDA 
+                               parameterization or the orginal and revised Perdew, Burke, 
+                               and Ernzerhof GGA functional.
+        \item SIMULATION\_CELL (see section \ref{sec:pspw_cell})
+        \item BRILLOUIN\_ZONE  (see section \ref{sec:band_brillouin_zone})
+        \item MONKHORST-PACK - Alternatively, the MONKHORST-PACK keyword can be used 
+                               to enter a MONKHORST-PACK sampling of the Brillouin zone.
+        \item $<$smear$>$ - value for smearing broadending
+        \item $<$temperature$>$ - same as smear but in units of K.
+        \item CG - optional keyword which sets the minimizer to 1
+        \item LMBFGS - optional keyword which sets the minimizer to 2
+        \item SCF - optional keyword which sets the minimizer to be a band by band minimizer.  Several
+                    options are available for setting the density or potential mixing, and the type of
+                    Kohn-Sham minimizer.
+\end{itemize}
+
+
+\subsection{Brillouin Zone}
+\label{sec:band_brillouin_zone}
+To supply the special points of the Brillouin zone,
+the user defines a brillouin\_zone sub-block within the NWPW 
+block.  Listed below is the format of a brillouin\_zone sub-block.
+\begin{verbatim}
+NWPW
+...
+   BRILLOUIN_ZONE
+      ZONE_NAME <string name default 'zone_default'>
+      (KVECTOR <real k1 k2 k3 no default> <real weight default (see input description)>
+       ...)
+   END
+...
+END
+\end{verbatim}
+The user enters the special points and weights of the
+Brillouin zone.  The following list describes the input in detail.
+\begin{itemize}
+        \item $<$name$>$ - user-supplied name for the simulation block. 
+        \item $<$k1 k2 k3$>$ - user-supplied values for a special point in the
+                               Brillouin zone.
+        \item $<$weight$>$ - user-supplied weight.  Default is to set the weight
+                         so that the sum of all the weights for the entered  
+                         special points adds up to unity.
+\end{itemize}
+
+
+\normalsize
+\subsection{\tt BAND\_DPLOT}
+\label{sec:pspw_dplot}
+The BAND BAND\_DPLOT task is used to generate plots of various types of electron
+densities (or orbitals) of a crystal.  The electron density is calculated on the
+specified set of grid points from a Band calculation.  The output file
+generated is in the Gaussian Cube format.
+Input to the BAND\_DPLOT task is contained
+within the BAND\_DPLOT sub-block.
+\begin{verbatim}
+NWPW
+  ...
+  BAND_DPLOT
+     ...
+  END
+  ...
+END
+\end{verbatim}
+To run a BAND\_DPLOT calculation the following directive
+is used:
+\begin{verbatim}
+TASK BAND BAND_DPLOT
+\end{verbatim}
+Listed below is the format of a BAND\_DPLOT sub-block.
+\begin{verbatim}
+NWPW
+...
+   BAND_DPLOT
+     VECTORS <string input_wavefunctions  default input_movecs>
+     DENSITY [total||difference||alpha||beta||laplacian||potential default total] <string density_name no default>
+     ELF [restricted|alpha|beta] <string elf_name no default>
+     ORBITAL (density || real || complex default density) <integer orbital_number no default> <integer brillion_number default 1> <string orbital_name no default>
+
+
+     [LIMITXYZ [units <string Units default angstroms>]
+     <real X_From> <real X_To> <integer No_Of_Spacings_X>
+     <real Y_From> <real Y_To> <integer No_Of_Spacings_Y>
+     <real Z_From> <real Z_To> <integer No_Of_Spacings_Z>]
+
+   END
+
+...
+END
+\end{verbatim}
+
+The following list describes the input for the BAND\_DPLOT
+sub-block.
+
+\begin{verbatim}
+     VECTORS <string input_wavefunctions  default input_movecs>
+\end{verbatim}
+ This sub-directive specifies the name of the molecular orbital file. If the second file is optionally given the density is computed as the difference between the corresponding electron densities. The vector files have to match.
+
+\begin{verbatim}
+     DENSITY [total||difference||alpha||beta||laplacian||potential default total] <string density_name no default>
+\end{verbatim}
+This sub-directive specifies, what kind of density is to be plotted. The known names for total, difference, alpha, beta, laplacian, and potential.
+
+\begin{verbatim}
+     ELF [restricted|alpha|beta] <string elf_name no default>
+\end{verbatim}
+This sub-directive specifies that an electron localization function (ELF) is to be plotted.
+
+\begin{verbatim}
+     ORBITAL (density || real || complex default density) <integer orbital_number no default> \
+             <integer brillion_number default 1> <string orbital_name no default>
+\end{verbatim}
+This sub-directive specifies the molecular orbital number that is to be plotted.
+
+\begin{verbatim}
+     LIMITXYZ [units <string Units default angstroms>]
+     <real X_From> <real X_To> <integer No_Of_Spacings_X>
+     <real Y_From> <real Y_To> <integer No_Of_Spacings_Y>
+     <real Z_From> <real Z_To> <integer No_Of_Spacings_Z>
+\end{verbatim}
+By default the grid spacing and the limits of the cell to be plotted are defined by the input wavefunctions.  Alternatively the user can use the LIMITXYZ sub-directive to specify other limits.  The grid is generated using No\_Of\_Spacings + 1 points along each direction. The known names for Units are angstroms, au and bohr.
+
+\subsection{SMEAR - Fractional Occupation of the Molecular Orbitals}
+\label{sec:band_smear}
+The smear keyword to turn on fractional occupation of the molecular orbitals
+\begin{verbatim}
+  SMEAR <sigma default 0.001> [TEMPERATURE <temperature>] [FERMI || GAUSSIAN default FERMI] 
+                              [ORBITALS <integer orbitals default 4>]
+\end{verbatim}
+Both Fermi-Dirac (FERMI) and Gaussian broadening functions are available.  The ORBITALS keyword is used to change
+the number of virtual orbitals to be used in the calculation.  Note to use this option the user must currently use the
+SCF minimizer.  The following SCF option is recommended for running fractional occupation
+\begin{verbatim}
+  SCF Anderson
+\end{verbatim}
+
+
+\section{PAW Tasks}
+\label{sec:paw_tasks}
+
+
+All input to the PAW Tasks is contained within the compound NWPW block,
+\begin{verbatim}
+NWPW
+   ...
+END
+\end{verbatim}
+
+
+To perform an actual calculation a TASK PAW directive is used
+(Section \ref{sec:task}).  
+\begin{verbatim}
+  TASK PAW
+\end{verbatim} 
+In addition to the directives listed in Section \ref{sec:task}, i.e.
+\begin{verbatim}
+TASK paw energy          
+TASK paw gradient         
+TASK paw optimize         
+TASK paw saddle           
+TASK paw freqencies       
+TASK paw vib
+\end{verbatim}
+there are additional directives that are specific to the PSPW module, which are:
+\begin{verbatim}
+TASK PAW [Car-Parrinello             ||
+          steepest_descent            ]
+\end{verbatim}
+
+
+Once a user has specified a geometry, the PAW module can be invoked with no input directives (defaults invoked throughout).  There are sub-directives which allow for customized application; those currently provided as options for the PAW module are:
+\begin{verbatim}
+NWPW
+  CELL_NAME <string cell_name default 'cell_default'>  
+  [GEOMETRY_OPTIMIZE]
+  INPUT_WAVEFUNCTION_FILENAME  <string input_wavefunctions  default input_movecs>
+  OUTPUT_WAVEFUNCTION_FILENAME <string output_wavefunctions default input_movecs>
+  FAKE_MASS <real fake_mass default 400000.0>
+  TIME_STEP <real time_step default 5.8>
+  LOOP <integer inner_iteration outer_iteration default 10 100>
+  TOLERANCES <real tole tolc default 1.0e-7 1.0e-7>
+  CUTOFF              <real cutoff>
+  ENERGY_CUTOFF       <real ecut default (see input description)>
+  WAVEFUNCTION_CUTOFF <real wcut default (see input description)>
+  EWALD_NCUT <integer ncut default 1>]
+  EWALD_RCUT <real rcut default (see input description)>
+  XC (Vosko || PBE96 || revPBE  default Vosko)
+  DFT||ODFT||RESTRICTED||UNRESTRICTED
+  MULT <integer mult default 1>
+  INTEGRATE_MULT_L <integer imult default 1>
+  
+  SIMULATION_CELL ... (see input description) END
+  CAR-PARRINELLO  ... (see input description) END
+
+  MAPPING <integer mapping default 1>
+END 
+
+
+END 
+\end{verbatim}
+The following list describes these keywords.
+\begin{itemize}
+        \item $<$cell\_name$>$ - name of the
+              the simulation\_cell named $<$cell\_name$>$. The
+              current version of PAW only accepts periodic unit cells.  
+              See section \ref{sec:pspw_cell}.
+        \item GEOMETRY\_OPTIMIZE - optional keyword which if specified
+              turns on geometry optimization.   
+        \item $<$input\_wavefunctions$>$ - name of the
+              file containing one-electron orbitals
+        \item $<$output\_wavefunctions$>$ - name of the
+              file that will contain the one-electron orbitals at the
+              end of the run. 
+        \item $<$fake\_mass$>$ - value for the electronic
+              fake mass ($\mu$). This parameter is not presently used in a 
+              conjugate gradient simulation
+        \item $<$time\_step$>$ - value for the time step ($\Delta t$).  This
+              parameter is not presently used in a conjugate gradient simulation.
+        \item $<$inner\_iteration$>$ - number of iterations between the 
+              printing out of energies and tolerances
+        \item $<$outer\_iteration$>$ - number of outer iterations
+        \item $<$tole$>$ - value for the energy tolerance.
+        \item $<$tolc$>$ - value for the one-electron orbital tolerance.
+        \item $<$cutoff$>$ - value for the cutoff energy used to define the wavefunction.  In addition
+                             using the CUTOFF keyword automatically sets the cutoff energy for the density
+                             to be twice the wavefunction cutoff.
+        \item $<$ecut$>$ - value for the cutoff energy used
+                           to define the density. Default is set
+                           to be the maximum value that will fit
+                            within the simulation\_cell $<$cell\_name$>$.
+        \item $<$wcut$>$ - value for the cutoff energy used
+                           to define the one-electron orbitals.
+                           Default is set to be the maximum value that 
+                           will fix within the simulation\_cell $<$cell\_name$>$.
+        \item $<$ncut$>$ - value for the number of unit cells
+                          to sum over (in each direction) for the real space
+                          part of the smooth compensation summation. 
+        \item $<$rcut$>$ - value for the cutoff radius used
+                          in the smooth compensation summation. \\
+                           Default set to be
+                          $\frac{MIN(\left| \vec{a_i} \right|)}{\pi}, i=1,2,3$.
+        \item (Vosko $||$ PBE96 $||$ revPBE) - Choose between Vosko et al's LDA 
+                               parameterization or the orginal and revised Perdew, Burke, 
+                               and Ernzerhof GGA functional.
+        \item MULT - optional keyword which if specified allows the user to define the spin multiplicity
+                     of the system
+        \item INTEGRATE\_MULT\_L - optional keyword which if specified allows the user to define the 
+                                   angular XC integration of the augmented region
+        \item SIMULATION\_CELL (see section \ref{sec:pspw_cell})
+        \item CAR-PARRINELLO(see section \ref{sec:pspw_CP})
+
+
+        \item $<$mapping$>$ - for a value of 1 slab FFT is used, for a value of 2 a 2d-hilbert FFT is used.
+\end{itemize}
+
+
+\section{Pseudopotential and PAW basis Libraries}
+\label{sec:psp_library}
+
+A library of pseudopotentials used by PSPW and BAND is currently available  in the
+directory \\
+\verb+ $NWCHEM_TOP/src/nwpw/libraryps/pspw_default+
+
+The elements listed in the following table are present:
+
+\begin{verbatim}
+  H                                                  He
+ -------                              ------------------
+  Li Be                               B  C  N  O  F  Ne
+ -------                             -------------------
+  Na Mg                               Al Si P  S  Cl Ar
+ -------------------------------------------------------
+  K  Ca Sc Ti V  Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr         
+ -------------------------------------------------------
+  Rb Sr Y  Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I  Xe
+ -------------------------------------------------------
+  Cs Ba La Hf Ta W  Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn
+ -------------------------------------------------------
+  Fr Ra . 
+ -----------------
+
+          ------------------------------------------
+           .  .  .  .  .  .  Gd .  .  .  .  .  .  .                      
+          ------------------------------------------
+           .  .  U  .  Pu .  .  .  .  .  .  .  .  .      
+          ------------------------------------------
+
+\end{verbatim}
+The pseudopotential libraries are continually being tested
+and added.   Also,  the PSPW program can read in pseudopotentials
+in CPI and TETER format generated with pseudopotential generation
+programs such as the OPIUM package of Rappe et al.
+The user can request additional pseudopotentials from 
+Eric J. Bylaska at (Eric.Bylaska@pnl.gov).  
+
+Similarly, a library of PAW basis used by PAW is currently available in the
+directory \\
+\verb+ $NWCHEM_TOP/src/nwpw/libraryps/paw_default+
+
+\begin{verbatim}
+  H                                                  He
+ -------                              -----------------
+  Li Be                               B  C  N  O  F  Ne
+ -------                             ------------------
+  Na Mg                               Al Si P  S  Cl Ar
+ ------------------------------------------------------
+  K  Ca Sc Ti V  Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr         
+ ------------------------------------------------------
+  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .
+ ------------------------------------------------------
+  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .
+ ------------------------------------------------------
+  .  .  . 
+ -----------------
+                                                      
+
+          ------------------------------------------
+           .  .  .  .  .  .  .  .  .  .  .  .  .  .                      
+          ------------------------------------------
+           .  .  .  .  .  .  .  .  .  .  .  .  .  .      
+          ------------------------------------------
+
+\end{verbatim}
+
+
+Currently there are not very many elements available for PAW.  However,
+the user can request additional basis sets from Eric J. Bylaska at (Eric.Bylaska@pnl.gov).
+
+A preliminary implementation of the HGH pseudopotentials (Hartwigsen, Goedecker, and Hutter)
+has been implemented into the PSPW module.  To access
+the pseudopotentials the pseudopotentials input block is used.  For
+example, to redirect the code to use HGH pseudopotentials for carbon
+and hydrogen, the following input would be used.
+\begin{verbatim}
+nwpw
+   ...
+   pseudopotentials
+    C  library  HGH_LDA
+    H  library  HGH_LDA
+   end
+   ...
+end
+\end{verbatim}
+The implementation of HGH pseudopotentials is rather limited in this release.
+HGH pseudopotentials cannot be used to optimize unit cells, and they
+do not work with the MULLIKEN option.  They also have not yet been implemented 
+into the BAND structure code.
+
+To read in pseudopotentials in CPI format the following input would be used.
+\begin{verbatim}
+nwpw
+   ...
+   pseudopotentials
+    C  CPI  c.cpi
+    H  CPI  h.cpi
+   end
+   ...
+end
+\end{verbatim}
+In order for the program to recognize the CPI format the CPI files, e.g. c.cpi 
+have to be prepended with the ``$<$CPI$>$'' keyword.
+
+To read in pseudopotentials in TETER format the following input would be used.
+\begin{verbatim}
+nwpw
+   ...
+   pseudopotentials
+    C  TETER  c.teter
+    H  TETER  h.teter
+   end
+   ...
+end
+\end{verbatim}
+In order for the program to recognize the TETER format the TETER files, e.g. c.teter 
+have to be prepended with the ``$<$TETER$>$'' keyword.
+
+
+If you wish to redirect the code to a different directory other than
+the default one, 
+you need to set the environmental variable
+{\tt NWCHEM\_NWPW\_LIBRARY}
+to the new location of the \verb+libraryps+ directory.
+
+
+
+\section{NWPW RTDB Entries and DataFiles}
+\label{sec:pspw_data}
+Input to the PSPW and Band modules are contained in both the RTDB and datafiles.
+The RTDB is used to store input that the user will need to directly specify.
+Input of this kind includes ion positions, ion velocities, and simulation cell
+parameters.  The datafiles are used to store input, such the one-electron 
+orbitals, one-electron orbital velocities, formatted pseudopotentials, 
+and one-dimensional pseudopotentials, that the user will in most cases
+run a program to generate.
+
+\subsection{Ion Positions}
+The positions of the ions are stored in the default geometry structure
+in the RTDB and must be specified  using the GEOMETRY directive.
+
+\subsection{Ion Velocities}
+The velocities of the ions are stored in the default geometry structure
+in the RTDB, and must be specified using the GEOMETRY directive.
+
+
+
+\subsection{Wavefunction Datafile}
+The one-electron orbitals are stored in a wavefunction datafile.  This
+is a binary file and cannot be directly edited.  This datafile is used
+by steepest\_descent and Car-Parrinello tasks and can be generated
+using the wavefunction\_initializer or wavefunction\_expander tasks.
+
+\subsection{Velocity Wavefunction Datafile}
+The one-electron orbital velocities are stored in a velocity wavefunction 
+datafile.  This is a binary file and cannot be directly edited.  This datafile 
+is used by the Car-Parrinello task and can be generated
+using the v\_wavefunction\_initializer task.
+
+\subsection{Formatted Pseudopotential Datafile}
+The pseudopotentials in Kleinman-Bylander form expanded on a simulation
+cell (3d grid) are stored in a formatted pseudopotential datafile.
+This is a binary file and cannot be directly edited.
+This datafile 
+is used by steepest\_descent and Car-Parrinello tasks and can be generated
+using the pseudopotential\_formatter task.
+
+\subsection{One-Dimensional Pseudopotential Datafile}
+The one-dimensional pseudopotentials are stored in a one-dimensional 
+pseudopotential file.  This is an ASCII file and can be directly edited with
+a text editor.  However, the user will usually use the psp\_generator
+task to generate this datafile.
+
+The data stored in the one-dimensional pseudopotential file is
+\begin{verbatim}
+   character*2 element       :: element name
+   integer     charge        :: valence charge of ion
+   real        mass          :: mass of ion
+   integer     lmax          :: maximum angular component
+   real        rcut(lmax)    :: cutoff radii used to define pseudopotentials
+   integer     nr            :: number of points in the radial grid
+   real        dr            :: linear spacing of the radial grid
+   real        r(nr)         :: one-dimensional radial grid
+   real        Vpsp(nr,lmax) :: one-dimensional pseudopotentials
+   real        psi(nr,lmax)  :: one-dimensional pseudowavefunctions
+   real        r_semicore        :: semicore radius
+   real        rho_semicore(nr)  :: semicore density
+\end{verbatim}
+and the format of it is:
+\begin{verbatim}
+[line 1:     ] element  
+[line 2:     ] charge mass lmax
+[line 3:     ] (rcut(l), l=1,lmax)
+[line 4:     ] nr dr
+[line 5:     ]    r(1)  (Vpsp(1,l),  l=1,lmax)
+[line 6:     ] ....
+[line nr+4:  ] r(nr) (Vpsp(nr,l), l=1,lmax)
+[line nr+5:  ] r(1)  (psi(1,l), l=1,lmax) 
+[line nr+6:  ] ....
+[line 2*nr+4:] r(nr) (psi(nr,l), l=1,lmax)
+[line 2*nr+5:] r_semicore
+if (r_semicore read) then
+[line 2*nr+6:] r(1)  rho_semicore(1)
+[line 2*nr+7:] ....
+[line 3*nr+5:] r(nr) rho_semicore(nr)
+end if
+\end{verbatim}
+
+
+
+\subsection{PSPW Car-Parrinello Output Datafiles}
+\label{sec:pspw_cp_data}
+
+\subsubsection{XYZ motion file}
+Data file that stores ion positions and velocities as
+a function of time in XYZ format.
+
+\begin{verbatim}
+[line 1:          ]  n_ion
+[line 2:          ]  
+do ii=1,n_ion
+[line 2+ii:       ] atom_name(ii), x(ii),y(ii),z(ii),vx(ii),vy(ii),vz(ii)
+end do
+[line n_ion+3     ] n_nion
+
+do ii=1,n_ion
+[line n_ion+3+ii: ] atom_name(ii), x(ii),y(ii),z(ii), vx(ii),vy(ii),vz(ii)
+end do
+[line 2*n_ion+4:  ]  ....
+\end{verbatim}
+
+
+\subsubsection{ION\_MOTION motion file}
+Datafile that stores ion positions and velocities
+as a function of time
+
+\begin{verbatim}
+[line 1:          ]  it_out, n_ion, omega
+[line 2:          ]  time
+do ii=1,n_ion
+[line 2+ii:       ] x(ii),y(ii),z(ii), vx(ii),vy(ii),vz(ii)
+end do
+[line n_ion+3     ] time
+do 
+do ii=1,n_ion
+[line n_ion+3+ii: ] x(ii),y(ii),z(ii), vx(ii),vy(ii),vz(ii)
+end do
+[line 2*n_ion+4:  ]  ....
+\end{verbatim}
+
+\subsubsection{EMOTION motion file}
+Datafile that store energies as a function of time
+\begin{verbatim}
+[line 1:          ]  time, E1,E2,E3,E4,E5,E6,E7,E8, (E9,E10, if Nose-Hoover)
+[line 2:          ] ...
+\end{verbatim}
+
+
+\subsubsection{HMOTION motion file}
+Datafile that stores the rotation matrix
+as a function of time.
+
+\begin{verbatim}
+[line 1:          ] time
+[line 2:          ] ms,ne(ms),ne(ms)
+do i=1,ne(ms)
+[line 2+i:        ] (hml(i,j), j=1,ne(ms)
+end do
+[line 3+ne(ms):   ] time
+[line 4+ne(ms):   ] ....
+\end{verbatim}
+
+
+\subsubsection{EIGMOTION motion file}
+Datafile that stores the eigenvalues for the one-electron
+orbitals as a function of time.
+
+\begin{verbatim}
+[line 1:          ]  time, (eig(i), i=1,number_orbitals)
+[line 2:          ] ...
+\end{verbatim}
+
+
+\subsubsection{OMOTION motion file}
+Datafile that stores a reduced representation of the
+one-electron orbitals.  To be used with a molecular
+orbital viewer that will be ported to NWChem
+in the near future. 
+
+       
+
+\section{Car-Parrinello Scheme for Ab Initio Molecular Dynamics}
+\label{sec:pspw_Car-Parrinello}
+
+Car and Parrinello developed a unified scheme for doing {\it ab initio}
+molecular dynamics by combining the motion of the ion cores and a fictitious
+motion for the Kohn-Sham orbitals of density-functional theory 
+(R. Car and M. Parrinello, Phys. Rev. Lett. \textbf{55}, 2471, (1985)).  
+At the heart of this method they introduced a fictitious kinetic energy 
+functional for the Kohn-Sham orbitals.
+
+\begin{eqnarray}
+\label{appendix:b1}
+KE(\{\psi_{i,\sigma}(\vec{r})\}) &=& \sum_{i,\sigma}^{occ} 
+                                      \int d\vec{r}\ \mu \left| 
+                                      \dot{\psi}_{i,\sigma}(\vec{r}) \right|^2 
+\end{eqnarray}
+
+\noindent
+Given this kinetic energy the constrained equations of motion are found 
+by taking the first variation of the auxiliary Lagrangian.
+\begin{eqnarray}
+\label{appendix:b2}
+L &=& \sum_{i,\sigma}^{occ} \int d\vec{r}\ \mu \left| 
+     \dot{\psi}_{i,\sigma}(\vec{r}) \right|^2 
+     + \frac 12 \sum_I M_I \left| \dot{\vec{R}}_I \right|^2 
+- E\left[ \left\{ \psi_{i,\sigma}(\vec{r})\right\},\left\{\vec{R}_I \right\} \right]  
+\nonumber \\
+&&+\sum_{ij,\sigma} \Lambda_{ij,\sigma} \left( \int d\vec{r}\ 
+\psi_{i,\sigma}^{*}(\vec{r}) \psi_{j,\sigma}(\vec{r}) - \delta_{ij,\sigma} 
+\right) 
+\end{eqnarray}
+
+\noindent
+Which generates a dynamics for the wavefunctions $\psi_{i,\sigma}(\vec{r})$ and 
+atoms positions $\vec{R}_I$ through the constrained equations of motion:
+
+\begin{eqnarray}
+\mu \ddot{\psi}_{i,\sigma}(\vec{r},t) &=& -\frac{\delta E}{\delta \psi_{i,\sigma }^{*}
+\left( \vec{r},t \right) } + \sum\limits_j \Lambda_{ij,\sigma} 
+\psi_{j,\sigma} \left( \vec{r},t \right)
+\label{eq:b3}
+\end{eqnarray}
+\begin{eqnarray}
+M_I \ddot{\vec{R}}_I &=& -\frac{\partial E}{\partial \vec{R}_I}
+\label{eq:b4}
+\end{eqnarray}
+
+\noindent
+where $\mu$ is the fictitious mass for the electronic degrees of freedom and 
+$M_I$ are the ionic masses.  
+The adjustable parameter $\mu$ is used to 
+describe the relative rate at which the wavefunctions change with time.  
+$\Lambda_{ij,\sigma}$ are the 
+Lagrangian multipliers for the orthonormalization of the single-particle 
+orbitals $\psi_{i,\sigma}(\vec{r})$. 
+They are defined by the orthonormalization constraint conditions
+and can be rigorously found. 
+However, the equations of motion for the Lagrange multipliers
+depend on the specific algorithm used to integrate
+Eqs.~\ref{eq:b3}-\ref{eq:b4}.
+
+For this method to give ionic motions that are physically meaningful
+the kinetic energy of the Kohn-Sham orbitals must be relatively
+small when compared to the kinetic energy of the ions.
+There are two ways where this criterion can fail.
+First, the numerical integrations for the Car-Parrinello equations of motion 
+can often lead to large relative values of the kinetic energy of 
+the Kohn-Sham orbitals relative to the kinetic energy of the ions.
+This kind of failure is easily fixed by requiring a more accurate
+numerical integration, i.e. use a smaller time step for the numerical
+integration.
+Second, during the motion of the system a the ions can be in locations where
+there is an Kohn-Sham orbital level crossing, i.e. the density-functional
+energy can have two states that are nearly degenerate.  This kind
+of failure often occurs in the study of chemical reactions.
+This kind of failure is not easily fixed and requires the use
+of a more sophisticated density-functional energy that accounts
+for low-lying excited electronic states.
+
+
+\subsection{Verlet Algorithm for Integration}
+%\subsection{Verlet Algorithm for Integrating Eqs. \ref{eq:b3} - \ref{eq:b4} }
+
+Eqs.~\ref{eq:b3}-\ref{eq:b4} integrated using the Verlet algorithm
+results in
+
+\begin{eqnarray}
+\psi_{i,\sigma}^{t+ \Delta t} 
+                   &\leftarrow& 
+                    2 \psi_{i,\sigma}^{t} - \psi_{i,\sigma}^{t-\Delta t}
+                      + \frac{(\Delta t)^2}{\mu}
+                        \left[ 
+                           \frac{\delta E}{\delta \psi_{i,\sigma}^{*}}
+                            + \sum_{j} \psi_{j,\sigma} \Lambda_{ji,\sigma} 
+                        \right]_{t}
+\label{eq:b6}
+\end{eqnarray}
+\begin{eqnarray}
+\vec{R}_I^{t+\Delta t} &\leftarrow& 
+                    2 \vec{R}_I^{t} - \vec{R}_I^{t-\Delta t}
+                    + \frac{(\Delta t)^2}{M_I} 
+                       \frac{\partial E}{\partial \vec{R}_I}
+\label{eq:b7}
+\end{eqnarray}
+               
+In this molecular dynamic procedure we have to know variational derivative
+$\frac{\delta E}{\delta \psi_{i,\sigma}^{*}}$ and the matrix 
+$\Lambda_{ij,\sigma}$. 
+The variational derivative $\frac{\delta E}{\delta \psi_{i,\sigma}^{*}}$ 
+can be analytically found and is
+\begin{eqnarray}
+\frac{\delta E}{\delta \psi_{i,\sigma}^{*}} 
+      &=&  -\frac{1}{2} \nabla^2 
+            \psi_{i,\sigma}(\vec{r}) \nonumber \\
+      &+& \int d\vec{r^{\prime}} 
+           W_{ext}(\vec{r},\vec{r^{\prime}}) 
+          \psi_{i,\sigma}(\vec{r^{\prime}}) \nonumber \\
+      &+& \int d\vec{r^{\prime}} 
+                    \frac{n(\vec{r^{\prime}})}{|\vec{r}-\vec{r^{\prime}}|}
+          \psi_{i,\sigma}(\vec{r}) \nonumber \\
+      &+& \mu_{xc}^{\sigma}(\vec{r}) 
+          \psi_{i,\sigma}(\vec{r}) \nonumber \\
+& \equiv & \hat{H} \psi_{i,\sigma}
+\label{eq:b8}
+\end{eqnarray}
+                        
+\noindent
+To find the matrix $\Lambda_{ij,\sigma}$ we impose the orthonormality
+constraint on $\psi_{i,\sigma}^{t+\Delta t}$ to obtain a
+matrix Riccatti equation, and then Riccatti equation is solved by an iterative
+solution 
+% ref does not exist
+%(see section ~\ref{sec:pspw_sd2}).
+
+
+\subsection{Constant Temperature Simulations: Nose-Hoover Thermostats}
+\label{sec:pspw_nose}
+
+Nose-Hoover Thermostats for the electrons and ions can also be added to the 
+Car-Parrinello simulation.  In this type of simulation thermostats variables $x_e$ and $x_R$ 
+are added to the simulation by adding the auxiliary energy functionals to the total energy.
+\begin{eqnarray}
+ION\_THERMOSTAT(x_R)      &=&  \frac{1}{2} Q_R \dot{x_R} + E_{R0}x_R \\ 
+ELECTRON\_THERMOSTAT(x_e) &=&  \frac{1}{2} Q_e \dot{x_e} + E_{e0}x_e 
+\end{eqnarray}
+
+In these equations, the average kinetic energy for the ions is
+\begin{eqnarray}
+E_{R0} = \frac{1}{2} f k_B T
+\end{eqnarray}
+where $f$ is the number of atomic degrees of freedom, $k_B$ is 
+Boltzmann's constant, and T is the desired temperature.  Defining
+the average fictitious kinetic energy of the electrons is not as straightforward.
+Bl\"{o}chl and Parrinello 
+(P.E. Bl\"{o}chl and M. Parrinello, Phys. Rev. B, \textbf{45}, 9413, (1992)) 
+have suggested the following formula for determining
+the average fictitious kinetic energy
+\begin{eqnarray}
+E_{e0} = 4 k_B T \frac{\mu}{M} \sum_i <\psi_i|-\frac{1}{2} \nabla^2 |\psi_i>
+\end{eqnarray}
+where $\mu$ is the fictitious electronic mass, $M$ is average mass of one atom,
+and $\sum_i <\psi_i|-\frac{1}{2} \nabla^2 |\psi_i>$ is the kinetic energy of the
+electrons.
+
+Bl\"{o}chl and Parrinello suggested that the choice of mass parameters, 
+$Q_e$, and $Q_R$ should be made such that the period of oscillating thermostats 
+should be chosen larger than the typical time scale for the dynamical events of 
+interest but shorter than the simulation time.  
+\begin{eqnarray}
+P_{ion} &=& 2\pi \sqrt{\frac{Q_R}{4E_{R0}}}\\
+P_{electron} &=& 2\pi \sqrt{\frac{Q_e}{4E_{e0}}}
+\end{eqnarray}
+where $P_{ion}$ and $P_{electron}$ are the periods of oscillation for the ionic and fictitious
+electronic thermostats.  
+
+
+In simulated annealing simulations the electronic and ionic Temperatures are scaled 
+according to an exponential cooling schedule,
+\begin{eqnarray}
+T_e(t) = T_e^0 \exp^{-\frac{t}{\tau_e}}\\
+T_{ionic}(t) = T_{ionic}^0 \exp^{-\frac{t}{\tau_{ionic}}}
+\end{eqnarray}
+where $T_e^0$ and $T_{ionic}^0$ are the initial temperatures, and $\tau_e$ and $\tau_{ionic}$
+are the cooling rates in atomic units.  
+
+
+
+\section{PSPW Tutorial 1: Minimizing the geometry for a C$_2$ molecule}
+\label{sec:pspw_sd}
+
+In this section we show how use the PSPW module to optimize the geometry 
+for a C$_2$ molecule at the PBE96 levels. 
+
+In the following example we show the input needed to optimize the geometry
+for a C$_2$ molecule at the LDA level.  In this example, default pseudopotentials
+from the pseudopotential library are used for C, the boundary condition is free-space, 
+the exchange correlation functional is PBE96, The boundary condition is free-space, and 
+the simulation cell cell is aperiodic and cubic with a side length of 10.0 Angstroms and has
+40 grid points in each direction (cutoff energy is 44 Ry).  
+\begin{verbatim}
+         
+start c2_pspw_pbe96
+title "C2 restricted singlet dimer optimization - PBE96/44Ry"
+
+geometry  
+C    -0.62 0.0 0.0
+C     0.62 0.0 0.0
+end
+       
+pspw
+   simulation_cell units angstroms
+      boundary_conditions aperiodic
+      SC 10.0
+      ngrid 40 40 40
+   end
+   xc pbe96
+end
+set nwpw:minimizer 2
+task pspw optimize
+\end{verbatim}
+
+
+
+\normalsize
+\section{PSPW Tutorial 2: Running a Car-Parrinello Simulation}
+\label{sec:pspw_cp}
+\normalsize
+
+In this section we show how use the PSPW module to perform a Car-Parrinello
+molecular dynamic simulation for a C$_2$ molecule at the LDA level.  
+Before running a PSPW Car-Parrinello  simulation the system should be
+on the Born-Oppenheimer surface, i.e. the one-electron orbitals should be minimized 
+with respect to the total energy (i.e. task pspw energy).  The input needed
+is basically the same as for optimizing the geometry of a C$_2$ molecule at the LDA level,
+except that and additional Car-Parrinello sub-block is added.  
+
+In the following example we show the input needed to run a Car-Parrinello simulation
+for a C$_2$ molecule at the LDA level.  In this example, default pseudopotentials
+from the pseudopotential library are used for C, the boundary condition is free-space, 
+the exchange correlation functional is LDA, The boundary condition is free-space, and 
+the simulation cell cell is aperiodic and cubic with a side length of 10.0 Angstroms and has
+40 grid points in each direction (cutoff energy is 44 Ry).  The time step and fake mass
+for the Car-Parrinello run are specified to be 5.0 au and 600.0 au, respectively.  
+
+\begin{verbatim}
+         
+start c2_pspw_lda_md
+title "C2 restricted singlet dimer, LDA/44Ry - constant energy Car-Parrinello simulation"
+
+geometry  
+C    -0.62 0.0 0.0
+C     0.62 0.0 0.0
+end
+       
+pspw
+   simulation_cell units angstroms
+      boundary_conditions aperiodic
+      lattice
+        lat_a 10.00d0
+        lat_b 10.00d0
+        lat_c 10.00d0
+      end
+      ngrid 40 40 40
+   end
+   Car-Parrinello
+     fake_mass 600.0
+     time_step 5.0
+     loop 10 10
+   end
+end
+set nwpw:minimizer 2
+task pspw energy
+task pspw Car-Parrinello
+\end{verbatim}
+
+
+\normalsize
+\section{PSPW Tutorial 3: optimizing a unit cell and geometry for Silicon-Carbide}
+\label{sec:pspw_unitcell_optimization}
+
+The following example demonstrates how to uses the PSPW module to optimize the unit cell
+and geometry for a silicon-carbide crystal.
+
+\begin{verbatim}
+title "SiC 8 atom cubic cell - geometry and unit cell optimization"
+
+start SiC
+
+#**** Enter the geometry using fractional coordinates ****
+geometry units au center noautosym noautoz print
+  system crystal
+    lat_a 8.277d0
+    lat_b 8.277d0
+    lat_c 8.277d0
+    alpha 90.0d0
+    beta  90.0d0
+    gamma 90.0d0
+  end
+Si    -0.50000d0  -0.50000d0  -0.50000d0
+Si     0.00000d0   0.00000d0  -0.50000d0
+Si     0.00000d0  -0.50000d0   0.00000d0
+Si    -0.50000d0   0.00000d0   0.00000d0
+C     -0.25000d0  -0.25000d0  -0.25000d0
+C      0.25000d0   0.25000d0  -0.25000d0
+C      0.25000d0  -0.25000d0   0.25000d0
+C     -0.25000d0   0.25000d0   0.25000d0
+end
+
+#***** setup the nwpw gamma point code ****
+nwpw
+   simulation_cell
+     ngrid 16 16 16
+   end
+   ewald_ncut 8
+end
+set nwpw:minimizer 2
+set nwpw:psi_nolattice .true.  # turns of unit cell checking for wavefunctions
+
+driver
+  clear
+  maxiter 40
+end
+set includestress .true.    # this option tells driver to optimize the unit cell
+
+task pspw optimize
+
+\end{verbatim}
+
+\normalsize
+\section{PSPW Tutorial 4: QM/MM simulation for CCl$_4$ + 64H$_2$O}
+\label{sec:pspw_qmmm_simulation}
+
+In this section we show how use the PSPW module to perform a Car-Parrinello
+QM/MM simulation for a CCl$_4$ molecule in a box of 64 H$_2$O.
+Before running a PSPW Car-Parrinello  simulation the system should be
+on the Born-Oppenheimer surface, i.e. the one-electron orbitals should be minimized
+with respect to the total energy (i.e. task pspw energy).  
+
+In the following example we show the input needed to run a Car-Parrinello 
+QM/MM simulation for a CCl$_4$ molecule in a box of 64 H$_2$O. 
+In this example, default pseudopotentials from the pseudopotential library are used 
+for C, Cl, O\^\ and H\^\, exchange correlation functional is PBE96, The boundary condition is periodic, and
+with a side length of 23.577 Bohrs and has a cutoff energy is 50 Ry).  The time step and fake mass
+for the Car-Parrinello run are specified to be 5.0 au and 600.0 au, respectively.
+\normalsize
+\begin{verbatim}
+title "CCl4 + water64 QM/MM simulation- 195 atom cell"
+
+memory 1500 mb
+start CCl4-water64
+
+#scratch_dir   ./perm
+#permanent_dir ./perm
+\end{verbatim}
+\tiny
+\begin{verbatim}
+geometry nocenter noautoz noautosym
+C        0.7804E-02 -0.2897E-02  0.1420E-02 -0.2910E-07 -0.1055E-07 -0.2001E-07
+Cl      -0.8603E+00  0.1547E+01  0.2556E+00 -0.2910E-07 -0.1055E-07 -0.2001E-07
+Cl       0.8421E+00 -0.4774E+00  0.1518E+01 -0.2910E-07 -0.1055E-07 -0.2001E-07
+Cl      -0.1167E+01 -0.1279E+01 -0.4592E+00 -0.2910E-07 -0.1055E-07 -0.2001E-07
+Cl       0.1218E+01  0.1972E+00 -0.1309E+01 -0.2910E-07 -0.1055E-07 -0.2001E-07
+
+O^       0.1545E+01 -0.3640E+01 -0.2558E+01  0.1675E-03 -0.2134E-03  0.2608E-03
+H^       0.6377E+00 -0.4054E+01 -0.2486E+01 -0.8467E-05 -0.6710E-04 -0.1101E-02
+H^       0.1860E+01 -0.3690E+01 -0.3506E+01  0.9734E-03  0.1042E-02  0.4566E-03
+O^      -0.6138E+01 -0.4627E+01 -0.1181E+01 -0.1477E-03 -0.1616E-03 -0.1670E-03
+H^      -0.7068E+01 -0.4458E+01 -0.8549E+00 -0.6948E-03 -0.5435E-03 -0.1521E-02
+H^      -0.5628E+01 -0.5133E+01 -0.4858E+00 -0.8855E-03  0.2768E-03  0.6961E-03
+O^       0.3808E+01  0.2935E+01  0.2147E+01 -0.6374E-04  0.1081E-03 -0.3184E-04
+H^       0.4187E+01  0.2253E+01  0.2772E+01  0.5832E-03  0.5155E-03  0.2134E-04
+H^       0.4511E+01  0.3612E+01  0.1926E+01 -0.4943E-03  0.3230E-03 -0.7034E-03
+O^      -0.6210E+00 -0.5260E+01 -0.2842E+01  0.1727E-03  0.9623E-04  0.8184E-04
+H^      -0.2750E+00 -0.5523E+01 -0.3742E+01  0.1119E-03  0.7072E-03 -0.1203E-03
+H^      -0.7042E+00 -0.6073E+01 -0.2266E+01 -0.6331E-03 -0.4150E-03 -0.7442E-03
+O^       0.2760E+01  0.2730E+01 -0.4774E+01 -0.1327E-03  0.3354E-03 -0.1366E-03
+H^       0.3676E+01  0.2570E+01 -0.5142E+01 -0.5941E-04  0.5145E-03 -0.3057E-04
+H^       0.2828E+01  0.2989E+01 -0.3811E+01 -0.2370E-03  0.1001E-02 -0.3029E-03
+O^      -0.2387E+01  0.5716E+01  0.3965E+01 -0.6296E-04 -0.1405E-04 -0.2853E-04
+H^      -0.1694E+01  0.5121E+01  0.3558E+01  0.5787E-04 -0.5014E-03  0.9024E-03
+H^      -0.1939E+01  0.6465E+01  0.4453E+01 -0.2046E-03  0.6948E-04 -0.2150E-04
+O^      -0.3456E+01  0.5123E+01 -0.2154E+01 -0.3714E-04 -0.1948E-03  0.4699E-05
+H^      -0.3043E+01  0.4342E+01 -0.2622E+01 -0.1119E-05 -0.3220E-03  0.2734E-03
+H^      -0.3693E+01  0.5826E+01 -0.2825E+01 -0.2085E-03 -0.4813E-03 -0.2351E-03
+O^       0.5940E+00  0.1399E+01  0.3463E+01 -0.1288E-03 -0.9776E-04 -0.1409E-03
+H^       0.1245E+01  0.1913E+01  0.2904E+01 -0.3790E-03 -0.4010E-03 -0.6948E-03
+H^      -0.3201E+00  0.1790E+01  0.3355E+01 -0.1070E-03  0.6148E-04  0.3431E-03
+O^       0.4845E+01  0.4936E+01  0.4088E+01  0.2876E-03 -0.2625E-03 -0.7661E-04
+H^       0.4098E+01  0.5168E+01  0.3465E+01 -0.1301E-03 -0.5756E-04  0.4909E-03
+H^       0.4740E+01  0.3991E+01  0.4397E+01  0.1202E-02 -0.7660E-03 -0.1345E-02
+O^      -0.7209E+00  0.4285E+01  0.1237E+01 -0.1519E-03  0.6569E-04  0.1096E-03
+H^       0.1958E-01  0.4499E+01  0.6000E+00 -0.5731E-04 -0.2919E-03  0.9929E-04
+H^      -0.1597E+01  0.4541E+01  0.8281E+00 -0.1117E-03 -0.3977E-03 -0.2666E-03
+O^       0.3836E+01  0.2390E-01 -0.6670E+00  0.2697E-04 -0.6474E-05 -0.4852E-03
+H^       0.4335E+01 -0.5028E+00  0.2166E-01 -0.1127E-02  0.1144E-02  0.1230E-02
+H^       0.2962E+01 -0.4225E+00 -0.8598E+00 -0.1721E-03  0.3171E-03 -0.3321E-03
+O^      -0.7034E+00 -0.2120E+01 -0.3538E+01  0.1292E-03 -0.1072E-03 -0.1333E-03
+H^      -0.7567E+00 -0.3086E+01 -0.3284E+01  0.5037E-03 -0.2660E-03 -0.6455E-03
+H^       0.2369E+00 -0.1894E+01 -0.3793E+01  0.2452E-03  0.6329E-03  0.9344E-03
+O^       0.1465E+01 -0.4009E+01  0.4737E+01  0.3828E-03 -0.5067E-04  0.2649E-03
+H^       0.4923E+00 -0.3944E+01  0.4958E+01  0.3572E-03  0.1205E-02 -0.2187E-03
+H^       0.1582E+01 -0.4544E+01  0.3901E+01  0.1254E-03 -0.4486E-03  0.4761E-03
+O^      -0.3224E+01 -0.3091E+00  0.1701E+01 -0.2499E-03 -0.2643E-03 -0.1442E-03
+H^      -0.2950E+01 -0.9626E+00  0.9949E+00 -0.4237E-03 -0.8809E-04 -0.3749E-03
+H^      -0.3005E+01  0.6188E+00  0.1398E+01 -0.6682E-03 -0.1587E-03 -0.1246E-03
+O^       0.5321E+01  0.3728E+01 -0.5992E+01  0.1243E-03  0.1407E-03  0.3011E-04
+H^       0.5383E+01  0.3541E+01 -0.5012E+01  0.2175E-03 -0.4499E-04  0.4888E-05
+H^       0.5850E+01  0.3045E+01 -0.6496E+01 -0.1043E-03  0.1021E-03 -0.1441E-03
+O^      -0.3365E+01 -0.2780E+01  0.3200E+01  0.2012E-03 -0.1310E-03 -0.1047E-04
+H^      -0.4036E+01 -0.2193E+01  0.3653E+01 -0.5141E-03 -0.4867E-03 -0.6379E-03
+H^      -0.3029E+01 -0.2327E+01  0.2375E+01  0.8564E-03  0.1057E-03  0.3940E-03
+O^      -0.6115E+01  0.4096E+01 -0.1385E+01 -0.2067E-03 -0.2544E-03  0.9568E-04
+H^      -0.6740E+01  0.3315E+01 -0.1402E+01 -0.7231E-04 -0.3492E-03 -0.2122E-03
+H^      -0.5445E+01  0.4002E+01 -0.2121E+01 -0.1573E-03  0.1356E-03  0.9095E-04
+O^      -0.1742E+01  0.5855E+01 -0.5125E+01 -0.4122E-03 -0.4759E-04 -0.3874E-04
+H^      -0.1849E+01  0.6848E+01 -0.5063E+01  0.6007E-03  0.8115E-04 -0.2854E-03
+H^      -0.9641E+00  0.5640E+01 -0.5716E+01 -0.3814E-03 -0.9778E-03  0.3468E-03
+O^       0.3739E+01  0.4907E+01 -0.2428E+00 -0.1192E-05 -0.2368E-03  0.6724E-04
+H^       0.3792E+01  0.3995E+01  0.1643E+00 -0.1132E-02 -0.3235E-03  0.1695E-04
+H^       0.4347E+01  0.4954E+01 -0.1035E+01 -0.9395E-03 -0.1354E-02 -0.7298E-03
+O^       0.2987E+00 -0.5628E+01 -0.8431E-01 -0.1166E-03  0.1187E-03 -0.7732E-04
+H^       0.1276E+01 -0.5804E+01  0.3260E-01 -0.1801E-03  0.3589E-04  0.3022E-03
+H^       0.5558E-01 -0.4777E+01  0.3824E+00 -0.2238E-03  0.1517E-03 -0.1903E-03
+O^       0.1671E+01 -0.3048E+00 -0.4287E+01 -0.8597E-04  0.3502E-04  0.1369E-03
+H^       0.2286E+01 -0.1088E+01 -0.4380E+01  0.2453E-03  0.3302E-03 -0.1838E-03
+H^       0.1079E+01 -0.2489E+00 -0.5091E+01  0.4959E-03  0.6558E-03 -0.2504E-03
+O^      -0.2941E-01  0.2661E+01 -0.4082E+01  0.1756E-03 -0.5742E-04 -0.1573E-03
+H^      -0.8858E+00  0.2586E+01 -0.3571E+01  0.9848E-03 -0.7154E-04  0.1212E-02
+H^       0.2989E+00  0.1746E+01 -0.4318E+01  0.2778E-03 -0.9530E-04  0.1150E-03
+O^      -0.1659E+01  0.3915E+00 -0.2844E+01 -0.1270E-04 -0.1120E-03 -0.9166E-04
+H^      -0.1204E+01  0.8157E+00 -0.2061E+01 -0.1351E-02  0.1320E-02 -0.9371E-04
+H^      -0.1101E+01 -0.3654E+00 -0.3184E+01  0.1361E-02  0.3184E-03  0.1229E-02
+O^       0.2089E+01  0.5535E+01 -0.3917E+01  0.1204E-04 -0.7803E-04  0.8825E-04
+H^       0.2792E+01  0.6204E+01 -0.4157E+01  0.3230E-03 -0.4625E-03 -0.6275E-04
+H^       0.2250E+01  0.4687E+01 -0.4423E+01 -0.8063E-03 -0.1769E-04 -0.2737E-03
+O^      -0.3593E+01  0.4433E+01  0.9266E+00  0.1739E-03 -0.3290E-04 -0.3843E-04
+H^      -0.4481E+01  0.4653E+01  0.1330E+01  0.7439E-04  0.3872E-03 -0.4940E-03
+H^      -0.3441E+01  0.5007E+01  0.1217E+00  0.4864E-03 -0.6984E-03 -0.4424E-03
+O^       0.5367E+01 -0.2126E+01 -0.1991E+01 -0.2551E-03  0.1323E-04  0.1464E-03
+H^       0.4615E+01 -0.2084E+01 -0.1333E+01 -0.9232E-03 -0.8571E-03 -0.5616E-03
+H^       0.6028E+01 -0.2817E+01 -0.1698E+01 -0.9047E-03 -0.8682E-03 -0.4681E-03
+O^      -0.5302E+01  0.2831E+01  0.3682E+01 -0.8660E-05  0.1412E-03  0.1894E-06
+H^      -0.5277E+01  0.3688E+01  0.3167E+01  0.1207E-02  0.1614E-03  0.9149E-04
+H^      -0.5660E+01  0.2102E+01  0.3099E+01 -0.2688E-03  0.5247E-03 -0.3316E-03
+O^      -0.4788E+01 -0.5922E+01 -0.4919E+01 -0.3929E-03 -0.9853E-05  0.3585E-03
+H^      -0.4466E+01 -0.4994E+01 -0.5108E+01  0.2628E-03 -0.1497E-03  0.8332E-03
+H^      -0.5586E+01 -0.6120E+01 -0.5489E+01 -0.1623E-03  0.6350E-03 -0.1750E-03
+O^       0.2449E+01  0.5722E+01  0.2217E+01  0.1955E-03  0.6679E-06  0.1909E-03
+H^       0.1457E+01  0.5804E+01  0.2318E+01  0.1783E-03 -0.2907E-03  0.2435E-03
+H^       0.2696E+01  0.4757E+01  0.2130E+01  0.5892E-03 -0.2071E-04  0.1586E-02
+O^       0.5651E+01  0.8176E+00 -0.2769E+01 -0.5866E-04 -0.1602E-04 -0.5855E-04
+H^       0.4741E+01  0.1046E+01 -0.2421E+01 -0.1450E-04 -0.4401E-03  0.3128E-03
+H^       0.5700E+01 -0.1641E+00 -0.2953E+01  0.2489E-03  0.4500E-04 -0.2890E-03
+O^       0.2231E+01 -0.2461E+01 -0.6899E-01 -0.1876E-04  0.7416E-04  0.1305E-03
+H^       0.2029E+01 -0.2779E+01 -0.9952E+00  0.1240E-02 -0.7506E-03  0.1383E-03
+H^       0.1687E+01 -0.2982E+01  0.5886E+00  0.7330E-03 -0.8484E-03  0.8706E-05
+O^       0.2294E+01  0.3375E+01  0.4716E+01 -0.1652E-03  0.2400E-03 -0.1586E-04
+H^       0.1550E+01  0.2835E+01  0.5111E+01  0.4246E-03 -0.1052E-02 -0.6720E-03
+H^       0.3160E+01  0.3107E+01  0.5138E+01  0.1669E-04  0.1270E-02  0.2646E-03
+O^       0.7453E+00  0.4511E+01 -0.1428E+01  0.3864E-05  0.1202E-03 -0.1956E-04
+H^       0.1116E+01  0.5421E+01 -0.1241E+01  0.2420E-03  0.3195E-06  0.1360E-03
+H^       0.4066E+00  0.4476E+01 -0.2368E+01  0.5441E-03  0.1747E-03 -0.2138E-03
+O^       0.3229E+01  0.2523E+01 -0.1702E+01  0.8684E-04  0.1770E-03 -0.1302E-03
+H^       0.2367E+01  0.3024E+01 -0.1626E+01  0.1473E-03  0.2022E-03  0.3857E-03
+H^       0.3259E+01  0.1803E+01 -0.1008E+01  0.2618E-03 -0.1686E-03 -0.4964E-03
+O^      -0.4696E+01  0.1761E+01 -0.5781E+01 -0.1399E-03  0.5263E-04 -0.1977E-04
+H^      -0.4285E+01  0.1469E+01 -0.4918E+01 -0.2145E-03  0.4890E-03  0.1638E-03
+H^      -0.4401E+01  0.2692E+01 -0.5993E+01  0.4905E-03 -0.3279E-03 -0.8519E-03
+O^      -0.1324E+01  0.8348E+00  0.5926E+01 -0.4021E-03 -0.2283E-03  0.1866E-03
+H^      -0.9165E+00  0.1419E+01  0.5224E+01  0.6640E-03 -0.3537E-03  0.7015E-03
+H^      -0.1446E+01 -0.8850E-01  0.5561E+01  0.6728E-04 -0.2690E-03  0.1331E-03
+O^       0.3599E+01 -0.4806E+01  0.5923E+01  0.2240E-03  0.1057E-03 -0.1705E-06
+H^       0.2749E+01 -0.4798E+01  0.5396E+01  0.7639E-03  0.1003E-02 -0.8568E-03
+H^       0.3835E+01 -0.5749E+01  0.6158E+01 -0.8554E-03 -0.1746E-03 -0.3717E-04
+O^       0.3944E+01  0.1279E+01  0.4873E+01 -0.1309E-04  0.2875E-03 -0.3979E-03
+H^       0.4210E+01  0.1174E+01  0.5831E+01  0.1066E-02  0.1745E-02 -0.5234E-03
+H^       0.3429E+01  0.4734E+00  0.4579E+01 -0.2975E-03 -0.1943E-03  0.1395E-02
+O^       0.5483E+01 -0.7180E+00 -0.5757E+01  0.1312E-03  0.1083E-03  0.7991E-04
+H^       0.6244E+01 -0.1590E+00 -0.6085E+01 -0.2745E-03  0.5021E-03 -0.1907E-03
+H^       0.5629E+01 -0.9484E+00 -0.4795E+01  0.4035E-03  0.4934E-03  0.1307E-03
+O^      -0.3287E+00  0.3790E+01  0.5524E+01 -0.7176E-05  0.1175E-03  0.2084E-04
+H^       0.3281E+00  0.3309E+01  0.4943E+01  0.4936E-04  0.5155E-04  0.1453E-03
+H^      -0.5608E+00  0.3217E+01  0.6310E+01  0.1927E-03  0.3956E-03  0.2736E-03
+O^      -0.4527E+01 -0.7948E+00 -0.3582E+01 -0.5240E-04  0.1526E-03  0.1337E-03
+H^      -0.3613E+01 -0.3987E+00 -0.3669E+01 -0.1226E-03  0.1632E-03 -0.5451E-03
+H^      -0.4999E+01 -0.3775E+00 -0.2804E+01  0.5636E-03  0.5893E-04  0.5571E-03
+O^      -0.6007E+01 -0.5060E+01  0.4881E+01 -0.1087E-04  0.3392E-03  0.9991E-04
+H^      -0.5573E+01 -0.4743E+01  0.4038E+01 -0.1440E-03 -0.6469E-03 -0.3565E-03
+H^      -0.6934E+01 -0.4690E+01  0.4939E+01 -0.3791E-03 -0.4391E-03 -0.7065E-03
+O^       0.2677E+01 -0.3981E+01  0.2476E+01  0.1089E-03 -0.1054E-03  0.1375E-03
+H^       0.3493E+01 -0.3506E+01  0.2147E+01 -0.6883E-04  0.1734E-03  0.8114E-04
+H^       0.2947E+01 -0.4819E+01  0.2949E+01  0.4465E-03  0.2834E-03  0.6339E-03
+O^      -0.5289E+01  0.1887E+01  0.8394E+00  0.9633E-04 -0.1890E-04 -0.1561E-03
+H^      -0.5106E+01  0.1824E+01 -0.1418E+00  0.5279E-03 -0.4110E-03 -0.5213E-04
+H^      -0.5189E+01  0.9829E+00  0.1255E+01  0.4782E-03  0.2522E-03  0.3444E-03
+O^      -0.2867E+01 -0.3827E+01 -0.4340E+01  0.3624E-03 -0.4131E-03 -0.1321E-03
+H^      -0.2075E+01 -0.3938E+01 -0.3739E+01  0.3156E-03  0.3721E-03  0.8843E-04
+H^      -0.3635E+01 -0.3461E+01 -0.3814E+01  0.6431E-03  0.1311E-02 -0.9227E-03
+O^      -0.3108E+01 -0.5334E+01 -0.4502E+00  0.1643E-03  0.8922E-04 -0.6109E-04
+H^      -0.3192E+01 -0.5798E+01 -0.1332E+01 -0.7280E-03  0.6552E-03 -0.2814E-03
+H^      -0.3767E+01 -0.4583E+01 -0.4035E+00 -0.1942E-04 -0.1519E-03  0.1222E-02
+O^      -0.4554E+01 -0.2685E+01 -0.1490E+01 -0.1628E-03  0.1207E-03 -0.5201E-04
+H^      -0.4735E+01 -0.2235E+01 -0.2365E+01 -0.7933E-03  0.5578E-04  0.5343E-04
+H^      -0.5002E+01 -0.2175E+01 -0.7554E+00 -0.7371E-03 -0.5704E-03  0.7546E-04
+O^       0.3475E+01 -0.4761E+01 -0.1158E+01  0.4877E-04  0.1059E-04 -0.5547E-04
+H^       0.3973E+01 -0.5628E+01 -0.1186E+01  0.4343E-03  0.2527E-03 -0.6376E-03
+H^       0.2590E+01 -0.4871E+01 -0.1610E+01  0.9492E-04 -0.8052E-04 -0.1260E-03
+O^       0.3854E+01 -0.3250E+01 -0.4023E+01  0.1560E-03 -0.1082E-03  0.5321E-04
+H^       0.3588E+01 -0.3599E+01 -0.4922E+01  0.9956E-03 -0.1719E-03 -0.1793E-03
+H^       0.4732E+01 -0.2777E+01 -0.4097E+01  0.5500E-03 -0.7001E-03  0.9756E-03
+O^       0.5345E+01 -0.2101E+01  0.4132E+01 -0.2089E-03 -0.2574E-03  0.1618E-04
+H^       0.6127E+01 -0.2332E+01  0.4711E+01 -0.9618E-03 -0.1658E-03  0.1067E-02
+H^       0.4498E+01 -0.2226E+01  0.4648E+01 -0.8397E-03  0.5189E-03 -0.8292E-03
+O^       0.1412E+00 -0.6149E+01  0.3138E+01  0.2892E-03  0.5036E-03  0.3292E-04
+H^      -0.7153E+00 -0.6083E+01  0.2626E+01  0.1289E-03  0.4802E-03  0.3119E-03
+H^      -0.2587E-01 -0.6612E+01  0.4008E+01  0.3628E-03  0.1494E-02  0.5832E-03
+O^      -0.3946E+00 -0.1042E+01  0.4471E+01 -0.1576E-04 -0.2368E-03  0.1489E-03
+H^       0.9542E-03 -0.3942E+00  0.3820E+01 -0.3498E-03  0.1869E-03  0.3694E-03
+H^      -0.1312E+01 -0.1300E+01  0.4169E+01  0.4445E-03 -0.1244E-02 -0.3945E-03
+O^       0.5287E+01 -0.5793E+01  0.1490E+01 -0.7884E-04 -0.1027E-03 -0.2446E-03
+H^       0.5544E+01 -0.5748E+01  0.2455E+01  0.2712E-03 -0.1871E-03 -0.3382E-03
+H^       0.4354E+01 -0.5449E+01  0.1377E+01  0.1098E-03  0.5129E-03  0.2576E-04
+O^      -0.1759E+01  0.2460E+01  0.3320E+01 -0.7676E-04 -0.2161E-03 -0.1200E-03
+H^      -0.2739E+01  0.2657E+01  0.3343E+01 -0.8392E-04 -0.2861E-03 -0.1401E-03
+H^      -0.1350E+01  0.2896E+01  0.2518E+01  0.1772E-03  0.9790E-03  0.6584E-03
+O^      -0.3269E+01  0.3863E+01 -0.6091E+01 -0.1391E-03  0.5335E-04  0.6947E-04
+H^      -0.3641E+01  0.4123E+01 -0.6982E+01 -0.1000E-02  0.3166E-03  0.5059E-03
+H^      -0.2735E+01  0.4622E+01 -0.5719E+01 -0.3032E-03  0.1718E-03  0.6328E-04
+O^      -0.1995E+01 -0.3980E+01  0.5500E+01 -0.2062E-03  0.5484E-04 -0.1547E-03
+H^      -0.1956E+01 -0.3408E+01  0.6320E+01  0.2765E-03 -0.4418E-03  0.1804E-03
+H^      -0.2256E+01 -0.3419E+01  0.4714E+01 -0.9111E-03  0.4974E-03  0.3954E-03
+O^       0.4884E+01  0.6075E+01 -0.3080E+01  0.7152E-05  0.2327E-03 -0.1652E-05
+H^       0.5552E+01  0.5525E+01 -0.2578E+01 -0.1376E-04 -0.1713E-03 -0.4170E-03
+H^       0.5056E+01  0.7045E+01 -0.2906E+01  0.7043E-03  0.1266E-03 -0.1535E-03
+O^       0.2615E+01 -0.1474E+01  0.4779E+01  0.2480E-03  0.2773E-03  0.6476E-04
+H^       0.3294E+01 -0.7726E+00  0.4997E+01  0.6977E-03 -0.5022E-03  0.1176E-02
+H^       0.2248E+01 -0.1858E+01  0.5626E+01 -0.5883E-03 -0.2609E-03 -0.5399E-03
+O^      -0.3116E+01 -0.1271E+01  0.5862E+01  0.4484E-04 -0.4921E-03 -0.2958E-03
+H^      -0.3824E+01 -0.1292E+01  0.6568E+01  0.4160E-03 -0.1014E-02  0.6119E-04
+H^      -0.3115E+01 -0.3749E+00  0.5417E+01  0.2101E-03  0.3728E-04  0.7720E-03
+O^      -0.3732E+01  0.4587E+00 -0.1024E+01  0.1530E-04  0.1409E-03  0.2144E-03
+H^      -0.3291E+01  0.6710E+00 -0.1521E+00  0.4425E-03  0.2528E-04  0.2437E-04
+H^      -0.3039E+01  0.3972E+00 -0.1742E+01 -0.2884E-03 -0.8982E-04 -0.6985E-04
+O^      -0.6022E+01 -0.2054E+01  0.9880E+00  0.1148E-03  0.2240E-04 -0.6860E-04
+H^      -0.5613E+01 -0.2820E+01  0.1483E+01 -0.8247E-03 -0.3674E-03  0.1037E-03
+H^      -0.6561E+01 -0.1498E+01  0.1621E+01 -0.9049E-03 -0.3507E-03 -0.6107E-03
+O^       0.5388E+01 -0.6596E-01  0.2375E+01  0.1300E-03  0.7636E-04  0.9649E-04
+H^       0.4393E+01  0.2216E-01  0.2323E+01  0.8852E-05 -0.9209E-03  0.5667E-03
+H^       0.5638E+01 -0.5050E+00  0.3238E+01  0.9431E-03 -0.1611E-03 -0.2704E-03
+O^      -0.3777E+00 -0.3378E+01  0.1384E+01 -0.1187E-03  0.6597E-04 -0.9305E-04
+H^       0.3137E+00 -0.3344E+01  0.2106E+01  0.6941E-04 -0.1725E-03 -0.2510E-03
+H^      -0.2333E+00 -0.2620E+01  0.7483E+00 -0.1763E-03  0.1878E-03  0.5338E-04
+O^      -0.5167E+01  0.9137E-01  0.4518E+01 -0.7764E-04 -0.2549E-04  0.4651E-03
+H^      -0.4490E+01  0.2494E+00  0.3799E+01 -0.5003E-03 -0.3149E-03  0.3790E-05
+H^      -0.5695E+01  0.9276E+00  0.4669E+01 -0.8687E-03 -0.3647E-03 -0.4836E-03
+end
+\end{verbatim}
+\normalsize
+\begin{verbatim}
+#set up the QM/MM simulation and cell
+NWPW
+   SIMULATION_CELL
+      SC 23.577
+   END
+   QMMM
+      lj_ion_parameters C  3.41000000d0 0.10000000d0
+      lj_ion_parameters Cl  3.45000000d0 0.16d0
+      lj_ion_parameters O^ 3.16555789d0 0.15539425d0
+
+      # new input format
+      fragment spc
+         size 3
+         index_start 6:195:3
+         shake units angstroms 1 2 3 cyclic 1.0 1.632993125 1.0
+      end
+   END
+END
+
+#***** Setup conjugate gradient code ****
+nwpw
+   cutoff 25.0
+   xc pbe96
+   lmbfgs
+   ewald_ncut 1
+end
+set nwpw:lcao_skip .true.
+task pspw energy
+
+
+#***** Setup Car-Parrinello code ****
+nwpw
+   car-parrinello
+      Nose-Hoover 1200.0 300.0 1200.0 300.0
+      time_step 5.00
+      fake_mass 750.0
+      loop 10 2000
+      xyz_filename         ccl4.00.xyz
+      ion_motion_filename  ccl4.00.ion_motion
+      emotion_filename     ccl4.00.emotion
+    end
+end
+task pspw car-parrinello
+
+\end{verbatim}
+
+
+
+
+\normalsize
+\section{Band Tutorial 1: Minimizing the energy of a silicon-carbide crystal by running a PSPW and Band simulation in tandem}
+\label{sec:band_tutorial1}
+\normalsize
+
+The following input deck performs a PSPW energy calculation followed
+by a Band energy calculation at the $\Gamma$-point  for a cubic (8-atom) 
+silicon-carbide crystal.  Since the geometry is entered using fractional coordinates
+the unit cell parameters do not have to be re-specified in the simulation\_cell
+nwpw sub-block.  In this example, default pseudopotential from the pseudopotential
+library are used for C and Si.  The advantage of running these calculations in tandem is that
+the Band code uses the wavefunctions generated from the faster PSPW calculation for
+its initial guess.  The PSPW energy is -38.353570, and the Band energy is -38.353570.
+ 
+\begin{verbatim}
+start SiC_band
+title "SiC 8 atom cubic cell"
+
+#**** geometry entered using fractional coordinates ****
+geometry units au center noautosym noautoz print 
+  system crystal 
+    lat_a 8.277d0
+    lat_b 8.277d0
+    lat_c 8.277d0
+    alpha 90.0d0
+    beta  90.0d0
+    gamma 90.0d0
+  end
+Si    -0.50000d0  -0.50000d0  -0.50000d0
+Si     0.00000d0   0.00000d0  -0.50000d0
+Si     0.00000d0  -0.50000d0   0.00000d0
+Si    -0.50000d0   0.00000d0   0.00000d0
+C     -0.25000d0  -0.25000d0  -0.25000d0
+C      0.25000d0   0.25000d0  -0.25000d0
+C      0.25000d0  -0.25000d0   0.25000d0
+C     -0.25000d0   0.25000d0   0.25000d0
+end
+
+#***** setup the nwpw gamma point code ****
+nwpw
+   simulation_cell
+     ngrid 16 16 16
+   end
+   brillouin_zone
+     kvector  0.0 0.0 0.0
+   end
+   ewald_ncut 8
+end
+set nwpw:minimizer 2
+set nwpw:psi_brillioun_check .false.
+task pspw energy
+task band energy
+\end{verbatim}
+
+
+
+
+\normalsize
+\section{BAND Tutorial 2: optimizing a unit cell and geometry for Silicon-Carbide}
+\label{sec:band_unitcell_optimization}
+
+The following example demonstrates how to uses the BAND module to optimize the unit cell
+and geometry for a silicon-carbide crystal.
+
+\begin{verbatim}
+title "SiC 8 atom cubic cell - geometry and unit cell optimization"
+
+start SiC
+
+#**** Enter the geometry using fractional coordinates ****
+geometry units au center noautosym noautoz print
+  system crystal
+    lat_a 8.277d0
+    lat_b 8.277d0
+    lat_c 8.277d0
+    alpha 90.0d0
+    beta  90.0d0
+    gamma 90.0d0
+  end
+Si    -0.50000d0  -0.50000d0  -0.50000d0
+Si     0.00000d0   0.00000d0  -0.50000d0
+Si     0.00000d0  -0.50000d0   0.00000d0
+Si    -0.50000d0   0.00000d0   0.00000d0
+C     -0.25000d0  -0.25000d0  -0.25000d0
+C      0.25000d0   0.25000d0  -0.25000d0
+C      0.25000d0  -0.25000d0   0.25000d0
+C     -0.25000d0   0.25000d0   0.25000d0
+end
+
+#***** setup the nwpw gamma point code ****
+nwpw
+   simulation_cell
+     ngrid 16 16 16
+   end
+   ewald_ncut 8
+   monkhorst-pack 2 2 2 
+   lmbfgs
+end
+
+driver
+  clear
+  maxiter 40
+end
+set includestress .true.          # this option tells driver to optimize the unit cell
+#set nwpw:stress_numerical .true.  #option to use numerical stresses 
+
+task band optimize
+
+\end{verbatim}
+
+
+\normalsize
+\section{BAND Tutorial 3: optimizing a unit cell and geometry for Aluminum with fractional occupation}
+\label{sec:band_unitcell_optimization}
+
+The following example demonstrates how to uses the BAND module to optimize the unit cell
+and geometry for a Aluminum.
+
+\begin{verbatim}
+title "Aluminum optimization with fractional occupation"
+
+start aluminumfrac
+
+memory 900 mb
+
+geometry noautoz
+   system crystal
+     lat_a 3.0
+     lat_b 3.0
+     lat_c 3.0
+     alpha 90.0
+     beta  90.0
+     gamma 90.0
+   end
+Al  0.0 0.0 0.0
+Al  0.0 0.5 0.5
+Al  0.5 0.5 0.0
+Al  0.5 0.0 0.5
+end
+set nwpw:cif_filename aluminum
+
+nwpw
+   scf anderson
+   mult 1
+   smear  temperature 3500.0 fermi
+   cutoff 15.0
+   monkhorst-pack 3 3 3
+   ewald_ncut 8
+   mapping 2
+end
+set nwpw:lcao_skip .true.
+
+set includestress .true.
+#set nwpw:stress_numerical .true.
+
+driver
+   clear
+end
+task band optimize ignore
+
+\end{verbatim}
+
+
+
+\section{PAW Tutorial}
+\label{sec:paw_tutorial}
+
+The following input deck performs for a water molecule a PSPW energy calculation followed
+by a PAW energy calculation and a PAW geometry optimization calculation.  
+The default unit cell parameters are used (SC=20.0, ngrid 32 32 32).  In this simulation, the
+first PAW run optimizes the wavefunction and the second PAW run optimizes the wavefunction
+and geometry in tandem.
+
+\begin{verbatim}
+title "paw steepest descent test"
+
+start paw_test
+
+charge 0
+
+geometry units au nocenter noautoz noautosym
+O      0.00000    0.00000    0.01390
+H     -1.49490    0.00000   -1.18710
+H      1.49490    0.00000   -1.18710
+end
+
+nwpw
+   time_step 15.8
+   ewald_rcut 1.50
+   tolerances 1.0d-8 1.0d-8
+end
+set nwpw:lcao_iterations 1
+set nwpw:minimizer 2
+task pspw energy
+
+task paw energy
+
+nwpw
+   time_step 5.8
+   geometry_optimize
+   ewald_rcut 1.50
+   tolerances 1.0d-7 1.0d-7 1.0d-4
+end
+task paw steepest_descent
+
+task paw optimize
+\end{verbatim}
+
+
+
+
+\normalsize
+\section{PAW Tutorial 2: optimizing a unit cell and geometry for Silicon-Carbide}
+\label{sec:pspw_unitcell_optimization}
+
+The following example demonstrates how to uses the PAW module to optimize the unit cell
+and geometry for a silicon-carbide crystal.
+
+\begin{verbatim}
+title "SiC 8 atom cubic cell - geometry and unit cell optimization"
+
+start SiC
+
+#**** Enter the geometry using fractional coordinates ****
+geometry units au center noautosym noautoz print
+  system crystal
+    lat_a 8.277d0
+    lat_b 8.277d0
+    lat_c 8.277d0
+    alpha 90.0d0
+    beta  90.0d0
+    gamma 90.0d0
+  end
+Si    -0.50000d0  -0.50000d0  -0.50000d0
+Si     0.00000d0   0.00000d0  -0.50000d0
+Si     0.00000d0  -0.50000d0   0.00000d0
+Si    -0.50000d0   0.00000d0   0.00000d0
+C     -0.25000d0  -0.25000d0  -0.25000d0
+C      0.25000d0   0.25000d0  -0.25000d0
+C      0.25000d0  -0.25000d0   0.25000d0
+C     -0.25000d0   0.25000d0   0.25000d0
+end
+
+#***** setup the nwpw gamma point code ****
+nwpw
+   simulation_cell
+     ngrid 16 16 16
+   end
+   ewald_ncut 8
+end
+set nwpw:minimizer 2
+set nwpw:psi_nolattice .true.  # turns of unit cell checking for wavefunctions
+
+driver
+  clear
+  maxiter 40
+end
+set includestress .true.         # this option tells driver to optimize the unit cell
+set nwpw:stress_numerical .true. #currently only numerical stresses implemented in paw
+
+task paw optimize
+
+\end{verbatim}
+
+
+
+\normalsize
+\section{PAW Tutorial 2: Running a Car-Parrinello Simulation}
+\label{sec:pspw_cp}
+\normalsize
+
+In this section we show how use the PAW module to perform a Car-Parrinello
+molecular dynamic simulation for a C$_2$ molecule at the LDA level.  
+Before running a PAW Car-Parrinello  simulation the system should be
+on the Born-Oppenheimer surface, i.e. the one-electron orbitals should be minimized 
+with respect to the total energy (i.e. task pspw energy).  The input needed
+is basically the same as for optimizing the geometry of a C$_2$ molecule at the LDA level,
+except that and additional Car-Parrinello sub-block is added.  
+
+In the following example we show the input needed to run a Car-Parrinello simulation
+for a C$_2$ molecule at the LDA level.  In this example, default pseudopotentials
+from the pseudopotential library are used for C, the boundary condition is free-space, 
+the exchange correlation functional is LDA, The boundary condition is free-space, and 
+the simulation cell cell is aperiodic and cubic with a side length of 10.0 Angstroms and has
+40 grid points in each direction (cutoff energy is 44 Ry).  The time step and fake mass
+for the Car-Parrinello run are specified to be 5.0 au and 600.0 au, respectively.  
+
+\begin{verbatim}
+         
+start c2_paw_lda_md
+title "C2 restricted singlet dimer, LDA/44Ry - constant energy Car-Parrinello simulation"
+
+geometry  
+C    -0.62 0.0 0.0
+C     0.62 0.0 0.0
+end
+       
+pspw
+   simulation_cell units angstroms
+      boundary_conditions aperiodic
+      lattice
+        lat_a 10.00d0
+        lat_b 10.00d0
+        lat_c 10.00d0
+      end
+      ngrid 40 40 40
+   end
+   Car-Parrinello
+     fake_mass 600.0
+     time_step 5.0
+     loop 10 10
+   end
+end
+set nwpw:minimizer 2
+task paw energy
+task paw Car-Parrinello
+\end{verbatim}
+
+
+
+\section{NWPW Capabilities and Limitations}
+\label{sec:pspw_limits}
+\normalsize
+
+\begin{itemize}
+
+\item Hybrid Functionals (e.g. PBE0, LDA-SIC) only work in PSPW.
+\item Car-Parrinello QM/MM simulation only work with PSPW.
+\item Fractional occupations only work for BAND simulations.
+\end{itemize}
+
+
+\section{Questions and Difficulties}
+\normalsize
+
+Questions and encountered problems should be reported to 
+nwchem-users@emsl.pnl.gov 
+or to Eric J. Bylaska, Eric.Bylaska@pnl.gov
+
+
+
+
+
+% LocalWords:  tolc wcut ncut

@@ -1,0 +1,16 @@
+#
+#	$Id$
+#
+
+# Note - collection of header files into this dir is currently being done
+# by main makefile since this is "special"
+
+# In this directory, clean does not do anything - we only want to get rid of
+# the include files if there's a serious cleanup
+
+clean:
+	@echo clean does nothing in include dir
+
+realclean:
+	if exist "*.h" erase "*.h"
+	if exist "*.fh" erase "*.fh"

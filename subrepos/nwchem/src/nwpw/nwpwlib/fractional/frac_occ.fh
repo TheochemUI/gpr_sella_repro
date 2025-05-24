@@ -1,0 +1,9 @@
+c
+c $Id$
+c
+
+*     **** frac_occ common block ****
+      logical fractional
+      integer fweight(2)
+      common / frac_occ_common / fweight,fractional
+

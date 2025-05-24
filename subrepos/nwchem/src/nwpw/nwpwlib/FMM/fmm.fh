@@ -1,0 +1,13 @@
+
+
+
+*     ***** FMM common block ****
+      logical fmm
+      integer lmax,lr
+      integer levels,nboxes,tboxes
+
+      common / FMM_nwpw / lmax,lr,
+     >                    levels,nboxes,tboxes,
+     >                    fmm
+
+c $Id$

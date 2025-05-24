@@ -1,0 +1,7 @@
+!$Id$
+!
+!$Log: not supported by cvs2svn $
+
+      integer paw_double_factorial
+      external paw_double_factorial
+

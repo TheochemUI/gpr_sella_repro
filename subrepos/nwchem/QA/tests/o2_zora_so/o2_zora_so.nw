@@ -1,0 +1,35 @@
+echo
+start o2_zora_so
+
+geometry units angstrom
+#symmetry c1
+ O 0 0 -0.61101873
+ O 0 0  0.61101873
+end
+
+basis spherical
+ * library "DZVP (DFT Orbital)"
+end
+
+dft
+ grid xfine
+ iterations 100
+ XC b3lyp
+ odft
+ mult 3
+ convergence energy 1d-9
+end
+
+driver
+ clear
+ maxiter 100
+  tight
+end
+
+relativistic
+  zora on
+  zora:cutoff 1d-30
+end
+
+task sodft optimize
+task sodft freq

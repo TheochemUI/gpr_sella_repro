@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+#
+# $Id$
+#
+#
+# confirms file(s) that have blas/lapack calls now using the perl scripts
+# reports all double precision routines
+# also shows all matching lines
+#
+if [ -z "$NWCHEM_TOP" ]; then
+   echo "the environement variable NWCHEM_TOP must first be set"
+   echo "csh/tcsh:     setenv NWCHEM_TOP .../nwchem"
+   echo "sh/bash/ksh:  NWCHEM_TOP=.../nwchem;export NWCHEM_TOP"
+   echo "Usage: show_dblas file_1 [file_2 file_3 ...]"
+   exit 1
+fi
+      perlexe=perl
+  perlscript=$NWCHEM_TOP/src/config/showdblas.pl
+
+if [[ $# -eq 0 ]] ; then
+   echo "Usage: show_dblas file_1 [file_2 file_3 ...]"
+   exit 2
+fi
+echo executing  $perlexe $perlscript "$@"
+$perlexe $perlscript "$@"

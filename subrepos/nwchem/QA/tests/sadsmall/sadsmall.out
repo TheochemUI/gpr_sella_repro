@@ -1,0 +1,2391 @@
+ argument  1 = /Users/edo/nwchem/nwchem/QA/tests/sadsmall/sadsmall.nw
+  NWChem w/ OpenMP: maximum threads =    1
+
+
+
+============================== echo of input deck ==============================
+echo
+start
+
+basis
+  c library 3-21g
+  o library 3-21g
+  f library 3-21g
+ si library 3-21g
+  h library 3-21g
+end
+
+scf; print low; end
+
+title "H3CO <-> H2COH"
+geometry
+  c    -0.01768833     0.00000000    -0.68118028
+  o    -0.01768833     0.00000000     0.79881972
+  h     1.29788134     0.00000000    -0.20235208
+  h    -0.52512235    -0.87890150    -1.05056203
+  h    -0.52512235     0.87890150    -1.05056203
+end
+scf; uhf; doublet; end
+driver; clear; end
+task scf saddle
+
+================================================================================
+
+
+                                         
+                                         
+
+
+             Northwest Computational Chemistry Package (NWChem) 7.0.1
+             --------------------------------------------------------
+
+
+                    Environmental Molecular Sciences Laboratory
+                       Pacific Northwest National Laboratory
+                                Richland, WA 99352
+
+                              Copyright (c) 1994-2020
+                       Pacific Northwest National Laboratory
+                            Battelle Memorial Institute
+
+             NWChem is an open-source computational chemistry package
+                        distributed under the terms of the
+                      Educational Community License (ECL) 2.0
+             A copy of the license is included with this distribution
+                              in the LICENSE.TXT file
+
+                                  ACKNOWLEDGMENT
+                                  --------------
+
+            This software and its documentation were developed at the
+            EMSL at Pacific Northwest National Laboratory, a multiprogram
+            national laboratory, operated for the U.S. Department of Energy
+            by Battelle under Contract Number DE-AC05-76RL01830. Support
+            for this work was provided by the Department of Energy Office
+            of Biological and Environmental Research, Office of Basic
+            Energy Sciences, and the Office of Advanced Scientific Computing.
+
+
+           Job information
+           ---------------
+
+    hostname        = WE40672
+    program         = /Users/edo/nwchem/nwchem/bin/MACX64/nwchem
+    date            = Fri Feb  4 17:06:32 2022
+
+    compiled        = Thu_Feb_03_11:51:49_2022
+    source          = /Users/edo/nwchem/nwchem
+    nwchem branch   = 7.0.0
+    nwchem revision = nwchem_on_git-3195-g27fae8c638
+    ga revision     = 5.8.1
+    use scalapack   = T
+    input           = /Users/edo/nwchem/nwchem/QA/tests/sadsmall/sadsmall.nw
+    prefix          = sadsmall.
+    data base       = ./sadsmall.db
+    status          = startup
+    nproc           =        1
+    time left       =     -1s
+
+
+
+           Memory information
+           ------------------
+
+    heap     =   52195779 doubles =    398.2 Mbytes
+    stack    =   52195783 doubles =    398.2 Mbytes
+    global   =   29826161 doubles =    227.6 Mbytes (distinct from heap & stack)
+    total    =  134217723 doubles =   1024.0 Mbytes
+    verify   = yes
+    hardfail = no 
+
+
+           Directory information
+           ---------------------
+
+  0 permanent = .
+  0 scratch   = .
+
+
+
+
+                                NWChem Input Module
+                                -------------------
+
+
+                      Basis "ao basis" -> "" (cartesian)
+                      -----
+  c (Carbon)
+  ----------
+            Exponent  Coefficients 
+       -------------- ---------------------------------------------------------
+  1 S  1.72256000E+02  0.061767
+  1 S  2.59109000E+01  0.358794
+  1 S  5.53335000E+00  0.700713
+
+  2 S  3.66498000E+00 -0.395897
+  2 S  7.70545000E-01  1.215840
+
+  3 P  3.66498000E+00  0.236460
+  3 P  7.70545000E-01  0.860619
+
+  4 S  1.95857000E-01  1.000000
+
+  5 P  1.95857000E-01  1.000000
+
+  o (Oxygen)
+  ----------
+            Exponent  Coefficients 
+       -------------- ---------------------------------------------------------
+  1 S  3.22037000E+02  0.059239
+  1 S  4.84308000E+01  0.351500
+  1 S  1.04206000E+01  0.707658
+
+  2 S  7.40294000E+00 -0.404453
+  2 S  1.57620000E+00  1.221560
+
+  3 P  7.40294000E+00  0.244586
+  3 P  1.57620000E+00  0.853955
+
+  4 S  3.73684000E-01  1.000000
+
+  5 P  3.73684000E-01  1.000000
+
+  f (Fluorine)
+  ------------
+            Exponent  Coefficients 
+       -------------- ---------------------------------------------------------
+  1 S  4.13801000E+02  0.058548
+  1 S  6.22446000E+01  0.349308
+  1 S  1.34340000E+01  0.709632
+
+  2 S  9.77759000E+00 -0.407327
+  2 S  2.08617000E+00  1.223140
+
+  3 P  9.77759000E+00  0.246680
+  3 P  2.08617000E+00  0.852321
+
+  4 S  4.82383000E-01  1.000000
+
+  5 P  4.82383000E-01  1.000000
+
+  si (Silicon)
+  ------------
+            Exponent  Coefficients 
+       -------------- ---------------------------------------------------------
+  1 S  9.10655000E+02  0.066082
+  1 S  1.37336000E+02  0.386229
+  1 S  2.97601000E+01  0.672380
+
+  2 S  3.66716000E+01 -0.104511
+  2 S  8.31729000E+00  0.107410
+  2 S  2.21645000E+00  0.951446
+
+  3 P  3.66716000E+01  0.113355
+  3 P  8.31729000E+00  0.457578
+  3 P  2.21645000E+00  0.607427
+
+  4 S  1.07913000E+00 -0.376108
+  4 S  3.02422000E-01  1.251650
+
+  5 P  1.07913000E+00  0.067103
+  5 P  3.02422000E-01  0.956883
+
+  6 S  9.33392000E-02  1.000000
+
+  7 P  9.33392000E-02  1.000000
+
+  h (Hydrogen)
+  ------------
+            Exponent  Coefficients 
+       -------------- ---------------------------------------------------------
+  1 S  5.44717800E+00  0.156285
+  1 S  8.24547000E-01  0.904691
+
+  2 S  1.83192000E-01  1.000000
+
+
+
+ Summary of "ao basis" -> "" (cartesian)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ c                           3-21g                   5        9   3s2p
+ o                           3-21g                   5        9   3s2p
+ f                           3-21g                   5        9   3s2p
+ si                          3-21g                   7       13   4s3p
+ h                           3-21g                   2        2   2s
+
+
+                                  H3CO <-> H2COH
+                                  --------------
+
+ Scaling coordinates for geometry "geometry" by  1.889725989
+ (inverse scale =  0.529177249)
+
+ CS  symmetry detected
+
+          ------
+          auto-z
+          ------
+  autoz: The atoms group into disjoint clusters
+ cluster   1:    1    2    4    5
+ cluster   2:    3
+ Connecting clusters   1   2 via atoms    1    3 r = 1.40
+  autoz: regenerating connections with new bonds
+  Looking for out-of-plane bends
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+
+
+                             Geometry "geometry" -> ""
+                             -------------------------
+
+ Output coordinates in angstroms (scale by  1.889725989 to convert to a.u.)
+
+  No.       Tag          Charge          X              Y              Z
+ ---- ---------------- ---------- -------------- -------------- --------------
+    1 c                    6.0000     0.01640926     0.68121229     0.00000000
+    2 o                    8.0000    -0.05762644    -0.79693477     0.00000000
+    3 h                    1.0000     1.30637889     0.13717335     0.00000000
+    4 h                    1.0000    -0.47191146     1.07551552    -0.87890150
+    5 h                    1.0000    -0.47191146     1.07551552     0.87890150
+
+      Atomic Mass 
+      ----------- 
+
+      c                 12.000000
+      o                 15.994910
+      h                  1.007825
+
+
+ Effective nuclear repulsion energy (a.u.)      32.6678346073
+
+            Nuclear Dipole moment (a.u.) 
+            ----------------------------
+        X                 Y               Z
+ ---------------- ---------------- ----------------
+    -0.0000000000     0.0000000000     0.0000000000
+
+      Symmetry information
+      --------------------
+
+ Group name             Cs        
+ Group number              2
+ Group order               2
+ No. of unique centers     4
+
+      Symmetry unique atoms
+
+     1    2    3    4
+
+
+
+                                Z-matrix (autoz)
+                                -------- 
+
+ Units are Angstrom for bonds and degrees for angles
+
+      Type          Name      I     J     K     L     M      Value
+      ----------- --------  ----- ----- ----- ----- ----- ----------
+    1 Stretch                  1     3                       1.40000
+    2 Stretch                  1     2                       1.48000
+    3 Stretch                  1     4                       1.08000
+    4 Stretch                  1     5                       1.08000
+    5 Bend                     2     1     3                70.00000
+    6 Bend                     2     1     4               110.00000
+    7 Bend                     2     1     5               110.00000
+    8 Bend                     3     1     4               123.95136
+    9 Bend                     3     1     5               123.95136
+   10 Bend                     4     1     5               108.93730
+
+
+            XYZ format geometry
+            -------------------
+     5
+ geometry
+ c                     0.01640926     0.68121229     0.00000000
+ o                    -0.05762644    -0.79693477     0.00000000
+ h                     1.30637889     0.13717335     0.00000000
+ h                    -0.47191146     1.07551552    -0.87890150
+ h                    -0.47191146     1.07551552     0.87890150
+
+ ==============================================================================
+                                internuclear distances
+ ------------------------------------------------------------------------------
+       center one      |      center two      | atomic units |  angstroms
+ ------------------------------------------------------------------------------
+    2 o                |   1 c                |     2.79679  |     1.48000
+    4 h                |   1 c                |     2.04090  |     1.08000
+    5 h                |   1 c                |     2.04090  |     1.08000
+ ------------------------------------------------------------------------------
+                         number of included internuclear distances:          3
+ ==============================================================================
+
+
+
+ ==============================================================================
+                                 internuclear angles
+ ------------------------------------------------------------------------------
+        center 1       |       center 2       |       center 3       |  degrees
+ ------------------------------------------------------------------------------
+    2 o                |   1 c                |   4 h                |   110.00
+    2 o                |   1 c                |   5 h                |   110.00
+    4 h                |   1 c                |   5 h                |   108.94
+ ------------------------------------------------------------------------------
+                            number of included internuclear angles:          3
+ ==============================================================================
+
+
+
+
+  Deleted DRIVER restart files 
+
+
+
+                           NWChem Geometry Optimization
+                           ----------------------------
+
+
+
+
+                                  H3CO <-> H2COH
+
+
+  no constraints, skipping    0.0000000000000000     
+ maximum gradient threshold         (gmax) =   0.000450
+ rms gradient threshold             (grms) =   0.000300
+ maximum cartesian step threshold   (xmax) =   0.001800
+ rms cartesian step threshold       (xrms) =   0.001200
+ fixed trust radius                (trust) =   0.100000
+ maximum step size to saddle      (sadstp) =   0.100000
+ energy precision                  (eprec) =   1.0D-07
+ maximum number of steps          (nptopt) =   40
+ initial hessian option           (inhess) =    0
+ line search option               (linopt) =    0
+ hessian update option            (modupd) =    2
+ saddle point option              (modsad) =    1
+ initial eigen-mode to follow     (moddir) =    0
+ initial variable to follow       (vardir) =    0
+ follow first negative mode     (firstneg) =    T
+ apply conjugacy                    (opcg) =    F
+ source of zmatrix                         =   autoz   
+
+
+          -----------------------
+          Transition State Search
+          -----------------------
+
+
+ Names of Z-matrix variables 
+    1              2              3              4              5         
+    6              7              8              9             10         
+
+ Variables with the same non-blank name are constrained to be equal
+
+
+ Using diagonal initial Hessian 
+ Scaling for Hessian diagonals: bonds = 1.00  angles = 0.25  torsions = 0.10
+
+          --------
+          Step   0
+          --------
+
+
+                         Geometry "geometry" -> "geometry"
+                         ---------------------------------
+
+ Output coordinates in angstroms (scale by  1.889725989 to convert to a.u.)
+
+  No.       Tag          Charge          X              Y              Z
+ ---- ---------------- ---------- -------------- -------------- --------------
+    1 c                    6.0000     0.01640926     0.68121229     0.00000000
+    2 o                    8.0000    -0.05762644    -0.79693477     0.00000000
+    3 h                    1.0000     1.30637889     0.13717335     0.00000000
+    4 h                    1.0000    -0.47191146     1.07551552    -0.87890150
+    5 h                    1.0000    -0.47191146     1.07551552     0.87890150
+
+      Atomic Mass 
+      ----------- 
+
+      c                 12.000000
+      o                 15.994910
+      h                  1.007825
+
+
+ Effective nuclear repulsion energy (a.u.)      32.6678346073
+
+            Nuclear Dipole moment (a.u.) 
+            ----------------------------
+        X                 Y               Z
+ ---------------- ---------------- ----------------
+    -0.0000000000     0.0000000000     0.0000000000
+
+      Symmetry information
+      --------------------
+
+ Group name             Cs        
+ Group number              2
+ Group order               2
+ No. of unique centers     4
+
+      Symmetry unique atoms
+
+     1    2    3    4
+
+                                 NWChem SCF Module
+                                 -----------------
+
+
+                                  H3CO <-> H2COH
+
+
+
+  ao basis        = "ao basis"
+  functions       =    24
+  atoms           =     5
+  alpha electrons =     9
+  beta  electrons =     8
+  charge          =   0.00
+  wavefunction    = UHF 
+  input vectors   = atomic
+  output vectors  = ./sadsmall.movecs
+  use symmetry    = T
+  symmetry adapt  = T
+
+
+ Forming initial guess at       0.0s
+
+
+ Starting SCF solution at       0.1s
+
+
+
+       Final UHF  results 
+       ------------------ 
+
+         Total SCF energy =   -113.706031510827
+      One electron energy =   -220.055731331119
+      Two electron energy =     73.681865212962
+ Nuclear repulsion energy =     32.667834607329
+
+                       Sz =      0.5000
+                 Sz(Sz+1) =      0.7500
+                      S^2 =      0.7600
+
+        Time for solution =      0.4s
+
+
+                              NWChem Gradients Module
+                              -----------------------
+
+
+
+                         UHF ENERGY GRADIENTS
+
+    atom               coordinates                        gradient
+                 x          y          z           x          y          z
+   1 c       0.031009   1.287305   0.000000   -0.045859   0.087218   0.000000
+   2 o      -0.108898  -1.505988   0.000000    0.034981   0.005264   0.000000
+   3 h       2.468698   0.259220   0.000000    0.054894  -0.080807   0.000000
+   4 h      -0.891783   2.032430  -1.660883   -0.022008  -0.005837   0.006884
+   5 h      -0.891783   2.032430   1.660883   -0.022008  -0.005837  -0.006884
+
+  no constraints, skipping    0.0000000000000000     
+
+@ Step       Energy      Delta E   Gmax     Grms     Xrms     Xmax   Walltime
+@ ---- ---------------- -------- -------- -------- -------- -------- --------
+@    0    -113.70603151  0.0D+00  0.08198  0.03537  0.00000  0.00000      0.5
+                                                                    
+
+
+
+                                Z-matrix (autoz)
+                                -------- 
+
+ Units are Angstrom for bonds and degrees for angles
+
+      Type          Name      I     J     K     L     M      Value     Gradient
+      ----------- --------  ----- ----- ----- ----- ----- ---------- ----------
+    1 Stretch                  1     3                       1.40000    0.08198
+    2 Stretch                  1     2                       1.48000   -0.00701
+    3 Stretch                  1     4                       1.08000    0.00222
+    4 Stretch                  1     5                       1.08000    0.00222
+    5 Bend                     2     1     3                70.00000   -0.06627
+    6 Bend                     2     1     4               110.00000   -0.01495
+    7 Bend                     2     1     5               110.00000   -0.01495
+    8 Bend                     3     1     4               123.95136    0.02093
+    9 Bend                     3     1     5               123.95136    0.02093
+   10 Bend                     4     1     5               108.93730   -0.00403
+
+ Hessian eigenvalues: positive=  10 negative=  0 zero=  0
+ Initial step taken uphill
+
+ The mode being followed to the saddle point
+
+
+                                Z-matrix (autoz)
+                                -------- 
+
+ Units are Angstrom for bonds and degrees for angles
+
+      Type          Name      I     J     K     L     M      Value      Sadmode
+      ----------- --------  ----- ----- ----- ----- ----- ---------- ----------
+    1 Stretch                  1     3                       1.40000    0.74876
+    2 Stretch                  1     2                       1.48000    0.00000
+    3 Stretch                  1     4                       1.08000    0.00000
+    4 Stretch                  1     5                       1.08000    0.00000
+    5 Bend                     2     1     3                70.00000   -0.60522
+    6 Bend                     2     1     4               110.00000    0.00000
+    7 Bend                     2     1     5               110.00000    0.00000
+    8 Bend                     3     1     4               123.95136    0.19115
+    9 Bend                     3     1     5               123.95136    0.19115
+   10 Bend                     4     1     5               108.93730    0.00000
+
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+
+          --------
+          Step   1
+          --------
+
+
+                         Geometry "geometry" -> "geometry"
+                         ---------------------------------
+
+ Output coordinates in angstroms (scale by  1.889725989 to convert to a.u.)
+
+  No.       Tag          Charge          X              Y              Z
+ ---- ---------------- ---------- -------------- -------------- --------------
+    1 c                    6.0000     0.00964543     0.69364915     0.00000000
+    2 o                    8.0000    -0.04205940    -0.78544741     0.00000000
+    3 h                    1.0000     1.32755318     0.10503018     0.00000000
+    4 h                    1.0000    -0.48690020     1.07962500    -0.87798923
+    5 h                    1.0000    -0.48690020     1.07962500     0.87798923
+
+      Atomic Mass 
+      ----------- 
+
+      c                 12.000000
+      o                 15.994910
+      h                  1.007825
+
+
+ Effective nuclear repulsion energy (a.u.)      32.6223536818
+
+            Nuclear Dipole moment (a.u.) 
+            ----------------------------
+        X                 Y               Z
+ ---------------- ---------------- ----------------
+     0.1420131256     0.2694669866     0.0000000000
+
+      Symmetry information
+      --------------------
+
+ Group name             Cs        
+ Group number              2
+ Group order               2
+ No. of unique centers     4
+
+      Symmetry unique atoms
+
+     1    2    3    4
+
+                                 NWChem SCF Module
+                                 -----------------
+
+
+                                  H3CO <-> H2COH
+
+
+
+  ao basis        = "ao basis"
+  functions       =    24
+  atoms           =     5
+  alpha electrons =     9
+  beta  electrons =     8
+  charge          =   0.00
+  wavefunction    = UHF 
+  input vectors   = ./sadsmall.movecs
+  output vectors  = ./sadsmall.movecs
+  use symmetry    = T
+  symmetry adapt  = T
+
+
+ Forming initial guess at       0.5s
+
+
+ Starting SCF solution at       0.5s
+
+
+
+       Final UHF  results 
+       ------------------ 
+
+         Total SCF energy =   -113.694174000269
+      One electron energy =   -219.965645034666
+      Two electron energy =     73.649117352604
+ Nuclear repulsion energy =     32.622353681794
+
+                       Sz =      0.5000
+                 Sz(Sz+1) =      0.7500
+                      S^2 =      0.7783
+
+        Time for solution =      0.2s
+
+
+                              NWChem Gradients Module
+                              -----------------------
+
+
+
+                         UHF ENERGY GRADIENTS
+
+    atom               coordinates                        gradient
+                 x          y          z           x          y          z
+   1 c       0.018227   1.310807   0.000000   -0.040788   0.084290   0.000000
+   2 o      -0.079481  -1.484280   0.000000    0.030289   0.004700   0.000000
+   3 h       2.508712   0.198478   0.000000    0.054950  -0.076191   0.000000
+   4 h      -0.920108   2.040195  -1.659159   -0.022226  -0.006399   0.007376
+   5 h      -0.920108   2.040195   1.659159   -0.022226  -0.006399  -0.007376
+
+  no constraints, skipping    0.0000000000000000     
+
+  Step       Energy      Delta E   Gmax     Grms     Xrms     Xmax   Walltime
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    1    -113.69417400  1.2D-02  0.08124  0.03435  0.02443  0.06000      0.8
+                                                                    
+
+
+
+                                Z-matrix (autoz)
+                                -------- 
+
+ Units are Angstrom for bonds and degrees for angles
+
+      Type          Name      I     J     K     L     M      Value     Gradient
+      ----------- --------  ----- ----- ----- ----- ----- ---------- ----------
+    1 Stretch                  1     3                       1.44338    0.08124
+    2 Stretch                  1     2                       1.48000   -0.00576
+    3 Stretch                  1     4                       1.08000    0.00194
+    4 Stretch                  1     5                       1.08000    0.00194
+    5 Bend                     2     1     3                67.93504   -0.06147
+    6 Bend                     2     1     4               109.94419   -0.01685
+    7 Bend                     2     1     5               109.94419   -0.01685
+    8 Bend                     3     1     4               124.43981    0.01959
+    9 Bend                     3     1     5               124.43981    0.01959
+   10 Bend                     4     1     5               108.77092   -0.00638
+
+ Hessian eigenvalues: positive=   9 negative=  1 zero=  0
+ Hessian has correct structure - following negative mode, overlap=-9.4D-01
+
+ The mode being followed to the saddle point
+
+
+                                Z-matrix (autoz)
+                                -------- 
+
+ Units are Angstrom for bonds and degrees for angles
+
+      Type          Name      I     J     K     L     M      Value      Sadmode
+      ----------- --------  ----- ----- ----- ----- ----- ---------- ----------
+    1 Stretch                  1     3                       1.44338   -0.59884
+    2 Stretch                  1     2                       1.48000    0.02907
+    3 Stretch                  1     4                       1.08000   -0.00611
+    4 Stretch                  1     5                       1.08000   -0.00611
+    5 Bend                     2     1     3                67.93504    0.77675
+    6 Bend                     2     1     4               109.94419   -0.11418
+    7 Bend                     2     1     5               109.94419   -0.11418
+    8 Bend                     3     1     4               124.43981   -0.06733
+    9 Bend                     3     1     5               124.43981   -0.06733
+   10 Bend                     4     1     5               108.77092   -0.04461
+
+ Restricting large step in mode    1 eval=-4.7D-02 step=-4.0D-01 new=-1.0D-01
+ Restricting large step in mode    5 eval= 5.9D-02 step= 4.8D-01 new= 1.0D-01
+ Restricting large step in mode    6 eval= 1.2D-01 step=-2.0D-01 new=-1.0D-01
+ Search mode= 1 eval=-4.7D-02 grad=-9.5D-02 step=-1.0D-01
+ Restricting overall step due to large component. alpha=  0.75
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+
+          --------
+          Step   2
+          --------
+
+
+                         Geometry "geometry" -> "geometry"
+                         ---------------------------------
+
+ Output coordinates in angstroms (scale by  1.889725989 to convert to a.u.)
+
+  No.       Tag          Charge          X              Y              Z
+ ---- ---------------- ---------- -------------- -------------- --------------
+    1 c                    6.0000    -0.00354657     0.69480233     0.00000000
+    2 o                    8.0000    -0.00375061    -0.78759996     0.00000000
+    3 h                    1.0000     1.29308939     0.08717760     0.00000000
+    4 h                    1.0000    -0.48222671     1.08905097    -0.88266441
+    5 h                    1.0000    -0.48222671     1.08905097     0.88266441
+
+      Atomic Mass 
+      ----------- 
+
+      c                 12.000000
+      o                 15.994910
+      h                  1.007825
+
+
+ Effective nuclear repulsion energy (a.u.)      32.6992564049
+
+            Nuclear Dipole moment (a.u.) 
+            ----------------------------
+        X                 Y               Z
+ ---------------- ---------------- ----------------
+     0.5241186135     0.2518888573     0.0000000000
+
+      Symmetry information
+      --------------------
+
+ Group name             Cs        
+ Group number              2
+ Group order               2
+ No. of unique centers     4
+
+      Symmetry unique atoms
+
+     1    2    3    4
+
+                                 NWChem SCF Module
+                                 -----------------
+
+
+                                  H3CO <-> H2COH
+
+
+
+  ao basis        = "ao basis"
+  functions       =    24
+  atoms           =     5
+  alpha electrons =     9
+  beta  electrons =     8
+  charge          =   0.00
+  wavefunction    = UHF 
+  input vectors   = ./sadsmall.movecs
+  output vectors  = ./sadsmall.movecs
+  use symmetry    = T
+  symmetry adapt  = T
+
+
+ Forming initial guess at       0.8s
+
+
+ Starting SCF solution at       0.8s
+
+
+
+       Final UHF  results 
+       ------------------ 
+
+         Total SCF energy =   -113.692437257067
+      One electron energy =   -220.095299418265
+      Two electron energy =     73.703605756305
+ Nuclear repulsion energy =     32.699256404894
+
+                       Sz =      0.5000
+                 Sz(Sz+1) =      0.7500
+                      S^2 =      0.8075
+
+        Time for solution =      0.2s
+
+
+                              NWChem Gradients Module
+                              -----------------------
+
+
+
+                         UHF ENERGY GRADIENTS
+
+    atom               coordinates                        gradient
+                 x          y          z           x          y          z
+   1 c      -0.006702   1.312986   0.000000   -0.037987   0.075364   0.000000
+   2 o      -0.007088  -1.488348   0.000000    0.028484   0.002442   0.000000
+   3 h       2.443585   0.164742   0.000000    0.047627  -0.069530   0.000000
+   4 h      -0.911276   2.058008  -1.667994   -0.019062  -0.004138   0.006521
+   5 h      -0.911276   2.058008   1.667994   -0.019062  -0.004138  -0.006521
+
+  no constraints, skipping    0.0000000000000000     
+
+  Step       Energy      Delta E   Gmax     Grms     Xrms     Xmax   Walltime
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    2    -113.69243726  1.7D-03  0.07263  0.03058  0.02836  0.07205      1.1
+                                                                    
+
+
+
+                                Z-matrix (autoz)
+                                -------- 
+
+ Units are Angstrom for bonds and degrees for angles
+
+      Type          Name      I     J     K     L     M      Value     Gradient
+      ----------- --------  ----- ----- ----- ----- ----- ---------- ----------
+    1 Stretch                  1     3                       1.43195    0.07263
+    2 Stretch                  1     2                       1.48240   -0.00245
+    3 Stretch                  1     4                       1.07873    0.00161
+    4 Stretch                  1     5                       1.07873    0.00161
+    5 Bend                     2     1     3                64.89933   -0.05518
+    6 Bend                     2     1     4               111.43300   -0.01359
+    7 Bend                     2     1     5               111.43300   -0.01359
+    8 Bend                     3     1     4               123.84135    0.01757
+    9 Bend                     3     1     5               123.84135    0.01757
+   10 Bend                     4     1     5               109.81847   -0.00553
+
+ Hessian eigenvalues: positive=   9 negative=  1 zero=  0
+ Hessian has correct structure - following negative mode, overlap= 9.7D-01
+
+ The mode being followed to the saddle point
+
+
+                                Z-matrix (autoz)
+                                -------- 
+
+ Units are Angstrom for bonds and degrees for angles
+
+      Type          Name      I     J     K     L     M      Value      Sadmode
+      ----------- --------  ----- ----- ----- ----- ----- ---------- ----------
+    1 Stretch                  1     3                       1.43195   -0.41102
+    2 Stretch                  1     2                       1.48240    0.03917
+    3 Stretch                  1     4                       1.07873    0.00328
+    4 Stretch                  1     5                       1.07873    0.00328
+    5 Bend                     2     1     3                64.89933    0.88973
+    6 Bend                     2     1     4               111.43300   -0.09963
+    7 Bend                     2     1     5               111.43300   -0.09963
+    8 Bend                     3     1     4               123.84135   -0.05200
+    9 Bend                     3     1     5               123.84135   -0.05200
+   10 Bend                     4     1     5               109.81847   -0.11235
+
+ Restricting large step in mode    1 eval=-9.5D-02 step=-4.9D-01 new=-1.0D-01
+ Restricting large step in mode    3 eval= 4.8D-02 step= 2.6D-01 new= 1.0D-01
+ Restricting large step in mode    5 eval= 9.0D-02 step=-4.3D-01 new=-1.0D-01
+ Restricting large step in mode    6 eval= 9.2D-02 step= 1.7D-01 new= 1.0D-01
+ Search mode= 1 eval=-9.5D-02 grad=-7.8D-02 step=-1.0D-01
+ Restricting overall step due to large component. alpha=  0.95
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+
+          --------
+          Step   3
+          --------
+
+
+                         Geometry "geometry" -> "geometry"
+                         ---------------------------------
+
+ Output coordinates in angstroms (scale by  1.889725989 to convert to a.u.)
+
+  No.       Tag          Charge          X              Y              Z
+ ---- ---------------- ---------- -------------- -------------- --------------
+    1 c                    6.0000    -0.02998393     0.69027669     0.00000000
+    2 o                    8.0000     0.03583216    -0.78767687     0.00000000
+    3 h                    1.0000     1.24803428     0.07786369     0.00000000
+    4 h                    1.0000    -0.46627186     1.09600920    -0.89610771
+    5 h                    1.0000    -0.46627186     1.09600920     0.89610771
+
+      Atomic Mass 
+      ----------- 
+
+      c                 12.000000
+      o                 15.994910
+      h                  1.007825
+
+
+ Effective nuclear repulsion energy (a.u.)      32.8786054986
+
+            Nuclear Dipole moment (a.u.) 
+            ----------------------------
+        X                 Y               Z
+ ---------------- ---------------- ----------------
+     0.7979259816     0.2081103349     0.0000000000
+
+      Symmetry information
+      --------------------
+
+ Group name             Cs        
+ Group number              2
+ Group order               2
+ No. of unique centers     4
+
+      Symmetry unique atoms
+
+     1    2    3    4
+
+                                 NWChem SCF Module
+                                 -----------------
+
+
+                                  H3CO <-> H2COH
+
+
+
+  ao basis        = "ao basis"
+  functions       =    24
+  atoms           =     5
+  alpha electrons =     9
+  beta  electrons =     8
+  charge          =   0.00
+  wavefunction    = UHF 
+  input vectors   = ./sadsmall.movecs
+  output vectors  = ./sadsmall.movecs
+  use symmetry    = T
+  symmetry adapt  = T
+
+
+ Forming initial guess at       1.2s
+
+
+ Starting SCF solution at       1.2s
+
+
+
+       Final UHF  results 
+       ------------------ 
+
+         Total SCF energy =   -113.692918776320
+      One electron energy =   -220.419616978708
+      Two electron energy =     73.848092703762
+ Nuclear repulsion energy =     32.878605498626
+
+                       Sz =      0.5000
+                 Sz(Sz+1) =      0.7500
+                      S^2 =      0.8309
+
+        Time for solution =      0.2s
+
+
+                              NWChem Gradients Module
+                              -----------------------
+
+
+
+                         UHF ENERGY GRADIENTS
+
+    atom               coordinates                        gradient
+                 x          y          z           x          y          z
+   1 c      -0.056661   1.304434   0.000000   -0.039829   0.063447   0.000000
+   2 o       0.067713  -1.488493   0.000000    0.026307   0.000815   0.000000
+   3 h       2.358443   0.147141   0.000000    0.039936  -0.059588   0.000000
+   4 h      -0.881126   2.071157  -1.693398   -0.013207  -0.002337   0.004210
+   5 h      -0.881126   2.071157   1.693398   -0.013207  -0.002337  -0.004210
+
+  no constraints, skipping    0.0000000000000000     
+
+  Step       Energy      Delta E   Gmax     Grms     Xrms     Xmax   Walltime
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    3    -113.69291878 -4.8D-04  0.06176  0.02550  0.03522  0.08395      1.4
+                                                                    
+
+
+
+                                Z-matrix (autoz)
+                                -------- 
+
+ Units are Angstrom for bonds and degrees for angles
+
+      Type          Name      I     J     K     L     M      Value     Gradient
+      ----------- --------  ----- ----- ----- ----- ----- ---------- ----------
+    1 Stretch                  1     3                       1.41717    0.06176
+    2 Stretch                  1     2                       1.47942    0.00036
+    3 Stretch                  1     4                       1.07609    0.00097
+    4 Stretch                  1     5                       1.07609    0.00097
+    5 Bend                     2     1     3                61.84694   -0.04619
+    6 Bend                     2     1     4               113.24765   -0.00859
+    7 Bend                     2     1     5               113.24765   -0.00859
+    8 Bend                     3     1     4               121.90824    0.01417
+    9 Bend                     3     1     5               121.90824    0.01417
+   10 Bend                     4     1     5               112.76295   -0.00203
+
+ Hessian eigenvalues: positive=   9 negative=  1 zero=  0
+ Hessian has correct structure - following negative mode, overlap= 1.0D+00
+
+ The mode being followed to the saddle point
+
+
+                                Z-matrix (autoz)
+                                -------- 
+
+ Units are Angstrom for bonds and degrees for angles
+
+      Type          Name      I     J     K     L     M      Value      Sadmode
+      ----------- --------  ----- ----- ----- ----- ----- ---------- ----------
+    1 Stretch                  1     3                       1.41717   -0.41115
+    2 Stretch                  1     2                       1.47942    0.05609
+    3 Stretch                  1     4                       1.07609    0.00639
+    4 Stretch                  1     5                       1.07609    0.00639
+    5 Bend                     2     1     3                61.84694    0.88194
+    6 Bend                     2     1     4               113.24765   -0.10704
+    7 Bend                     2     1     5               113.24765   -0.10704
+    8 Bend                     3     1     4               121.90824   -0.02270
+    9 Bend                     3     1     5               121.90824   -0.02270
+   10 Bend                     4     1     5               112.76295   -0.16110
+
+ Restricting large step in mode    1 eval=-1.1D-01 step=-4.4D-01 new=-1.0D-01
+ Restricting large step in mode    2 eval= 4.4D-02 step= 2.9D-01 new= 1.0D-01
+ Restricting large step in mode    5 eval= 8.6D-02 step= 1.5D-01 new= 1.0D-01
+ Restricting large step in mode    6 eval= 9.8D-02 step=-3.7D-01 new=-1.0D-01
+ Search mode= 1 eval=-1.1D-01 grad=-6.5D-02 step=-1.0D-01
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+
+          --------
+          Step   4
+          --------
+
+
+                         Geometry "geometry" -> "geometry"
+                         ---------------------------------
+
+ Output coordinates in angstroms (scale by  1.889725989 to convert to a.u.)
+
+  No.       Tag          Charge          X              Y              Z
+ ---- ---------------- ---------- -------------- -------------- --------------
+    1 c                    6.0000    -0.06193227     0.67905832     0.00000000
+    2 o                    8.0000     0.07604061    -0.78329998     0.00000000
+    3 h                    1.0000     1.20011681     0.07126825     0.00000000
+    4 h                    1.0000    -0.44644318     1.10272767    -0.90829280
+    5 h                    1.0000    -0.44644318     1.10272767     0.90829280
+
+      Atomic Mass 
+      ----------- 
+
+      c                 12.000000
+      o                 15.994910
+      h                  1.007825
+
+
+ Effective nuclear repulsion energy (a.u.)      33.1820254339
+
+            Nuclear Dipole moment (a.u.) 
+            ----------------------------
+        X                 Y               Z
+ ---------------- ---------------- ----------------
+     1.0279385944     0.1600099693     0.0000000000
+
+      Symmetry information
+      --------------------
+
+ Group name             Cs        
+ Group number              2
+ Group order               2
+ No. of unique centers     4
+
+      Symmetry unique atoms
+
+     1    2    3    4
+
+                                 NWChem SCF Module
+                                 -----------------
+
+
+                                  H3CO <-> H2COH
+
+
+
+  ao basis        = "ao basis"
+  functions       =    24
+  atoms           =     5
+  alpha electrons =     9
+  beta  electrons =     8
+  charge          =   0.00
+  wavefunction    = UHF 
+  input vectors   = ./sadsmall.movecs
+  output vectors  = ./sadsmall.movecs
+  use symmetry    = T
+  symmetry adapt  = T
+
+
+ Forming initial guess at       1.5s
+
+
+ Starting SCF solution at       1.5s
+
+
+
+       Final UHF  results 
+       ------------------ 
+
+         Total SCF energy =   -113.693314969910
+      One electron energy =   -220.982617490893
+      Two electron energy =     74.107277087068
+ Nuclear repulsion energy =     33.182025433916
+
+                       Sz =      0.5000
+                 Sz(Sz+1) =      0.7500
+                      S^2 =      0.8448
+
+        Time for solution =      0.2s
+
+
+                              NWChem Gradients Module
+                              -----------------------
+
+
+
+                         UHF ENERGY GRADIENTS
+
+    atom               coordinates                        gradient
+                 x          y          z           x          y          z
+   1 c      -0.117035   1.283234   0.000000   -0.040066   0.045723   0.000000
+   2 o       0.143696  -1.480222   0.000000    0.021908   0.000835   0.000000
+   3 h       2.267892   0.134677   0.000000    0.032130  -0.045857   0.000000
+   4 h      -0.843655   2.083853  -1.716425   -0.006986  -0.000350   0.002603
+   5 h      -0.843655   2.083853   1.716425   -0.006986  -0.000350  -0.002603
+
+  no constraints, skipping    0.0000000000000000     
+
+  Step       Energy      Delta E   Gmax     Grms     Xrms     Xmax   Walltime
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    4    -113.69331497 -4.0D-04  0.04884  0.01933  0.03787  0.08888      1.7
+                                                                    
+
+
+
+                                Z-matrix (autoz)
+                                -------- 
+
+ Units are Angstrom for bonds and degrees for angles
+
+      Type          Name      I     J     K     L     M      Value     Gradient
+      ----------- --------  ----- ----- ----- ----- ----- ---------- ----------
+    1 Stretch                  1     3                       1.40078    0.04884
+    2 Stretch                  1     2                       1.46885    0.00123
+    3 Stretch                  1     4                       1.07347    0.00016
+    4 Stretch                  1     5                       1.07347    0.00016
+    5 Bend                     2     1     3                58.89513   -0.03412
+    6 Bend                     2     1     4               115.25029   -0.00278
+    7 Bend                     2     1     5               115.25029   -0.00278
+    8 Bend                     3     1     4               119.60159    0.00918
+    9 Bend                     3     1     5               119.60159    0.00918
+   10 Bend                     4     1     5               115.58576    0.00069
+
+ Hessian eigenvalues: positive=   9 negative=  1 zero=  0
+ Hessian has correct structure - following negative mode, overlap= 1.0D+00
+
+ The mode being followed to the saddle point
+
+
+                                Z-matrix (autoz)
+                                -------- 
+
+ Units are Angstrom for bonds and degrees for angles
+
+      Type          Name      I     J     K     L     M      Value      Sadmode
+      ----------- --------  ----- ----- ----- ----- ----- ---------- ----------
+    1 Stretch                  1     3                       1.40078   -0.38788
+    2 Stretch                  1     2                       1.46885    0.07479
+    3 Stretch                  1     4                       1.07347    0.00624
+    4 Stretch                  1     5                       1.07347    0.00624
+    5 Bend                     2     1     3                58.89513    0.88393
+    6 Bend                     2     1     4               115.25029   -0.11299
+    7 Bend                     2     1     5               115.25029   -0.11299
+    8 Bend                     3     1     4               119.60159    0.00378
+    9 Bend                     3     1     5               119.60159    0.00378
+   10 Bend                     4     1     5               115.58576   -0.19232
+
+ Restricting large step in mode    1 eval=-1.3D-01 step=-3.3D-01 new=-1.0D-01
+ Restricting large step in mode    2 eval= 4.6D-02 step= 2.2D-01 new= 1.0D-01
+ Restricting large step in mode    6 eval= 1.0D-01 step=-3.0D-01 new=-1.0D-01
+ Search mode= 1 eval=-1.3D-01 grad=-4.8D-02 step=-1.0D-01
+ Restricting overall step due to large component. alpha=  0.84
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+
+          --------
+          Step   5
+          --------
+
+
+                         Geometry "geometry" -> "geometry"
+                         ---------------------------------
+
+ Output coordinates in angstroms (scale by  1.889725989 to convert to a.u.)
+
+  No.       Tag          Charge          X              Y              Z
+ ---- ---------------- ---------- -------------- -------------- --------------
+    1 c                    6.0000    -0.07160301     0.68116744     0.00000000
+    2 o                    8.0000     0.11062564    -0.76611902     0.00000000
+    3 h                    1.0000     1.15039959     0.05934699     0.00000000
+    4 h                    1.0000    -0.43404171     1.09904326    -0.91880753
+    5 h                    1.0000    -0.43404171     1.09904326     0.91880753
+
+      Atomic Mass 
+      ----------- 
+
+      c                 12.000000
+      o                 15.994910
+      h                  1.007825
+
+
+ Effective nuclear repulsion energy (a.u.)      33.5681898916
+
+            Nuclear Dipole moment (a.u.) 
+            ----------------------------
+        X                 Y               Z
+ ---------------- ---------------- ----------------
+     1.3940569404     0.4072093951     0.0000000000
+
+      Symmetry information
+      --------------------
+
+ Group name             Cs        
+ Group number              2
+ Group order               2
+ No. of unique centers     4
+
+      Symmetry unique atoms
+
+     1    2    3    4
+
+                                 NWChem SCF Module
+                                 -----------------
+
+
+                                  H3CO <-> H2COH
+
+
+
+  ao basis        = "ao basis"
+  functions       =    24
+  atoms           =     5
+  alpha electrons =     9
+  beta  electrons =     8
+  charge          =   0.00
+  wavefunction    = UHF 
+  input vectors   = ./sadsmall.movecs
+  output vectors  = ./sadsmall.movecs
+  use symmetry    = T
+  symmetry adapt  = T
+
+
+ Forming initial guess at       1.7s
+
+
+ Starting SCF solution at       1.8s
+
+
+
+       Final UHF  results 
+       ------------------ 
+
+         Total SCF energy =   -113.693310613930
+      One electron energy =   -221.710313209786
+      Two electron energy =     74.448812704235
+ Nuclear repulsion energy =     33.568189891621
+
+                       Sz =      0.5000
+                 Sz(Sz+1) =      0.7500
+                      S^2 =      0.8446
+
+        Time for solution =      0.2s
+
+
+                              NWChem Gradients Module
+                              -----------------------
+
+
+
+                         UHF ENERGY GRADIENTS
+
+    atom               coordinates                        gradient
+                 x          y          z           x          y          z
+   1 c      -0.135310   1.287220   0.000000   -0.025698   0.030826   0.000000
+   2 o       0.209052  -1.447755   0.000000    0.012800   0.001358   0.000000
+   3 h       2.173940   0.112150   0.000000    0.020758  -0.029431   0.000000
+   4 h      -0.820220   2.076891  -1.736294   -0.003930  -0.001376   0.000856
+   5 h      -0.820220   2.076891   1.736294   -0.003930  -0.001376  -0.000856
+
+  no constraints, skipping    0.0000000000000000     
+
+  Step       Energy      Delta E   Gmax     Grms     Xrms     Xmax   Walltime
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    5    -113.69331061  4.4D-06  0.03185  0.01232  0.03363  0.09360      2.0
+                                                                    
+
+
+
+                                Z-matrix (autoz)
+                                -------- 
+
+ Units are Angstrom for bonds and degrees for angles
+
+      Type          Name      I     J     K     L     M      Value     Gradient
+      ----------- --------  ----- ----- ----- ----- ----- ---------- ----------
+    1 Stretch                  1     3                       1.37111    0.03185
+    2 Stretch                  1     2                       1.45871    0.00025
+    3 Stretch                  1     4                       1.07247    0.00006
+    4 Stretch                  1     5                       1.07247    0.00006
+    5 Bend                     2     1     3                55.85419   -0.02054
+    6 Bend                     2     1     4               115.39173   -0.00278
+    7 Bend                     2     1     5               115.39173   -0.00278
+    8 Bend                     3     1     4               118.54853    0.00570
+    9 Bend                     3     1     5               118.54853    0.00570
+   10 Bend                     4     1     5               117.90098    0.00107
+
+ Hessian eigenvalues: positive=   9 negative=  1 zero=  0
+ Hessian has correct structure - following negative mode, overlap= 1.0D+00
+
+ The mode being followed to the saddle point
+
+
+                                Z-matrix (autoz)
+                                -------- 
+
+ Units are Angstrom for bonds and degrees for angles
+
+      Type          Name      I     J     K     L     M      Value      Sadmode
+      ----------- --------  ----- ----- ----- ----- ----- ---------- ----------
+    1 Stretch                  1     3                       1.37111   -0.32014
+    2 Stretch                  1     2                       1.45871    0.08288
+    3 Stretch                  1     4                       1.07247    0.00590
+    4 Stretch                  1     5                       1.07247    0.00590
+    5 Bend                     2     1     3                55.85419    0.90668
+    6 Bend                     2     1     4               115.39173   -0.08345
+    7 Bend                     2     1     5               115.39173   -0.08345
+    8 Bend                     3     1     4               118.54853    0.02549
+    9 Bend                     3     1     5               118.54853    0.02549
+   10 Bend                     4     1     5               117.90098   -0.23083
+
+ Restricting large step in mode    1 eval=-1.8D-01 step=-1.5D-01 new=-1.0D-01
+ Restricting large step in mode    6 eval= 1.4D-01 step=-1.9D-01 new=-1.0D-01
+ Search mode= 1 eval=-1.8D-01 grad=-2.8D-02 step=-1.0D-01
+ Restricting overall step due to large component. alpha=  0.87
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+
+          --------
+          Step   6
+          --------
+
+
+                         Geometry "geometry" -> "geometry"
+                         ---------------------------------
+
+ Output coordinates in angstroms (scale by  1.889725989 to convert to a.u.)
+
+  No.       Tag          Charge          X              Y              Z
+ ---- ---------------- ---------- -------------- -------------- --------------
+    1 c                    6.0000    -0.07792312     0.68159250     0.00000000
+    2 o                    8.0000     0.14601930    -0.75220171     0.00000000
+    3 h                    1.0000     1.10316875     0.04546832     0.00000000
+    4 h                    1.0000    -0.42496307     1.09881140    -0.92421631
+    5 h                    1.0000    -0.42496307     1.09881140     0.92421631
+
+      Atomic Mass 
+      ----------- 
+
+      c                 12.000000
+      o                 15.994910
+      h                  1.007825
+
+
+ Effective nuclear repulsion energy (a.u.)      33.9344605740
+
+            Nuclear Dipole moment (a.u.) 
+            ----------------------------
+        X                 Y               Z
+ ---------------- ---------------- ----------------
+     1.8025308294     0.5953249878     0.0000000000
+
+      Symmetry information
+      --------------------
+
+ Group name             Cs        
+ Group number              2
+ Group order               2
+ No. of unique centers     4
+
+      Symmetry unique atoms
+
+     1    2    3    4
+
+                                 NWChem SCF Module
+                                 -----------------
+
+
+                                  H3CO <-> H2COH
+
+
+
+  ao basis        = "ao basis"
+  functions       =    24
+  atoms           =     5
+  alpha electrons =     9
+  beta  electrons =     8
+  charge          =   0.00
+  wavefunction    = UHF 
+  input vectors   = ./sadsmall.movecs
+  output vectors  = ./sadsmall.movecs
+  use symmetry    = T
+  symmetry adapt  = T
+
+
+ Forming initial guess at       2.0s
+
+
+ Starting SCF solution at       2.0s
+
+
+
+       Final UHF  results 
+       ------------------ 
+
+         Total SCF energy =   -113.693413047454
+      One electron energy =   -222.389941006908
+      Two electron energy =     74.762067385501
+ Nuclear repulsion energy =     33.934460573953
+
+                       Sz =      0.5000
+                 Sz(Sz+1) =      0.7500
+                      S^2 =      0.8321
+
+        Time for solution =      0.2s
+
+
+                              NWChem Gradients Module
+                              -----------------------
+
+
+
+                         UHF ENERGY GRADIENTS
+
+    atom               coordinates                        gradient
+                 x          y          z           x          y          z
+   1 c      -0.147253   1.288023   0.000000   -0.006017   0.014772   0.000000
+   2 o       0.275936  -1.421455   0.000000    0.003385  -0.002317   0.000000
+   3 h       2.084687   0.085923   0.000000    0.006680  -0.009550   0.000000
+   4 h      -0.803064   2.076452  -1.746516   -0.002024  -0.001453   0.000197
+   5 h      -0.803064   2.076452   1.746516   -0.002024  -0.001453  -0.000197
+
+  no constraints, skipping    0.0000000000000000     
+
+  Step       Energy      Delta E   Gmax     Grms     Xrms     Xmax   Walltime
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    6    -113.69341305 -1.0D-04  0.01041  0.00424  0.03137  0.08898      2.3
+                                                                    
+
+
+
+                                Z-matrix (autoz)
+                                -------- 
+
+ Units are Angstrom for bonds and degrees for angles
+
+      Type          Name      I     J     K     L     M      Value     Gradient
+      ----------- --------  ----- ----- ----- ----- ----- ---------- ----------
+    1 Stretch                  1     3                       1.34150    0.01041
+    2 Stretch                  1     2                       1.45118    0.00281
+    3 Stretch                  1     4                       1.07177   -0.00008
+    4 Stretch                  1     5                       1.07177   -0.00008
+    5 Bend                     2     1     3                52.81631   -0.00579
+    6 Bend                     2     1     4               115.75900   -0.00252
+    7 Bend                     2     1     5               115.75900   -0.00252
+    8 Bend                     3     1     4               118.01321    0.00290
+    9 Bend                     3     1     5               118.01321    0.00290
+   10 Bend                     4     1     5               119.15834    0.00028
+
+ Hessian eigenvalues: positive=   9 negative=  1 zero=  0
+ Hessian has correct structure - following negative mode, overlap= 1.0D+00
+
+ The mode being followed to the saddle point
+
+
+                                Z-matrix (autoz)
+                                -------- 
+
+ Units are Angstrom for bonds and degrees for angles
+
+      Type          Name      I     J     K     L     M      Value      Sadmode
+      ----------- --------  ----- ----- ----- ----- ----- ---------- ----------
+    1 Stretch                  1     3                       1.34150   -0.31419
+    2 Stretch                  1     2                       1.45118    0.10844
+    3 Stretch                  1     4                       1.07177    0.00432
+    4 Stretch                  1     5                       1.07177    0.00432
+    5 Bend                     2     1     3                52.81631    0.90966
+    6 Bend                     2     1     4               115.75900   -0.07912
+    7 Bend                     2     1     5               115.75900   -0.07912
+    8 Bend                     3     1     4               118.01321    0.02951
+    9 Bend                     3     1     5               118.01321    0.02951
+   10 Bend                     4     1     5               119.15834   -0.21852
+
+ Search mode= 1 eval=-2.3D-01 grad=-7.7D-03 step=-3.3D-02
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+
+          --------
+          Step   7
+          --------
+
+
+                         Geometry "geometry" -> "geometry"
+                         ---------------------------------
+
+ Output coordinates in angstroms (scale by  1.889725989 to convert to a.u.)
+
+  No.       Tag          Charge          X              Y              Z
+ ---- ---------------- ---------- -------------- -------------- --------------
+    1 c                    6.0000    -0.08933834     0.67075643     0.00000000
+    2 o                    8.0000     0.16319167    -0.74767892     0.00000000
+    3 h                    1.0000     1.07963225     0.04477990     0.00000000
+    4 h                    1.0000    -0.41607339     1.10231225    -0.92481340
+    5 h                    1.0000    -0.41607339     1.10231225     0.92481340
+
+      Atomic Mass 
+      ----------- 
+
+      c                 12.000000
+      o                 15.994910
+      h                  1.007825
+
+
+ Effective nuclear repulsion energy (a.u.)      34.1886468352
+
+            Nuclear Dipole moment (a.u.) 
+            ----------------------------
+        X                 Y               Z
+ ---------------- ---------------- ----------------
+     1.9218301330     0.5527668988     0.0000000000
+
+      Symmetry information
+      --------------------
+
+ Group name             Cs        
+ Group number              2
+ Group order               2
+ No. of unique centers     4
+
+      Symmetry unique atoms
+
+     1    2    3    4
+
+                                 NWChem SCF Module
+                                 -----------------
+
+
+                                  H3CO <-> H2COH
+
+
+
+  ao basis        = "ao basis"
+  functions       =    24
+  atoms           =     5
+  alpha electrons =     9
+  beta  electrons =     8
+  charge          =   0.00
+  wavefunction    = UHF 
+  input vectors   = ./sadsmall.movecs
+  output vectors  = ./sadsmall.movecs
+  use symmetry    = T
+  symmetry adapt  = T
+
+
+ Forming initial guess at       2.3s
+
+
+ Starting SCF solution at       2.3s
+
+
+
+       Final UHF  results 
+       ------------------ 
+
+         Total SCF energy =   -113.693635036622
+      One electron energy =   -222.862135349789
+      Two electron energy =     74.979853477962
+ Nuclear repulsion energy =     34.188646835205
+
+                       Sz =      0.5000
+                 Sz(Sz+1) =      0.7500
+                      S^2 =      0.8229
+
+        Time for solution =      0.2s
+
+
+                              NWChem Gradients Module
+                              -----------------------
+
+
+
+                         UHF ENERGY GRADIENTS
+
+    atom               coordinates                        gradient
+                 x          y          z           x          y          z
+   1 c      -0.168825   1.267546   0.000000    0.001019   0.001563   0.000000
+   2 o       0.308388  -1.412908   0.000000    0.001275  -0.000126   0.000000
+   3 h       2.040209   0.084622   0.000000   -0.001121  -0.001371   0.000000
+   4 h      -0.786265   2.083068  -1.747644   -0.000586  -0.000033   0.000302
+   5 h      -0.786265   2.083068   1.747644   -0.000586  -0.000033  -0.000302
+
+  no constraints, skipping    0.0000000000000000     
+
+  Step       Energy      Delta E   Gmax     Grms     Xrms     Xmax   Walltime
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    7    -113.69363504 -2.2D-04  0.00193  0.00073  0.01743  0.04419      2.6
+                                                                    
+
+
+
+                                Z-matrix (autoz)
+                                -------- 
+
+ Units are Angstrom for bonds and degrees for angles
+
+      Type          Name      I     J     K     L     M      Value     Gradient
+      ----------- --------  ----- ----- ----- ----- ----- ---------- ----------
+    1 Stretch                  1     3                       1.32602   -0.00034
+    2 Stretch                  1     2                       1.44074    0.00035
+    3 Stretch                  1     4                       1.07158   -0.00010
+    4 Stretch                  1     5                       1.07158   -0.00010
+    5 Bend                     2     1     3                51.73639   -0.00193
+    6 Bend                     2     1     4               116.73979   -0.00031
+    7 Bend                     2     1     5               116.73979   -0.00031
+    8 Bend                     3     1     4               117.31706    0.00078
+    9 Bend                     3     1     5               117.31706    0.00078
+   10 Bend                     4     1     5               119.31931   -0.00004
+
+ Hessian eigenvalues: positive=   9 negative=  1 zero=  0
+ Hessian has correct structure - following negative mode, overlap= 1.0D+00
+
+ The mode being followed to the saddle point
+
+
+                                Z-matrix (autoz)
+                                -------- 
+
+ Units are Angstrom for bonds and degrees for angles
+
+      Type          Name      I     J     K     L     M      Value      Sadmode
+      ----------- --------  ----- ----- ----- ----- ----- ---------- ----------
+    1 Stretch                  1     3                       1.32602   -0.34875
+    2 Stretch                  1     2                       1.44074    0.10494
+    3 Stretch                  1     4                       1.07158    0.00327
+    4 Stretch                  1     5                       1.07158    0.00327
+    5 Bend                     2     1     3                51.73639    0.89890
+    6 Bend                     2     1     4               116.73979   -0.05781
+    7 Bend                     2     1     5               116.73979   -0.05781
+    8 Bend                     3     1     4               117.31706    0.02921
+    9 Bend                     3     1     5               117.31706    0.02921
+   10 Bend                     4     1     5               119.31931   -0.22569
+
+ Search mode= 1 eval=-2.2D-01 grad=-1.5D-03 step=-6.8D-03
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+
+          --------
+          Step   8
+          --------
+
+
+                         Geometry "geometry" -> "geometry"
+                         ---------------------------------
+
+ Output coordinates in angstroms (scale by  1.889725989 to convert to a.u.)
+
+  No.       Tag          Charge          X              Y              Z
+ ---- ---------------- ---------- -------------- -------------- --------------
+    1 c                    6.0000    -0.09571212     0.66776547     0.00000000
+    2 o                    8.0000     0.16353738    -0.74743767     0.00000000
+    3 h                    1.0000     1.08155882     0.04538914     0.00000000
+    4 h                    1.0000    -0.41402264     1.10338249    -0.92597755
+    5 h                    1.0000    -0.41402264     1.10338249     0.92597755
+
+      Atomic Mass 
+      ----------- 
+
+      c                 12.000000
+      o                 15.994910
+      h                  1.007825
+
+
+ Effective nuclear repulsion energy (a.u.)      34.1961737306
+
+            Nuclear Dipole moment (a.u.) 
+            ----------------------------
+        X                 Y               Z
+ ---------------- ---------------- ----------------
+     1.8661796615     0.5276976632     0.0000000000
+
+      Symmetry information
+      --------------------
+
+ Group name             Cs        
+ Group number              2
+ Group order               2
+ No. of unique centers     4
+
+      Symmetry unique atoms
+
+     1    2    3    4
+
+                                 NWChem SCF Module
+                                 -----------------
+
+
+                                  H3CO <-> H2COH
+
+
+
+  ao basis        = "ao basis"
+  functions       =    24
+  atoms           =     5
+  alpha electrons =     9
+  beta  electrons =     8
+  charge          =   0.00
+  wavefunction    = UHF 
+  input vectors   = ./sadsmall.movecs
+  output vectors  = ./sadsmall.movecs
+  use symmetry    = T
+  symmetry adapt  = T
+
+
+ Forming initial guess at       2.6s
+
+
+ Starting SCF solution at       2.6s
+
+
+
+       Final UHF  results 
+       ------------------ 
+
+         Total SCF energy =   -113.693646878605
+      One electron energy =   -222.879772953427
+      Two electron energy =     74.989952344204
+ Nuclear repulsion energy =     34.196173730618
+
+                       Sz =      0.5000
+                 Sz(Sz+1) =      0.7500
+                      S^2 =      0.8240
+
+        Time for solution =      0.2s
+
+
+                              NWChem Gradients Module
+                              -----------------------
+
+
+
+                         UHF ENERGY GRADIENTS
+
+    atom               coordinates                        gradient
+                 x          y          z           x          y          z
+   1 c      -0.180870   1.261894   0.000000   -0.000301  -0.000393   0.000000
+   2 o       0.309041  -1.412452   0.000000   -0.000116  -0.000287   0.000000
+   3 h       2.043850   0.085773   0.000000    0.000458   0.000102   0.000000
+   4 h      -0.782389   2.085091  -1.749844   -0.000021   0.000289   0.000068
+   5 h      -0.782389   2.085091   1.749844   -0.000021   0.000289  -0.000068
+
+  no constraints, skipping    0.0000000000000000     
+
+  Step       Energy      Delta E   Gmax     Grms     Xrms     Xmax   Walltime
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    8    -113.69364688 -1.2D-05  0.00036  0.00022  0.00400  0.01202      2.8
+                                     ok       ok                    
+
+
+
+                                Z-matrix (autoz)
+                                -------- 
+
+ Units are Angstrom for bonds and degrees for angles
+
+      Type          Name      I     J     K     L     M      Value     Gradient
+      ----------- --------  ----- ----- ----- ----- ----- ---------- ----------
+    1 Stretch                  1     3                       1.33166    0.00036
+    2 Stretch                  1     2                       1.43875    0.00026
+    3 Stretch                  1     4                       1.07169    0.00006
+    4 Stretch                  1     5                       1.07169    0.00006
+    5 Bend                     2     1     3                51.75552    0.00034
+    6 Bend                     2     1     4               116.95839    0.00021
+    7 Bend                     2     1     5               116.95839    0.00021
+    8 Bend                     3     1     4               116.90783   -0.00013
+    9 Bend                     3     1     5               116.90783   -0.00013
+   10 Bend                     4     1     5               119.54548   -0.00019
+
+ Hessian eigenvalues: positive=   9 negative=  1 zero=  0
+ Hessian has correct structure - following negative mode, overlap= 1.0D+00
+
+ The mode being followed to the saddle point
+
+
+                                Z-matrix (autoz)
+                                -------- 
+
+ Units are Angstrom for bonds and degrees for angles
+
+      Type          Name      I     J     K     L     M      Value      Sadmode
+      ----------- --------  ----- ----- ----- ----- ----- ---------- ----------
+    1 Stretch                  1     3                       1.33166   -0.34818
+    2 Stretch                  1     2                       1.43875    0.11379
+    3 Stretch                  1     4                       1.07169    0.00433
+    4 Stretch                  1     5                       1.07169    0.00433
+    5 Bend                     2     1     3                51.75552    0.89321
+    6 Bend                     2     1     4               116.95839   -0.05756
+    7 Bend                     2     1     5               116.95839   -0.05756
+    8 Bend                     3     1     4               116.90783    0.04612
+    9 Bend                     3     1     5               116.90783    0.04612
+   10 Bend                     4     1     5               119.54548   -0.23892
+
+ Search mode= 1 eval=-2.2D-01 grad= 2.2D-04 step= 9.9D-04
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+
+          --------
+          Step   9
+          --------
+
+
+                         Geometry "geometry" -> "geometry"
+                         ---------------------------------
+
+ Output coordinates in angstroms (scale by  1.889725989 to convert to a.u.)
+
+  No.       Tag          Charge          X              Y              Z
+ ---- ---------------- ---------- -------------- -------------- --------------
+    1 c                    6.0000    -0.09444458     0.66854600     0.00000000
+    2 o                    8.0000     0.16318885    -0.74676040     0.00000000
+    3 h                    1.0000     1.08082592     0.04554205     0.00000000
+    4 h                    1.0000    -0.41411570     1.10257713    -0.92616774
+    5 h                    1.0000    -0.41411570     1.10257713     0.92616774
+
+      Atomic Mass 
+      ----------- 
+
+      c                 12.000000
+      o                 15.994910
+      h                  1.007825
+
+
+ Effective nuclear repulsion energy (a.u.)      34.2058465136
+
+            Nuclear Dipole moment (a.u.) 
+            ----------------------------
+        X                 Y               Z
+ ---------------- ---------------- ----------------
+     1.8735458498     0.5440315782     0.0000000000
+
+      Symmetry information
+      --------------------
+
+ Group name             Cs        
+ Group number              2
+ Group order               2
+ No. of unique centers     4
+
+      Symmetry unique atoms
+
+     1    2    3    4
+
+                                 NWChem SCF Module
+                                 -----------------
+
+
+                                  H3CO <-> H2COH
+
+
+
+  ao basis        = "ao basis"
+  functions       =    24
+  atoms           =     5
+  alpha electrons =     9
+  beta  electrons =     8
+  charge          =   0.00
+  wavefunction    = UHF 
+  input vectors   = ./sadsmall.movecs
+  output vectors  = ./sadsmall.movecs
+  use symmetry    = T
+  symmetry adapt  = T
+
+
+ Forming initial guess at       2.9s
+
+
+ Starting SCF solution at       2.9s
+
+
+
+       Final UHF  results 
+       ------------------ 
+
+         Total SCF energy =   -113.693648539113
+      One electron energy =   -222.898116463028
+      Two electron energy =     74.998621410363
+ Nuclear repulsion energy =     34.205846513552
+
+                       Sz =      0.5000
+                 Sz(Sz+1) =      0.7500
+                      S^2 =      0.8236
+
+        Time for solution =      0.1s
+
+
+                              NWChem Gradients Module
+                              -----------------------
+
+
+
+                         UHF ENERGY GRADIENTS
+
+    atom               coordinates                        gradient
+                 x          y          z           x          y          z
+   1 c      -0.178474   1.263369   0.000000    0.000024  -0.000146   0.000000
+   2 o       0.308382  -1.411173   0.000000    0.000074   0.000212   0.000000
+   3 h       2.042465   0.086062   0.000000    0.000037  -0.000175   0.000000
+   4 h      -0.782565   2.083569  -1.750203   -0.000067   0.000055   0.000044
+   5 h      -0.782565   2.083569   1.750203   -0.000067   0.000055  -0.000044
+
+  no constraints, skipping    0.0000000000000000     
+
+  Step       Energy      Delta E   Gmax     Grms     Xrms     Xmax   Walltime
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    9    -113.69364854 -1.7D-06  0.00020  0.00009  0.00106  0.00240      3.1
+                                     ok       ok       ok           
+
+
+
+                                Z-matrix (autoz)
+                                -------- 
+
+ Units are Angstrom for bonds and degrees for angles
+
+      Type          Name      I     J     K     L     M      Value     Gradient
+      ----------- --------  ----- ----- ----- ----- ----- ---------- ----------
+    1 Stretch                  1     3                       1.33019    0.00011
+    2 Stretch                  1     2                       1.43856   -0.00020
+    3 Stretch                  1     4                       1.07162    0.00000
+    4 Stretch                  1     5                       1.07162    0.00000
+    5 Bend                     2     1     3                51.75540   -0.00015
+    6 Bend                     2     1     4               116.86572    0.00001
+    7 Bend                     2     1     5               116.86572    0.00001
+    8 Bend                     3     1     4               116.95325    0.00006
+    9 Bend                     3     1     5               116.95325    0.00006
+   10 Bend                     4     1     5               119.59950   -0.00004
+
+ Hessian eigenvalues: positive=   9 negative=  1 zero=  0
+ Hessian has correct structure - following negative mode, overlap= 1.0D+00
+
+ The mode being followed to the saddle point
+
+
+                                Z-matrix (autoz)
+                                -------- 
+
+ Units are Angstrom for bonds and degrees for angles
+
+      Type          Name      I     J     K     L     M      Value      Sadmode
+      ----------- --------  ----- ----- ----- ----- ----- ---------- ----------
+    1 Stretch                  1     3                       1.33019   -0.38203
+    2 Stretch                  1     2                       1.43856    0.12471
+    3 Stretch                  1     4                       1.07162    0.00298
+    4 Stretch                  1     5                       1.07162    0.00298
+    5 Bend                     2     1     3                51.75540    0.87754
+    6 Bend                     2     1     4               116.86572   -0.11028
+    7 Bend                     2     1     5               116.86572   -0.11028
+    8 Bend                     3     1     4               116.95325    0.06045
+    9 Bend                     3     1     5               116.95325    0.06045
+   10 Bend                     4     1     5               119.59950   -0.19178
+
+ Search mode= 1 eval=-2.4D-01 grad=-1.9D-04 step=-8.0D-04
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+  no constraints, skipping    0.0000000000000000     
+
+          --------
+          Step  10
+          --------
+
+
+                         Geometry "geometry" -> "geometry"
+                         ---------------------------------
+
+ Output coordinates in angstroms (scale by  1.889725989 to convert to a.u.)
+
+  No.       Tag          Charge          X              Y              Z
+ ---- ---------------- ---------- -------------- -------------- --------------
+    1 c                    6.0000    -0.09466382     0.66868921     0.00000000
+    2 o                    8.0000     0.16331961    -0.74675626     0.00000000
+    3 h                    1.0000     1.08060989     0.04556447     0.00000000
+    4 h                    1.0000    -0.41396344     1.10249225    -0.92638816
+    5 h                    1.0000    -0.41396344     1.10249225     0.92638816
+
+      Atomic Mass 
+      ----------- 
+
+      c                 12.000000
+      o                 15.994910
+      h                  1.007825
+
+
+ Effective nuclear repulsion energy (a.u.)      34.2040474549
+
+            Nuclear Dipole moment (a.u.) 
+            ----------------------------
+        X                 Y               Z
+ ---------------- ---------------- ----------------
+     1.8732040309     0.5454394126     0.0000000000
+
+      Symmetry information
+      --------------------
+
+ Group name             Cs        
+ Group number              2
+ Group order               2
+ No. of unique centers     4
+
+      Symmetry unique atoms
+
+     1    2    3    4
+
+                                 NWChem SCF Module
+                                 -----------------
+
+
+                                  H3CO <-> H2COH
+
+
+
+  ao basis        = "ao basis"
+  functions       =    24
+  atoms           =     5
+  alpha electrons =     9
+  beta  electrons =     8
+  charge          =   0.00
+  wavefunction    = UHF 
+  input vectors   = ./sadsmall.movecs
+  output vectors  = ./sadsmall.movecs
+  use symmetry    = T
+  symmetry adapt  = T
+
+
+ Forming initial guess at       3.1s
+
+
+ Starting SCF solution at       3.1s
+
+
+
+       Final UHF  results 
+       ------------------ 
+
+         Total SCF energy =   -113.693648635339
+      One electron energy =   -222.894753134231
+      Two electron energy =     74.997057044016
+ Nuclear repulsion energy =     34.204047454876
+
+                       Sz =      0.5000
+                 Sz(Sz+1) =      0.7500
+                      S^2 =      0.8236
+
+        Time for solution =      0.1s
+
+
+                              NWChem Gradients Module
+                              -----------------------
+
+
+
+                         UHF ENERGY GRADIENTS
+
+    atom               coordinates                        gradient
+                 x          y          z           x          y          z
+   1 c      -0.178889   1.263639   0.000000    0.000034  -0.000034   0.000000
+   2 o       0.308629  -1.411165   0.000000    0.000023   0.000046   0.000000
+   3 h       2.042057   0.086104   0.000000    0.000004  -0.000051   0.000000
+   4 h      -0.782277   2.083408  -1.750620   -0.000030   0.000019   0.000007
+   5 h      -0.782277   2.083408   1.750620   -0.000030   0.000019  -0.000007
+
+  no constraints, skipping    0.0000000000000000     
+
+  Step       Energy      Delta E   Gmax     Grms     Xrms     Xmax   Walltime
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@   10    -113.69364864 -9.6D-08  0.00005  0.00003  0.00026  0.00042      3.2
+                                     ok       ok       ok       ok  
+
+
+
+                                Z-matrix (autoz)
+                                -------- 
+
+ Units are Angstrom for bonds and degrees for angles
+
+      Type          Name      I     J     K     L     M      Value     Gradient
+      ----------- --------  ----- ----- ----- ----- ----- ---------- ----------
+    1 Stretch                  1     3                       1.33025    0.00003
+    2 Stretch                  1     2                       1.43876   -0.00004
+    3 Stretch                  1     4                       1.07160    0.00001
+    4 Stretch                  1     5                       1.07160    0.00001
+    5 Bend                     2     1     3                51.73815   -0.00005
+    6 Bend                     2     1     4               116.85177   -0.00000
+    7 Bend                     2     1     5               116.85177   -0.00000
+    8 Bend                     3     1     4               116.92861    0.00003
+    9 Bend                     3     1     5               116.92861    0.00003
+   10 Bend                     4     1     5               119.64869   -0.00001
+
+
+      ----------------------
+      Optimization converged
+      ----------------------
+
+
+  Step       Energy      Delta E   Gmax     Grms     Xrms     Xmax   Walltime
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@   10    -113.69364864 -9.6D-08  0.00005  0.00003  0.00026  0.00042      3.2
+                                     ok       ok       ok       ok  
+
+
+
+                                Z-matrix (autoz)
+                                -------- 
+
+ Units are Angstrom for bonds and degrees for angles
+
+      Type          Name      I     J     K     L     M      Value     Gradient
+      ----------- --------  ----- ----- ----- ----- ----- ---------- ----------
+    1 Stretch                  1     3                       1.33025    0.00003
+    2 Stretch                  1     2                       1.43876   -0.00004
+    3 Stretch                  1     4                       1.07160    0.00001
+    4 Stretch                  1     5                       1.07160    0.00001
+    5 Bend                     2     1     3                51.73815   -0.00005
+    6 Bend                     2     1     4               116.85177   -0.00000
+    7 Bend                     2     1     5               116.85177   -0.00000
+    8 Bend                     3     1     4               116.92861    0.00003
+    9 Bend                     3     1     5               116.92861    0.00003
+   10 Bend                     4     1     5               119.64869   -0.00001
+
+
+
+                         Geometry "geometry" -> "geometry"
+                         ---------------------------------
+
+ Output coordinates in angstroms (scale by  1.889725989 to convert to a.u.)
+
+  No.       Tag          Charge          X              Y              Z
+ ---- ---------------- ---------- -------------- -------------- --------------
+    1 c                    6.0000    -0.09466382     0.66868921     0.00000000
+    2 o                    8.0000     0.16331961    -0.74675626     0.00000000
+    3 h                    1.0000     1.08060989     0.04556447     0.00000000
+    4 h                    1.0000    -0.41396344     1.10249225    -0.92638816
+    5 h                    1.0000    -0.41396344     1.10249225     0.92638816
+
+      Atomic Mass 
+      ----------- 
+
+      c                 12.000000
+      o                 15.994910
+      h                  1.007825
+
+
+ Effective nuclear repulsion energy (a.u.)      34.2040474549
+
+            Nuclear Dipole moment (a.u.) 
+            ----------------------------
+        X                 Y               Z
+ ---------------- ---------------- ----------------
+     1.8732040309     0.5454394126     0.0000000000
+
+      Symmetry information
+      --------------------
+
+ Group name             Cs        
+ Group number              2
+ Group order               2
+ No. of unique centers     4
+
+      Symmetry unique atoms
+
+     1    2    3    4
+
+
+                Final and change from initial internal coordinates
+                --------------------------------------------------
+
+
+
+                                Z-matrix (autoz)
+                                -------- 
+
+ Units are Angstrom for bonds and degrees for angles
+
+      Type          Name      I     J     K     L     M      Value       Change
+      ----------- --------  ----- ----- ----- ----- ----- ---------- ----------
+    1 Stretch                  1     3                       1.33025   -0.06975
+    2 Stretch                  1     2                       1.43876   -0.04124
+    3 Stretch                  1     4                       1.07160   -0.00840
+    4 Stretch                  1     5                       1.07160   -0.00840
+    5 Bend                     2     1     3                51.73815  -18.26185
+    6 Bend                     2     1     4               116.85177    6.85177
+    7 Bend                     2     1     5               116.85177    6.85177
+    8 Bend                     3     1     4               116.92861   -7.02275
+    9 Bend                     3     1     5               116.92861   -7.02275
+   10 Bend                     4     1     5               119.64869   10.71138
+
+ ==============================================================================
+                                internuclear distances
+ ------------------------------------------------------------------------------
+       center one      |      center two      | atomic units |  angstroms
+ ------------------------------------------------------------------------------
+    2 o                |   1 c                |     2.71887  |     1.43876
+    4 h                |   1 c                |     2.02504  |     1.07160
+    5 h                |   1 c                |     2.02504  |     1.07160
+ ------------------------------------------------------------------------------
+                         number of included internuclear distances:          3
+ ==============================================================================
+
+
+
+ ==============================================================================
+                                 internuclear angles
+ ------------------------------------------------------------------------------
+        center 1       |       center 2       |       center 3       |  degrees
+ ------------------------------------------------------------------------------
+    2 o                |   1 c                |   4 h                |   116.85
+    2 o                |   1 c                |   5 h                |   116.85
+    4 h                |   1 c                |   5 h                |   119.65
+ ------------------------------------------------------------------------------
+                            number of included internuclear angles:          3
+ ==============================================================================
+
+
+
+
+ Task  times  cpu:        3.2s     wall:        3.2s
+ Summary of allocated global arrays
+-----------------------------------
+  No active global arrays
+
+
+MA_summarize_allocated_blocks: starting scan ...
+MA_summarize_allocated_blocks: scan completed: 0 heap blocks, 0 stack blocks
+MA usage statistics:
+
+	allocation statistics:
+					      heap	     stack
+					      ----	     -----
+	current number of blocks	         0	         0
+	maximum number of blocks	        20	        33
+	current total bytes		         0	         0
+	maximum total bytes		     80136	  22510296
+	maximum total K-bytes		        81	     22511
+	maximum total M-bytes		         1	        23
+
+
+                                NWChem Input Module
+                                -------------------
+
+
+
+
+                                     CITATION
+                                     --------
+                Please cite the following reference when publishing
+                           results obtained with NWChem:
+
+          E. Apra, E. J. Bylaska, W. A. de Jong, N. Govind, K. Kowalski,
+       T. P. Straatsma, M. Valiev, H. J. J. van Dam, Y. Alexeev, J. Anchell,
+       V. Anisimov, F. W. Aquino, R. Atta-Fynn, J. Autschbach, N. P. Bauman,
+     J. C. Becca, D. E. Bernholdt, K. Bhaskaran-Nair, S. Bogatko, P. Borowski,
+         J. Boschen, J. Brabec, A. Bruner, E. Cauet, Y. Chen, G. N. Chuev,
+      C. J. Cramer, J. Daily, M. J. O. Deegan, T. H. Dunning Jr., M. Dupuis,
+   K. G. Dyall, G. I. Fann, S. A. Fischer, A. Fonari, H. Fruchtl, L. Gagliardi,
+      J. Garza, N. Gawande, S. Ghosh, K. Glaesemann, A. W. Gotz, J. Hammond,
+       V. Helms, E. D. Hermes, K. Hirao, S. Hirata, M. Jacquelin, L. Jensen,
+   B. G. Johnson, H. Jonsson, R. A. Kendall, M. Klemm, R. Kobayashi, V. Konkov,
+      S. Krishnamoorthy, M. Krishnan, Z. Lin, R. D. Lins, R. J. Littlefield,
+      A. J. Logsdail, K. Lopata, W. Ma, A. V. Marenich, J. Martin del Campo,
+   D. Mejia-Rodriguez, J. E. Moore, J. M. Mullin, T. Nakajima, D. R. Nascimento,
+    J. A. Nichols, P. J. Nichols, J. Nieplocha, A. Otero-de-la-Roza, B. Palmer,
+    A. Panyala, T. Pirojsirikul, B. Peng, R. Peverati, J. Pittner, L. Pollack,
+   R. M. Richard, P. Sadayappan, G. C. Schatz, W. A. Shelton, D. W. Silverstein,
+   D. M. A. Smith, T. A. Soares, D. Song, M. Swart, H. L. Taylor, G. S. Thomas,
+            V. Tipparaju, D. G. Truhlar, K. Tsemekhman, T. Van Voorhis,
+      A. Vazquez-Mayagoitia, P. Verma, O. Villa, A. Vishnu, K. D. Vogiatzis,
+        D. Wang, J. H. Weare, M. J. Williamson, T. L. Windus, K. Wolinski,
+        A. T. Wong, Q. Wu, C. Yang, Q. Yu, M. Zacharias, Z. Zhang, Y. Zhao,
+                                and R. J. Harrison
+                        "NWChem: Past, present, and future
+                         J. Chem. Phys. 152, 184102 (2020)
+                               doi:10.1063/5.0004997
+
+                                      AUTHORS
+                                      -------
+     E. Apra, E. J. Bylaska, N. Govind, K. Kowalski, M. Valiev, W. A. de Jong,
+      T. P. Straatsma, H. J. J. van Dam, D. Wang, T. L. Windus, N. P. Bauman,
+       A. Panyala, J. Hammond, J. Autschbach, K. Bhaskaran-Nair, J. Brabec,
+    K. Lopata, S. A. Fischer, S. Krishnamoorthy, M. Jacquelin, W. Ma, M. Klemm,
+       O. Villa, Y. Chen, V. Anisimov, F. Aquino, S. Hirata, M. T. Hackler,
+           Eric Hermes, L. Jensen, J. E. Moore, J. C. Becca, V. Konjkov,
+            D. Mejia-Rodriguez, T. Risthaus, M. Malagoli, A. Marenich,
+   A. Otero-de-la-Roza, J. Mullin, P. Nichols, R. Peverati, J. Pittner, Y. Zhao,
+        P.-D. Fan, A. Fonari, M. J. Williamson, R. J. Harrison, J. R. Rehr,
+      M. Dupuis, D. Silverstein, D. M. A. Smith, J. Nieplocha, V. Tipparaju,
+      M. Krishnan, B. E. Van Kuiken, A. Vazquez-Mayagoitia, M. Swart, Q. Wu,
+   T. Van Voorhis, A. A. Auer, M. Nooijen, L. D. Crosby, E. Brown, G. Cisneros,
+     G. I. Fann, H. Fruchtl, J. Garza, K. Hirao, R. A. Kendall, J. A. Nichols,
+       K. Tsemekhman, K. Wolinski, J. Anchell, D. E. Bernholdt, P. Borowski,
+       T. Clark, D. Clerc, H. Dachsel, M. J. O. Deegan, K. Dyall, D. Elwood,
+      E. Glendening, M. Gutowski, A. C. Hess, J. Jaffe, B. G. Johnson, J. Ju,
+        R. Kobayashi, R. Kutteh, Z. Lin, R. Littlefield, X. Long, B. Meng,
+      T. Nakajima, S. Niu, L. Pollack, M. Rosing, K. Glaesemann, G. Sandrone,
+      M. Stave, H. Taylor, G. Thomas, J. H. van Lenthe, A. T. Wong, Z. Zhang.
+
+ Total times  cpu:        3.3s     wall:        3.3s

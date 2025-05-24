@@ -1,0 +1,9 @@
+*
+* $Id$
+*
+
+*     **** external functions ****
+      real*8   nwpw_timing
+      external nwpw_timing
+
+

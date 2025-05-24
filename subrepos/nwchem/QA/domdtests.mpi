@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#
+# $Id$
+#
+#---   md tests
+#
+if [ -z "$1" ]; then
+    let np=1
+else
+  let np=$1
+fi
+./runtests.mpi.unix procs $np prep/aal
+./runtests.mpi.unix procs $np prep/bpx
+./runtests.mpi.unix procs $np prep/caa
+./runtests.mpi.unix procs $np prep/fsc
+./runtests.mpi.unix procs $np water/water_md
+./runtests.mpi.unix procs $np water/water_pme
+./runtests.mpi.unix procs $np ethanol/ethanol_md
+./runtests.mpi.unix procs $np ethanol/ethanol_ti
+./runtests.mpi.unix procs $np trypsin/trypsin_md

@@ -1,0 +1,6 @@
+!$Id$
+!$Log: not supported by cvs2svn $
+!
+!
+      double precision paw_energy_kin_atom
+      external paw_energy_kin_atom

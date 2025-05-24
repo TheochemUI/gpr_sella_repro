@@ -1,0 +1,50 @@
+Title "FH-ClH-BrH-bsses"
+
+Start FH-ClH-BrH-bsses
+
+echo
+
+
+geometry 
+F     -1.38995843    -1.56722829    -0.00008379
+H     -0.35256333    -1.41900032    -0.00003648
+Cl    -1.85390137     1.20144820    -0.00008815
+H     -1.84508700    -0.28787015    -0.00009747
+Br     1.31794608    -0.15266498     0.00004793
+H      0.09998492     0.84537347    -0.00000141
+end
+
+
+basis "ao basis" 
+  H    library    3-21g
+  F    library    3-21g
+  Cl   library    3-21g
+  Br   library    3-21g
+  bqH  library H  3-21g
+  bqF  library F  3-21g
+  bqCl library Cl 3-21g
+  bqBr library Br 3-21g
+END
+
+dft
+ direct
+ iterations 100
+ grid fine
+ convergence energy 1d-8
+end
+
+driver
+clear
+end
+
+bsse
+ mon uno 1 2
+ mon dos 3 4
+ mon tres 5 6
+end
+
+driver; tight;end
+
+task dft optimize
+
+task dft freq

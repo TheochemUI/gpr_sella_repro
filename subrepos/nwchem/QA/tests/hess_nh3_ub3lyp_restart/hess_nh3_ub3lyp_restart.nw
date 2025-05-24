@@ -1,0 +1,37 @@
+# Steps to run this test
+# Step 1: Run normal hessian calculation
+# Step 2: Run after commenting out start line, uncommenting restart line, noscf and hessian block
+
+echo 
+
+start hess_nh3_ub3lyp_restart
+#restart hess_nh3_ub3lyp_restart
+
+title "open shell hessian calculation: restart"
+
+charge -1
+
+geometry
+  symmetry C3v
+  n      0.00000000     0.00000000     0.11528732
+  h      0.66613072     0.66613072    -0.29294900
+  h     -0.90995149     0.24382077    -0.29294900
+  h      0.24382077    -0.90995149    -0.29294900
+end
+
+basis spherical
+ * library cc-pvtz
+end
+
+dft
+  xc b3lyp
+  odft
+  mult 2
+#  noscf
+end
+
+#hessian
+# cphf_restart
+#end
+
+task dft freq

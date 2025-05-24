@@ -1,0 +1,9 @@
+*
+* $Id$
+*
+      integer dnlist(2),dnlist_tag(2)
+      integer size,maxsize
+      common / lcao_dnlist / dnlist,dnlist_tag,
+     >                       size,maxsize
+
+

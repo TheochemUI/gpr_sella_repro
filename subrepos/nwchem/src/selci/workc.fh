@@ -1,0 +1,5 @@
+*
+* $Id$
+*
+      character*80 ia,ja
+      common/workc/ia,ja

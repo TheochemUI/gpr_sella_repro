@@ -1,0 +1,5 @@
+*
+* $Id$
+*
+      double precision main_block_time
+      common /c_mn_blk_tm/main_block_time

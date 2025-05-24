@@ -1,0 +1,7 @@
+C
+C $Id$
+C
+C  Hold variable that will be needed throughout the interface
+C
+      integer rtdb, numatoms
+      common /venusinfo/ rtdb, numatoms

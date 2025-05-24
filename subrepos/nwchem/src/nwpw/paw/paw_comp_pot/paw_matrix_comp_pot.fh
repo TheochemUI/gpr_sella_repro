@@ -1,0 +1,10 @@
+*
+* $Id$
+*
+      integer paw_comp_pot_matrix(4)
+      integer i_paw_comp_pot_matrix(4)
+      integer s_paw_comp_pot_matrix(4)
+
+      common /paw_comp_pot_matrix/ paw_comp_pot_matrix,
+     >                      i_paw_comp_pot_matrix,
+     >                      s_paw_comp_pot_matrix

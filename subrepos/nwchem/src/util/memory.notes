@@ -1,0 +1,31 @@
+$Id$
+
+On many platforms, nodes are not being shared with other jobs, so it
+makes sense to try to use as much memory on each node as possible.
+The idea becomes even more useful with inhomogeneous memory
+distributions being used increasingly.  Unfortunately this turn out to
+be a hard thing to do in general, but I have found info for a few
+machines.
+
+--------
+Cray-T3D
+--------
+The Fortran--callable library routine IHPSTAT returns information
+about the heap. IHPSTAT(12) tells you how far the heap can extend (in
+words, of course).  Since Cray's don't have VM this is very
+straightforward and Cray system analysts tell me that all this memory
+can be used by the application -- there is no need to reserve some
+more for the OS.  I haven't tried it.
+
+IHPSTAT(12) responds as expected to initialization of MA, which
+allocates a large chunk of memory up front to manage for the
+application.
+
+---
+IBM
+---
+
+I haven't been able to figure out how to get this information.  Note
+that AIX uses lazy allocation like OSF1, so if you were able to get
+the info, the technical questions about how to use it are the same as
+those on the Paragon.

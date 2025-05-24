@@ -1,0 +1,12 @@
+!$Id$
+!
+!
+!
+      double precision paw_energy_core_self_atom
+      external paw_energy_core_self_atom
+
+      double precision paw_energy_core_ion_atom
+      external paw_energy_core_ion_atom
+
+      double precision paw_energy_core_atom
+      external paw_energy_core_atom

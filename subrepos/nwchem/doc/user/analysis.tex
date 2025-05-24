@@ -1,0 +1,560 @@
+%
+% $Id$
+%
+\label{sec:analysis}
+\def\bmu{\mbox{\boldmath $\mu$}}
+\def\bE{\mbox{\bf E}}
+\def\br{\mbox{\bf r}}
+\def\tT{\tilde{T}}
+\def\t{\tilde{1}}
+\def\ip{i\prime}
+\def\jp{j\prime}
+\def\ipp{i\prime\prime}
+\def\jpp{j\prime\prime}
+\def\etal{{\sl et al.}}
+\def\nwchem{{\bf NWChem}}
+\def\nwargos{{\bf nwargos}}
+\def\nwtop{{\bf nwtop}}
+\def\nwrst{{\bf nwrst}}
+\def\nwsgm{{\bf nwsgm}}
+\def\esp{{\bf esp}}
+\def\md{{\bf md}}
+\def\prepare{{\bf prepare}}
+\def\analysis{{\bf analysis}}
+\def\argos{{\bf ARGOS}}
+\def\amber{{\bf AMBER}}
+\def\charmm{{\bf CHARMM}}
+\def\discover{{\bf DISCOVER}}
+\def\povray{{\bf povray}}
+\def\gopenmol{{\bf gOpenMol}}
+\def\ecce{{\bf ecce}}
+
+The \analysis\ module is used to analyze molecular trajectories generated
+by the \nwchem\ molecular dynamics module, or partial charges generated
+by the \nwchem\ electrostatic potential fit module. This module should
+not de run in parallel mode.
+
+Directives for the \analysis\ module are read from an input deck,
+
+\begin{verbatim}
+analysis
+ ...
+end
+\end{verbatim}
+
+The analysis is performed  as post-analysis of trajectory files through 
+using the {\rm task} directive
+
+\begin{verbatim}
+task analysis
+\end{verbatim}
+or
+\begin{verbatim}
+task analyze
+\end{verbatim}
+
+\section{System specification}
+
+\begin{verbatim}
+system <string systemid>_<string calcid>
+\end{verbatim}
+
+where the strings \verb+systemid+ and \verb+calcid+ are user defined names
+for the chemical system and the type of calculation to ber performed, 
+respectively. These names are used to derive the filenames used for the
+calculation. The topoly file used will be \verb+systemid.top+, while all
+other files are named \verb+systemid_calcid.ext+.
+
+\section{Reference coordinates}
+
+Most analyses require a set of reference coordinates. These
+coordinates are read from a \nwchem\ restart file by the directive,
+
+\begin{verbatim}
+reference <string filename>
+\end{verbatim}
+
+where {\rm filename} is the name of an existing restart file. 
+This input directive is required.
+
+\section{File specification}
+
+The trajectory file(s) to be analyzed are specified with
+
+\begin{verbatim}
+file <string filename> [<integer firstfile> <integer lastfile>] 
+\end{verbatim}
+
+where {\rm filename} is an existing {\rm trj} trajectory file.
+If {\rm firstfile} and {\rm lastfile} are specified, the specified
+{\rm filename} needs to have a {\rm ?} wild card character that will 
+be substituted by the 3-character integer number from {\rm firstfile} 
+to {\rm lastfile}, and the analysis will be performed on the series 
+of files.
+For example,
+
+\begin{verbatim}
+file tr_md?.trj 3 6
+\end{verbatim}
+
+will instruct the analysis to be performed on files {\it tr\_md003.trj},
+{\it tr\_md004.trj}, {\it tr\_md005.trj} and {\it tr\_md006.trj}.
+
+\par
+From the specified files the subset of frames to be analyzed is 
+specified by
+
+\begin{verbatim}
+frames [<integer firstframe default 1>] <integer lastframe> \
+       [<integer frequency default 1>]
+\end{verbatim}
+
+For example, to analyze the first 100 frames from the specified
+trajectory files, use
+
+\begin{verbatim}
+frames 100
+\end{verbatim}
+
+To analyze every 10-th frame between frames 200 and 400 recorded on
+the specified trajectory files, use
+
+\begin{verbatim}
+frames 200 400 10
+\end{verbatim}
+
+A time offset can be specified with
+
+\begin{verbatim}
+time <real timoff>
+\end{verbatim}
+
+Solute coordinates of the reference set and ech subsequent frame
+read from a trajectory file are translated to have the center of
+geometry of the specified solute molecule at the center of the
+simulation box. After this translation all molecules are folded
+back into the box according to the periodic boundary conditions.
+The directive for this operation is
+
+\begin{verbatim}
+center <integer imol> [<integer jmol default imol>]
+\end{verbatim}
+
+Coordinates of each frame read from a trajectory file can be 
+rotated using
+
+\begin{verbatim}
+rotate ( off | x | y | z ) <real angle units degrees>
+\end{verbatim}
+
+If \verb+center+ was defined, rotation takes place after
+the system has been centered. The \verb+rotate+ directives
+only apply to frames read from the trajectory files, and not
+to the reference coordinates. Upto 100 \verb+rotate+ directives
+can be specified, which will be carried out in the order in which
+they appear in the input deck. \verb+rotate off+ cancels all
+previously defined \verb+rotate+ directives.
+
+To perform a hydrogen bond analysis:
+
+\begin{verbatim}
+hbond [distance [[<real rhbmin default 0.0>] <real rhbmin>]] \
+      [angle [<real hbdmin> [ <real hbdmax default pi>]]] \
+      [solvent [<integer numwhb>]]
+\end{verbatim}
+
+\section{Selection}
+
+Analyses can be applied to a selection of solute atoms and solvent molecules. 
+The selection is determined by
+
+\begin{verbatim}
+select ( [ super ] [ { <string atomlist> } ] |
+	solvent <real range> | save <string filename> | read <string filename> )
+\end{verbatim}
+
+where {\rm \{atomlist\}} is the set of atom names selected from the specified residues. 
+By default all solute atoms are selected. When keyword \verb+super+ is specified the selecion
+applies to the superimposition option.
+
+\par
+The selected atoms are specified by the string \verb+atomlist+ which
+takes the form
+
+\begin{verbatim}
+[{isgm [ - jsgm ] [,]} [:] [{aname[,]}]
+\end{verbatim}
+where \verb+isgm+ and \verb+jsgm+ are the first and last residue numbers,
+and \verb+aname+ is an atom name. In the atomname a question mark may be 
+used as a wildcard character. 
+
+For example, all protein backbone atoms are selected by
+
+\begin{verbatim}
+select _N,_CA,_C
+\end{verbatim}
+
+To select the backbone atoms in residues 20 to 80 and 90 to 100 only, use
+
+\begin{verbatim}
+select 20-80,90-100:_N,_CA,_C
+\end{verbatim}
+
+This selection is reset to apply to all atoms after each file
+directive.
+
+Solvent molecules within \verb+range+ nm from any selected solute atom
+are selected by
+
+\begin{verbatim}
+select solvent <real range>
+\end{verbatim}
+
+After solvent selection, the solute atom selection is reset to being all
+selected.
+
+The current selection can be saved to, or read from a file using the 
+\verb+save+ and \verb+read+ keywords, respectively.
+
+\par
+
+Some analysis are performed on groups of atoms. These groups of atoms
+are defined by
+
+\begin{verbatim}
+define <integer igroup> [<real rsel>] [solvent] { <string atomlist> }
+\end{verbatim}
+
+The string atom in this definitions again takes the form
+
+\begin{verbatim}
+[{isgm [ - jsgm ] [,]} [:] [{aname[,]}]
+\end{verbatim}
+where \verb+isgm+ and \verb+jsgm+ are the first and last residue numbers,
+and \verb+aname+ is an atom name. In the atomname a question mark may be 
+used as a wildcard character. 
+
+Multiple define directive can be used to define a single set of atoms.
+
+\section{Coordinate analysis}
+
+To analyze the root mean square deviation from the specified reference
+coordinates:
+
+\begin{verbatim}
+rmsd
+\end{verbatim}
+
+To analyze protein $\phi$-$\psi$ and backbone hydrogen bonding:
+
+\begin{verbatim}
+ramachandran
+\end{verbatim}
+
+To define a distance:
+
+\begin{verbatim}
+distance <integer ibond> <string atomi> <string atomj> 
+\end{verbatim}
+
+To define an angle:
+
+\begin{verbatim}
+angle <integer iangle> <string atomi> <string atomj> <string atomk> 
+\end{verbatim}
+
+To define a torsion:
+
+\begin{verbatim}
+torsion <integer itorsion> <string atomi> <string atomj> \
+                       <string atomk> <string atoml> 
+\end{verbatim}
+
+To define a vector:
+
+\begin{verbatim}
+vector <integer ivector> <string atomi> <string atomj>
+\end{verbatim}
+
+The atom string in these definitions takes the form
+
+\begin{verbatim}
+<integer segment>:<string atomname> | w<integer molecule>:<string atomname>
+\end{verbatim}
+
+for solute and solvent atom specification, respectively.
+
+To define charge distribution in z-direction:
+
+\begin{verbatim}
+charge_distribution <integer bins>
+\end{verbatim}
+
+Analyses on atoms in a predefined group are specified by
+
+\begin{verbatim}
+group [<integer igroup> [periodic <integer ipbc>] \
+      ( local [<real rsel default 0.0>] [<real rval default rsel>]
+        <string function> )
+\end{verbatim}
+where \verb+igroup+ specifies the group of atoms defined with a
+\verb+define+ directive. Keyword \verb+periodic+ can be used to
+specify the periodicity, \verb+ipbc=1+ for periodicity in \verb+z+, 
+\verb+ipbc=2+ for periodicity in \verb+x+ and \verb+y+, and
+\verb+ipbc=3+ for periodicity in \verb+x+, \verb+y+ and \verb+z+.
+Currently the only option is \verb+local+ which prints all selected 
+solute atom with a distance between \verb+rsel+ and \verb+rval+ from
+the atoms defined in \verb+igroup+. The actual analysis is done by the
+\verb+scan+ deirective. A formatted report is printed from 
+\verb+group+ analyses using
+
+\begin{verbatim}
+report <string filename> local
+\end{verbatim}
+
+Analyses on pairs of atoms in predefined groups are specified by
+
+\begin{verbatim}
+groups [<integer igroup> [<integer jgroup>]] [periodic [<integer ipbc default 3>]] \ 
+       <string function> [<real value1> [<real value2>]] [<string filename>]
+\end{verbatim}
+
+where $igroup$ and $jgroup$ are groups of atoms defined with a
+\verb+define+ directive. Keyword \verb+periodic+ specifies that
+periodic boundary conditions need to be applied in $ipbc$ dimensions.
+The type of analysis is define by $function$, $value1$ and $value2$.
+If $filename$ is specified, the analysis is applied to the reference
+coordinates and written to the specified file. If no filename is
+given, the analysis is applied to the specified trajectory and 
+performed as part of the \verb+scan+ directive.
+Implemented analyses defined by 
+\verb+<string function> [<real value1> [<real value2>]]+ include\\
+\\
+\verb+distance+ to calculate the distance between the centers of geometry of the 
+two specified groups of atoms, and\\
+\verb+distances+ to calculate all atomic distances between atoms
+in the specified groups that lie between $value1$ and $value2$.
+
+
+Coordinate histograms are specified by
+
+\begin{verbatim}
+histogram <integer idef> [<integer length>] zcoordinate <string filename>
+\end{verbatim}
+
+where $idef$ is the atom group definition number, $length$ is the size
+of the histogram, \verb+zcoordinate+ is the currently only histogram option,
+and $filename$ is the filname to which the histogram is written.
+
+Order parameters are evalated using
+
+\begin{verbatim}
+order <integer isel> <integer jsel> <string atomi> <string atomj>
+\end{verbatim}
+This is an experimental feature.
+
+To write the average coordinates of a trajectory
+
+\begin{verbatim}
+average [super] <string filename>
+\end{verbatim}
+
+
+To perform the coordinate analysis:
+
+\begin{verbatim}
+scan [ super ] <string filename>
+\end{verbatim}
+
+which will create, depending on the specified analysis options
+files filename.rms and filename.ana. After the scan directive
+previously defined coordinate analysis options are all reset.
+Optional keyword \verb+super+ specifies that frames read from
+the trajectory file(s) are superimposed to the reference structure
+before the analysis is performed.
+
+\section{Essential dynamics analysis}
+
+Essential dynamics analysis is performed by
+
+\begin{verbatim}
+essential
+\end{verbatim}
+
+This can be followed by one or more
+
+\begin{verbatim}
+project <integer vector> <string filename>
+\end{verbatim}
+
+to project the trajectory onto the specified vector. This will
+create files filename with extensions frm or trj, val, vec, \_min.pdb
+and \_max.pdb, with the projected trajectory, the projection
+value, the eigenvector, and the minimum and maximum projection
+structure.
+
+For example, an essential dynamics analysis with projection onto
+the first vector generating files firstvec.\{trj, val, vec, \_min.pdb, \_max.pdb\}
+is generated by
+
+\begin{verbatim}
+essential
+project 1 firstvec
+\end{verbatim}
+
+\section{Trajectory format conversion}
+
+To write a single frame in PDB or XYZ format, use
+
+\begin{verbatim}
+write [<integer number default 1>] [super] [solute] <string filename>
+\end{verbatim}
+
+To copy the selected frames from the specified trejctory file(s),
+onto a new file, use
+
+\begin{verbatim}
+copy  [solute] [rotate <real tangle>] <string filename>
+\end{verbatim}
+
+To superimpose the selected atoms for each specified frame to the 
+reference coordinates before copying onto a new file, use
+
+\begin{verbatim}
+super [solute] [rotate <real tangle>] <string filename>
+\end{verbatim}
+
+The \verb+rotate+ directive specifies that the structure will make
+a full ratation every tangle ps. This directive only has effect when
+writing povray files.
+
+The format of the new file is determined from the extension, which
+can be one of
+
+\begin{tabular}{rl}
+amb & \amber\ formatted trajectory file (obsolete)\\
+arc & \discover\ archive file\\
+bam & \amber\ unformatted trajectory file\\
+crd & \amber\ formatted trajectory file\\
+dcd & \charmm\ formatted trajectory file\\
+esp & \gopenmol\ formatted electrostatic potential files\\
+frm & \ecce\ frames file (obsolete)\\
+pov & \povray\ input files\\
+trj & \nwchem\ trajectory file\\
+\end{tabular}
+
+If no extension is specified, a {\rm trj} formatted file will be written.
+
+A special tag can be added to {\rm frm} and {\rm pov} formatted files  using
+
+\begin{verbatim}
+label <integer itag> <string tag>  [ <real rval default 1.0> ] \\
+    [ <integer iatag> [ <integer jatag default iatag> ] [ <real rtag default 0.0> ] ]
+    [ <string anam> ]
+\end{verbatim}
+
+where tag number $itag$ is set to the string $tag$ for all atoms
+anam within a distance $rtag$ from segments $iatag$ through $jatag$.
+A question mark can be used in anam as a wild card character.
+\par
+
+Atom rendering is specified using
+
+\begin{verbatim}
+render ( cpk | stick )  [ <real rval default 1.0> ] \\
+    [ <integer iatag> [ <integer jatag default iatag> ] [ <real rtag default 0.0> ] ]
+    [ <string anam> ]
+\end{verbatim}
+
+for all atoms anam within a distance $rtag$ from segments $iatag$ through $jatag$,
+and a scaling factor of $rval$. A question mark can be used in anam as a wild card 
+character.
+\par
+
+Atom color is specified using
+
+\begin{verbatim}
+color ( <string color> | atom ) \\
+    [ <integer iatag> [ <integer jatag default iatag> ] [ <real rtag default 0.0> ] ]
+    [ <string anam> ]
+\end{verbatim}
+
+for all atoms anam within a distance $rtag$ from segments $iatag$ through $jatag$.
+A question mark can be used in anam as a wild card character.
+\par
+For example, to display all carbon atoms in segments 34 through 45 
+in green and rendered cpk in povray files can be specified with
+
+\begin{verbatim}
+render cpk 34 45 _C??
+color green 34 45 _C??
+\end{verbatim}
+
+Coordinates written to a pov file can be scaled using
+
+\begin{verbatim}
+scale <real factor>
+\end{verbatim}
+
+A zero or negative scaling factor will scale the coordinates to
+lie within [-1,1] in all dimensions.
+\par
+The cpk rendering in povray files can be scaled by
+
+\begin{verbatim}
+cpk <real factor default 1.0>
+\end{verbatim}
+\par
+
+The stick rendering in povray files can be scaled by
+
+\begin{verbatim}
+stick <real factor default 1.0>
+\end{verbatim}
+
+The initial sequence number of esp related files is defined by
+
+\begin{verbatim}
+index <integer index default 1>
+\end{verbatim}
+
+A sequence of trajectory files with unequal lengths can be converted to files 
+with all $nclean$ frames using
+
+\begin{verbatim}
+clean <integer nclean>
+\end{verbatim}
+
+\section{Electrostatic potentials}
+
+A file in plt format of the electrostatic potential resulting
+from partial charges generated by the ESP module is generated
+by the command
+
+\begin{verbatim}
+esp  [ <integer spacing default 10> ] \
+     [ <real rcut default 1.0> ] [periodic [<integer iper default 3>]] \
+     [ <string xfile> [ <string pltfile> ] ]
+\end{verbatim}
+
+The input coordinates are taken from the {\rm xyzq} file that can
+be generated from a {\rm rst} by the prepare module. Parameter 
+spacing specifies the number of gridpoints per nm, rcut specifies 
+extent of the charge grid beyond the molecule.
+Periodic boundaries will be used if \verb+periodic+
+is specified. If \verb+iper+ is set to 2, periodic boundary
+conditions are applied in x and y dimensions only. If \verb+periodic+
+is specified, a negative value of \verb+rcut+ will extend the grid
+in the periodic dimensions by abs(\verb+rcut+), otherwise this value
+will be ignored in the periodic dimensions.
+The resulting {\rm plt} formatted file pltfile can be
+viewed with the gOpenMol program. The resulting electrostatic 
+potential grid is in units of kJ\ mol$^{-1}$e$^{-1}$.
+If no files are specified, only the parameters are set. This
+analysis applies to solute(s) only.
+
+The electrostatic potential at specific point are evaluated using
+
+\begin{verbatim}
+esp_points [<string filpin> [<string filhol> [<string filpou> [<string filavg>]]]]
+\end{verbatim}

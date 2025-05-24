@@ -1,0 +1,11 @@
+*
+* $Id$
+*
+
+*     **** NWPW_META_GGA common block ****
+      logical meta_on,is_band
+      integer tau(2),dfdtau(2)
+      common / NWPW_META_GGA_Block / tau,dfdtau,
+     >                               meta_on,is_band
+
+

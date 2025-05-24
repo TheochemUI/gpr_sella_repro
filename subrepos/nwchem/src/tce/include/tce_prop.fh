@@ -1,0 +1,32 @@
+      integer maxnumfreq
+      parameter (maxnumfreq=100)
+c quantum
+      integer maxnumrot
+      parameter (maxnumrot=200)
+      integer anumrot
+      double precision arot(maxnumrot)
+c
+      integer anumfreq,bnumfreq,gnumfreq
+      integer lr_diis,yr_diis,qr_diis
+      double precision lr_thresh,yr_thresh,qr_thresh
+      double precision num1,num0,den1,den0,num1sq,num0sq,numtot,dentot
+      double precision afreq(maxnumfreq)
+      double precision bfreq(maxnumfreq)
+      double precision gfreq(maxnumfreq)
+      logical respaxis(3)
+      logical lineresp,leftresp,quadresp
+      logical guess_lr_real,guess_qr_real
+      logical nopolar,nohyper,nogamma
+
+      common /tcepropdouble/
+     1 afreq,bfreq,gfreq,lr_thresh,yr_thresh,qr_thresh,arot
+
+      common /tcepropinteger/
+     1 anumfreq,bnumfreq,gnumfreq,anumrot
+
+      common /tceproplogical/
+     1  lineresp,leftresp,quadresp,respaxis,
+     3  guess_lr_real,guess_qr_real,
+     5  nopolar,nohyper,nogamma
+
+c $Id$

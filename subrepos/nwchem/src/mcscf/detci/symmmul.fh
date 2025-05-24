@@ -1,0 +1,8 @@
+*
+* $Id$
+*
+c
+c  Irrep direct product using EOR
+c
+      MULX(imul,jmul) = ieor((imul-1),(jmul-1)) + 1
+

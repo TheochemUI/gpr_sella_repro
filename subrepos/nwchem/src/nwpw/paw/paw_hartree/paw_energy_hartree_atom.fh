@@ -1,0 +1,6 @@
+!$Id$
+!
+!
+!
+      double precision paw_energy_hartree_atom
+      external paw_energy_hartree_atom

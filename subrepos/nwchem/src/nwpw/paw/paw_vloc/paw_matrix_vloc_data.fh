@@ -1,0 +1,7 @@
+*
+* $Id$
+*
+      integer paw_vloc_matrix(4)
+      integer i_paw_vloc_matrix(4)
+
+      common /paw_vloc_matrix/ paw_vloc_matrix,i_paw_vloc_matrix

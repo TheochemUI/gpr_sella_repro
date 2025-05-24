@@ -1,0 +1,9 @@
+!c
+!c $Id$
+!c
+
+      logical my_alloc
+      external my_alloc
+      logical my_dealloc
+      external my_dealloc
+

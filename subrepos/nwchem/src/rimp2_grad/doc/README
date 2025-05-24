@@ -1,0 +1,4 @@
+This directory contains
+rimp2-grad.tex
+	RI-MP2 frozen core gradient equations, as a superset of Robert
+	Harrison's writeup of the exact MP2 frozen core gradient.

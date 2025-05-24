@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+#
+# $Id$
+# this script tries to figure out no. of processors and RAM
+# to get the maximum available memory in memor_def.F
+# The only optional argument is the minimum amount of memory
+# (that can exceed the available physical memory/processor)
+# and is in units of megabytes.
+#
+if [[ -z "${NWCHEM_TARGET}" ]]; then
+    UNAME_S=$(uname -s)
+  if [[ ${UNAME_S} == Linux ]]; then
+    NWCHEM_TARGET=LINUX64
+  elif [[ ${UNAME_S} == Darwin ]]; then
+    NWCHEM_TARGET=MACX64
+  else
+      echo
+      echo You must define NWCHEM_TARGET in your environment to be the name
+      echo of the machine you wish to build for ... for example
+      echo     export NWCHEM_TARGET=SOLARIS
+      echo Known targets are SOLARIS, ...
+      echo See the INSTALL instructions for a complete list
+      echo ${UNAME_S}
+      exit 1
+  fi
+fi
+if [[ -z "${NWCHEM_TOP}" ]]; then
+    DIRUTIL=`dirname "$0"`
+    MYPW=`pwd`
+    NWCHEM_TOP=`echo ${DIRUTIL} | sed -e 's/\/contrib.*//' `
+fi
+#
+cd $NWCHEM_TOP/src/input
+a=("" "" "" "" "" "") 
+good=1
+
+if [ $NWCHEM_TARGET == LINUX ] || [ $NWCHEM_TARGET == LINUX64 ]; then
+    echo ==== lscpu ==========================
+    lscpu
+    echo ==== nproc --all ====================
+    nproc --all
+    echo ==== lscpu -p=Core,Socket | grep -v '^#'
+    lscpu   -p=Core,Socket | grep -v '^#'
+    echo =====================================
+#  nproc=`lscpu   -p=Core,Socket | grep -v '^#' | sort -u | wc -l`
+  nproc=`nproc --all`
+  memtot=`egrep -i MemT /proc/meminfo | sed -e "s/kB//g"|sed -e "s/MemTotal://"  `
+elif [ $NWCHEM_TARGET == MACX64 ]; then
+    nproc=`sysctl -n hw.physicalcpu`
+    memtot=`sysctl -n hw.memsize`
+    memtot=$(( memtot / 1024 ))
+elif [ $NWCHEM_TARGET == SOLARIS ]; then
+  nproc=`/usr/sbin/psrinfo | wc -l `
+  a=`/usr/sbin/prtconf | egrep -i mem   `  
+  memtot=$(( a[3] * 1024 ))
+else 
+    good=0
+fi
+# give at least 1024mb
+if [[ -n "$1" ]]; then
+    mem_min=$(( $1 * 1024 ))
+else
+    mem_min=$(( 1024 * 1024 ))
+fi
+  echo "Input Minum Memory   :" $mem_min "KB"
+if [[ $good != 0  ]]; then
+  memproc=0
+  memproc=$(( memtot / nproc ))
+  memprocgb=$(( memproc / 1000000 ))
+  echo "Total Memory         :" $memtot "KB"
+  echo "No. of processors    :" $nproc
+  echo "Total Memory/proc    :" $memproc "KB = " $memprocgb "GB"
+  # take away 30% memory for OS
+  memproc=$(( memproc*70/100 ))
+  echo cfr $memproc $mem_min
+  if [ "$memproc" -lt "$mem_min" ] ; then
+      echo 'WARNING: Memory/proc < ' $mem_min
+      memproc=$mem_min
+      echo 'WARNING: Memory/proc increased to ' $mem_min
+  fi
+#cap memory to 2GB for 32bit archs
+  if [ $NWCHEM_TARGET == LINUX ] || [ $NWCHEM_TARGET == MACX ] ; then
+      mem32limit=$(( 2600*1024 ))
+    if [ "$memproc" -gt "$mem32limit" ] ; then
+	memproc=$mem32limit
+	echo 'memory resized to 2600 mb on 32bit architectures'
+    fi
+fi    
+  # multiply by 128=(1024/8) to get to doubles
+   memproc=$(( memproc * 128 ))
+  if [ $good == 1 ]; then
+    copt=" -DDFLT_TOT_MEM="$memproc" -DMORE_MA_MEM=1 "
+    touch memory_def.F
+    echo "Executing " 'make LIB_DEFINES+="'$copt'"'
+    make   LIB_DEFINES+="$copt "
+    cd ..
+    make link
+  else
+    echo " "
+    echo "Edit memory_def.F and change DFLT_TOT_MEM to "$memproc
+    echo " "
+  fi
+else
+  echo "not ready for " $NWCHEM_TARGET
+fi
+

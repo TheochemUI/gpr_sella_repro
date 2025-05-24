@@ -1,0 +1,10 @@
+*
+* $Id$
+*
+      integer paw_hartree_matrix(4)
+      integer i_paw_hartree_matrix(4)
+      integer s_paw_hartree_matrix(4)
+
+      common /paw_hartree_matrix/ paw_hartree_matrix,
+     >                      i_paw_hartree_matrix,
+     >                      s_paw_hartree_matrix

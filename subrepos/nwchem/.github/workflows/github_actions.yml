@@ -1,0 +1,551 @@
+name: NWChem_CI
+
+on:
+  push:
+    paths-ignore:
+      - .gitlab-ci.yml
+  pull_request:
+  release:
+  schedule:
+    - cron: '0 0 * * SUN'
+  repository_dispatch:
+    types: [backend_automation]
+  workflow_dispatch:
+jobs:
+  build:
+    if: |
+      github.event_name == 'schedule' ||
+      (!contains(github.event.head_commit.message, 'ci skip'))
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        blas: [build_openblas]
+        blas_size: [8]
+        os: [ubuntu-22.04, macos-latest, ubuntu-24.04-arm]
+        experimental: [false]
+        mpi_impl:
+          - openmpi
+          - mpich
+        armci_network:
+          - MPI-TS
+        xcode_version:
+          - 13.2.1
+        nwchem_modules:
+          - "tinyqmpw python"
+          - "qmandpw qmd"
+          - "tce"
+        fc:
+          - gfortran
+        exclude:
+          - os: macos-latest
+            mpi_impl: mpich
+            nwchem_modules: "tinyqmpw python"
+          - os: macos-latest
+            mpi_impl: mpich
+            nwchem_modules: "qmandpw qmd"
+          - os: ubuntu-24.04-arm
+            mpi_impl: mpich
+            nwchem_modules: "tinyqmpw python"
+          - os: ubuntu-24.04-arm
+            mpi_impl: mpich
+            nwchem_modules: "qmandpw qmd"
+        include:
+          - os: ubuntu-latest
+            experimental: true
+            mpi_impl: openmpi
+            armci_network: MPI-TS
+            nwchem_modules: "nwdft driver solvation"
+            fc: gfortran
+            cc: gcc
+            blas: "libopenblas64-openmp-dev"
+            blas_size: 8
+          - os: ubuntu-22.04
+            experimental: true
+            mpi_impl: openmpi
+            armci_network: MPI-TS
+            nwchem_modules: "xtb qmd driver solvation"
+            fc: gfortran-9
+            blas: "build_openblas"
+            build_plumed: 1
+            use_openmp: 2
+            use_tblite: 1
+          - os: ubuntu-22.04
+            experimental: true
+            mpi_impl: mpich
+            armci_network: MPI-TS
+            nwchem_modules: "xtb driver solvation"
+            fc: gfortran-11
+            cc: gcc-11
+            blas: "build_openblas"
+            blas_size: 4
+            use_openmp: 2
+            use_tblite: 1
+          - os: ubuntu-22.04
+            experimental: true
+            mpi_impl: openmpi
+            armci_network: MPI-TS
+            nwchem_modules: "xtb driver solvation"
+            fc: gfortran-9
+            blas: "build_openblas"
+            use_openmp: 2
+            use_tblite: 1
+          - os: ubuntu-22.04
+            experimental: true
+            mpi_impl: intel
+            armci_network: MPI-TS
+            nwchem_modules: "xtb driver solvation"
+            fc: ifx
+            blas: "build_openblas"
+            blas_size: 4
+            use_openmp: 2
+            use_tblite: 1
+          - os: ubuntu-22.04
+            experimental: true
+            mpi_impl: intel
+            armci_network: MPI-TS
+            nwchem_modules: "xtb driver solvation"
+            fc: ifx
+            use_openmp: 2
+            use_tblite: 1
+          - os: ubuntu-22.04
+            experimental: true
+            mpi_impl: mpich
+            armci_network: MPI-TS
+            nwchem_modules: "xtb driver solvation"
+            fc: nvfortran
+            use_openmp: 2
+            use_tblite: 1
+          - os: ubuntu-22.04
+            experimental: true
+            mpi_impl: mpich
+            armci_network: ARMCI
+            nwchem_modules: "all"
+            fc: gfortran
+            blas: "build_openblas"
+          - os: ubuntu-latest
+            experimental: true
+            mpi_impl: openmpi
+            armci_network: GA_DEBIAN
+            nwchem_modules: "all python"
+            blas: "libopenblas-pthread-dev"
+            fc: gfortran
+            blas_size: 4
+          - os: ubuntu-22.04
+            experimental: true
+            mpi_impl: mpich
+            armci_network: MPI-TS
+            nwchem_modules: "all"
+            fc: gfortran
+            blas: "internal"
+            blas_size: 4
+          - os: ubuntu-22.04
+            experimental: false
+            mpi_impl: mpich
+            armci_network: MPI-PR
+            nwchem_modules: "tinyqmpw python"
+            fc: gfortran-11
+            cc: gcc-11
+          - os: ubuntu-latest
+            experimental: false
+            mpi_impl: mpich
+            armci_network: MPI-TS
+            nwchem_modules: "tce"
+            fc: gfortran-11
+            cc: gcc-11
+          - os: ubuntu-22.04
+            experimental: true
+            mpi_impl: mpich
+            armci_network: MPI-TS
+            nwchem_modules: "nwdft solvation driver"
+            fc: gfortran
+            cc: gcc
+            use_libxc: -1
+            blas: "internal"
+            blas_size: 8
+          - os: ubuntu-latest
+            experimental: true
+            mpi_impl: mpich
+            armci_network: MPI-TS
+            nwchem_modules: "qmandpw qmd"
+            fc: gfortran-11
+            cc: gcc-11
+            use_libxc: -1
+          - os: ubuntu-22.04
+            experimental: true
+            mpi_impl: mpich
+            armci_network: MPI-TS
+            nwchem_modules: "tinyqmpw python"
+            fc: amdflang
+            cc: amdclang
+          - os: ubuntu-22.04
+            experimental: true
+            mpi_impl: mpich
+            armci_network: MPI-TS
+            nwchem_modules: "tce"
+            fc: amdflang
+            cc: amdclang
+          - os: ubuntu-latest
+            experimental: true
+            mpi_impl: intel
+            armci_network: MPI-PR
+            nwchem_modules: "tinyqmpw python"
+            fc: ifx
+            use_openmp: 2
+          - os: ubuntu-22.04
+            experimental: true
+            mpi_impl: build_mpich
+            armci_network: MPI-TS
+            nwchem_modules: "tinyqmpw python"
+            fc: nvfortran
+            cc: gcc
+          - os: ubuntu-latest
+            experimental: true
+            mpi_impl: intel
+            armci_network: SOCKETS
+            nwchem_modules: "tce"
+            fc: ifx
+            use_openmp: 2
+          - os: ubuntu-latest
+            experimental: true 
+            mpi_impl: mpich
+            armci_network: MPI-TS
+            nwchem_modules: "tce"
+            fc: flang
+            cc: clang
+          - os: ubuntu-latest
+            experimental: true 
+            mpi_impl: intel
+            armci_network: MPI-PR
+            nwchem_modules: "tinyqmpw python"
+            fc: ifx
+          - os: ubuntu-latest
+            experimental: true 
+            mpi_impl: intel
+            armci_network: SOCKETS
+            nwchem_modules: "tce"
+            fc: ifx
+          - os: ubuntu-22.04
+            experimental: true 
+            mpi_impl: intel
+            armci_network: MPI-PR
+            nwchem_modules: "tinyqmpw python"
+            fc: ifx
+            use_openmp: 2
+          - os: ubuntu-22.04
+            experimental: true 
+            mpi_impl: intel
+            armci_network: SOCKETS
+            nwchem_modules: "tce"
+            fc: ifx
+            use_openmp: 2
+          - os: ubuntu-22.04
+            experimental: true
+            mpi_impl: openmpi
+            armci_network: MPI-TS
+            nwchem_modules: "tinyqmpw"
+            fc: gfortran
+            cc: gcc
+            use_libxc: 1
+          - os: ubuntu-22.04
+            experimental: true
+            mpi_impl: intel
+            armci_network: MPI-TS
+            nwchem_modules: "tinyqmpw"
+            fc: ifx
+            cc: icx
+            use_libxc: 1
+          - os: macos-latest
+            experimental: true 
+            mpi_impl: openmpi
+            armci_network: MPI-TS
+            nwchem_modules: "tinyqmpw"
+            fc: gfortran-12
+            cc: gcc
+            use_libxc: 1
+            xcode_version: 15.3
+          - os: macos-15
+            experimental: true 
+            mpi_impl: openmpi
+            armci_network: MPI-TS
+            nwchem_modules: "tinyqmpw python"
+            fc: gfortran-13
+            use_libxc: 1
+            xcode_version: 15.2
+          - os: ubuntu-22.04
+            experimental: true 
+            mpi_impl: mpich
+            armci_network: MPI-PT
+            nwchem_modules: "nwdft solvation driver"
+            fc: gfortran-10
+            cc: gcc-10
+            use_simint: 1
+          - os: ubuntu-latest
+            experimental: true
+            mpi_impl: build_mpich
+            armci_network: MPI-TS
+            nwchem_modules: "nwdft solvation driver"
+            fc: nvfortran
+            cc: gcc
+            use_simint: 1
+          - os: ubuntu-latest
+            experimental: true
+            mpi_impl: intel
+            armci_network: MPI-TS
+            nwchem_modules: "nwdft solvation driver"
+            fc: ifx
+            cc: icx
+            use_simint: 1
+          - os: ubuntu-22.04
+            experimental: true 
+            mpi_impl: mpich
+            armci_network: MPI-PR
+            nwchem_modules: "tinyqmpw python"
+            fc: gfortran-10
+            cc: gcc-10
+            use_libxc: 1
+          - os: macos-15
+            experimental: true 
+            mpi_impl: openmpi
+            armci_network: MPI-PR
+            nwchem_modules: "qmandpw qmd"
+            fc: gfortran-12
+            xcode_version: 15.0.1
+          - os: macos-latest
+            experimental: true
+            mpi_impl: openmpi
+            armci_network: MPI-PR
+            nwchem_modules: "tce"
+            fc: gfortran-12
+            cc: gcc-12
+            xcode_version: 15.4
+          - os: macos-latest
+            experimental: true
+            mpi_impl: openmpi
+            armci_network: MPI-TS
+            nwchem_modules: "tinyqmpw"
+            fc: gfortran-12
+            cc: gcc-12
+            xcode_version: 15.4
+          - os: macos-latest
+            experimental: true
+            mpi_impl: openmpi
+            armci_network: MPI-TS
+            nwchem_modules: "tinyqmpw"
+            fc: gfortran-13
+            blas: "accelerate"
+            blas_size: 4
+          - os: ubuntu-22.04
+            experimental: true
+            mpi_impl: mpich
+            armci_network: MPI-TS
+            nwchem_modules: "qmandpw qmd"
+            fc: gfortran-10
+            cc: gcc-10
+            use_openmp: 2
+            blas: "build_openblas"
+          - os: ubuntu-latest
+            experimental: true
+            mpi_impl: intel
+            armci_network: MPI-TS
+            nwchem_modules: "qmandpw qmd"
+            fc: ifx
+            use_openmp: 2
+          - os: ubuntu-22.04
+            experimental: true
+            mpi_impl: mpich
+            armci_network: MPI-TS
+            nwchem_modules: "qmandpw qmd"
+            fc: nvfortran
+            cc: gcc
+            use_openmp: 2
+          - os: ubuntu-22.04
+            experimental: true
+            mpi_impl: mpich
+            armci_network: MPI-TS
+            nwchem_modules: "nwdft driver solvation mp2_grad mcscf ccsd rimp2 fcidump nwc_columbus"
+            fc: nvfortran
+            cc: gcc
+          - os: ubuntu-latest
+            experimental: true
+            mpi_impl: openmpi
+            armci_network: MPI-TS
+            nwchem_modules: "nwdft driver solvation mp2_grad mcscf ccsd rimp2 fcidump nwc_columbus"
+            fc: gfortran
+            cc: gcc
+          - os: ubuntu-latest
+            experimental: true
+            mpi_impl: mpich
+            armci_network: MPI-TS
+            nwchem_modules: "nwdft driver solvation mp2_grad mcscf ccsd rimp2 fcidump nwc_columbus"
+            fc: flang
+            cc: clang
+          - os: ubuntu-latest
+            experimental: true
+            mpi_impl: intel
+            armci_network: MPI-TS
+            nwchem_modules: "nwdft driver solvation mp2_grad mcscf ccsd rimp2 fcidump nwc_columbus"
+            fc: ifx
+          - os: ubuntu-latest
+            experimental: true
+            mpi_impl: mpich
+            armci_network: MPI-TS
+            nwchem_modules: "tinyqmpw"
+            fc: flang-new-20
+          - os: ubuntu-latest
+            experimental: true
+            mpi_impl: mpich
+            armci_network: MPI-TS
+            nwchem_modules: "tinyqmpw"
+            fc: flang-new-19
+          - os: ubuntu-latest
+            experimental: true
+            mpi_impl: mpich
+            armci_network: MPI-TS
+            nwchem_modules: "tinyqmpw"
+            fc: flang-new-18
+          - os: ubuntu-latest
+            experimental: true
+            mpi_impl: openmpi
+            armci_network: MPI-TS
+            nwchem_modules: "nwdft driver solvation"
+            fc: gfortran
+            cc: gcc
+            blas: "libopenblas64-pthread-dev"
+            blas_size: 8
+          - os: macos-latest
+            experimental: true
+            mpi_impl: openmpi
+            armci_network: MPI-TS
+            nwchem_modules: "nwdft driver solvation"
+            fc: gfortran
+            cc: gcc
+            blas: "brew_openblas"
+            blas_size: 4
+          - os: macos-latest
+            experimental: true
+            mpi_impl: openmpi
+            armci_network: MPI-TS
+            nwchem_modules: "nwdft driver solvation"
+            fc: gfortran
+            cc: gcc
+            blas: "brew_openblas"
+            blas_size: 4
+          - os: macos-15
+            experimental: true
+            mpi_impl: openmpi
+            armci_network: MPI-TS
+            nwchem_modules: "nwdft driver solvation"
+            fc: gfortran
+            cc: gcc
+            blas: "brew_openblas"
+            blas_size: 4
+            xcode_version: 15.0.1
+          - os: macos-latest
+            experimental: true
+            mpi_impl: build_mpich
+            armci_network: MPI-TS
+            nwchem_modules: "nwdft driver solvation"
+            fc: gfortran-14
+            cc: gcc-14
+            blas: "brew_openblas"
+            blas_size: 4
+      fail-fast: false
+    env:
+        MPI_IMPL: ${{ matrix.mpi_impl }}
+        ARMCI_NETWORK: ${{ matrix.armci_network }}
+        NWCHEM_MODULES: ${{ matrix.nwchem_modules }}
+        USE_SIMINT: ${{ matrix.use_simint }}
+        USE_LIBXC: ${{ matrix.use_libxc }}
+        USE_TBLITE: ${{ matrix.use_tblite }}
+        BUILD_PLUMED: ${{ matrix.build_plumed }}
+        FC: ${{ matrix.fc }}
+        CC: ${{ matrix.cc }}
+        COMEX_MAX_NB_OUTSTANDING: 4
+        SIMINT_MAXAM: 4
+        BLAS_ENV:  ${{ matrix.blas }}
+        BLAS_SIZE:  ${{ matrix.blas_size }}
+        USE_OPENMP:  ${{ matrix.use_openmp }}
+        XCODE_VERSION:  ${{ matrix.xcode_version }}
+    continue-on-error: ${{ matrix.experimental }}
+    steps:
+      - name: pkg cleanup
+        run: |
+          df -h
+          if [[ $(uname -s) == "Linux" ]]; then
+          ubuntu_ver=$(cat /etc/os-release | grep VERSION_ID |cut -d \" -f 2)
+          dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n
+          sudo apt-get purge -y firefox || true
+          sudo apt-get purge -y microsoft-edge-stable dotnet-sdk-* google-chrome-stable firefox || true
+          sudo apt-get purge -y azure-cli || tru
+          sudo apt-get purge -y google-cloud-cli|| true
+          sudo apt-get purge -y temurin-*
+          sudo apt-get purge -y llvm-*-dev
+          sudo apt-get -y clean
+          sudo apt-get autoremove -y 
+          dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n
+          df -h
+          fi
+        shell: bash
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          show-progress:
+          fetch-depth: 200
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Get Instruction
+        id: get-simd
+        run: |
+          echo "simd=$(./travis/guess_simd.sh)" >> $GITHUB_ENV
+        shell: bash
+      - name: Setup cache
+        id: setup-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/cache
+          key: ${{ matrix.os }}-${{ matrix.mpi_impl}}-${{ matrix.fc}}-xcode${{ matrix.xcode_version}}-simint${{ matrix.use_simint}}-blas${{ matrix.blas}}-blas_size${{ matrix.blas_size}}-libxc${{matrix.use_libxc}}-tblite${{matrix.use_tblite}}-simd${{ env.simd }}-nwchemcache-v003
+      - name: build environment
+        run: |
+          pwd
+          ls -lart
+          ./travis/build_env.sh
+      - name: fetch cache
+        if: steps.setup-cache.outputs.cache-hit == 'true'
+        run: |
+          ./travis/cache_fetch.sh
+      - name: get external files
+        if: steps.setup-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/cache
+          NWCHEM_TOP=$(pwd) ./contrib/getfiles.nwchem ~/cache
+      - name: compile
+        id: compile
+        run: |
+          cc -v
+          ./travis/config_nwchem.sh
+          ./travis/compile_nwchem.sh
+      - name: Check compilation result
+        if: ${{ failure() }}
+        run: |
+          ./travis/compile_check.sh
+      - name: store cache
+        run: |
+          ./travis/cache_store.sh
+      - name: qa_test
+        id: qa_test
+        if: steps.compile.conclusion == 'success'
+        run: |
+          ./travis/run_qas.sh
+      - name: Check if QA testing has failed
+#        if: steps.qa_test.outcome == 'failure' || steps.qa_test.outcome == 'cancelled'
+        if: ${{ failure() }} &&  steps.qa_test.outcome == 'failure'
+        run: |
+          ./travis/check_qas.sh
+  
+
+
+
+     

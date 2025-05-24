@@ -1,0 +1,13 @@
+#
+#	$Id$	
+#
+
+#!MESSAGE *** Unresolved issues in this nmake file ***
+
+SUBDIRS = double
+
+
+LIBRARY = blas.lib
+
+!INCLUDE ..\config\NTmakefile.h
+!INCLUDE ..\config\NTmakelib.h

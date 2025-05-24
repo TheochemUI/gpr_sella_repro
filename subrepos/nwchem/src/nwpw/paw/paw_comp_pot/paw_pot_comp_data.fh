@@ -1,0 +1,7 @@
+c
+c $Id$
+c
+      integer paw_pot_comp(4)
+      integer i_paw_pot_comp(4)
+
+      common /paw_pot_comp/ paw_pot_comp,i_paw_pot_comp
