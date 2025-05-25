@@ -12,7 +12,7 @@ A more accessible form of the same publication is:
 [1] R. Goswami, M. Masterov, S. Kamath, A. Peña-Torres, and H. Jónsson, “Efficient implementation of gaussian process regression accelerated saddle point searches with application to molecular reactions,” May 18, 2025, arXiv: arXiv:2505.12519. doi: 10.48550/arXiv.2505.12519.
 #+end_quote
 * Usage
-Remember to inflate the data using the Zenodo source before using the scripts in the repository. This can be done by running the following--assuming that the ~.xz~ files are in the repository root:
+Remember to inflate the data using the [[https://zenodo.org/me/requests/98a9c4f2-e182-4251-9377-6938d400d51e][Zenodo source]] before using the scripts in the repository. This can be done by running the following--assuming that the ~.xz~ files are in the repository root:
 #+begin_src bash
 # CGrot + LBFGS Dimer
 mv cg_dimer.tar.xz bench_runs/eon/runs/1e8m/idimer/final_cgrot_lbfgs_dimer
