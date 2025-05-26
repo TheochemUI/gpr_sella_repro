@@ -3,7 +3,7 @@ Contains the reproduction details for the publication on the GPR-dimer and its
 performance compared to Sella.
 
 ** Reference
-If you use this repository or its parts please cite the corresponding publication.
+If you use this repository or its parts please cite the corresponding publication or data source.
 
 *** Preprint
 A more accessible form of the same publication is:
@@ -11,18 +11,104 @@ A more accessible form of the same publication is:
 #+begin_quote
 [1] R. Goswami, M. Masterov, S. Kamath, A. Peña-Torres, and H. Jónsson, “Efficient implementation of gaussian process regression accelerated saddle point searches with application to molecular reactions,” May 18, 2025, arXiv: arXiv:2505.12519. doi: 10.48550/arXiv.2505.12519.
 #+end_quote
+*** Data source
+#+begin_quote
+[1] Rohit Goswami, Maxim Masterov, Satish Kamath, Alejandro Peña-Torres, Hannes Jónsson, Efficient implementation of gaussian process regression accelerated saddle point searches with application to molecular reactions, Materials Cloud Archive 2025.X (2025), https://doi.org/10.24435/materialscloud:j6-zz
+#+end_quote
 * Usage
-Remember to inflate the data using the [[https://zenodo.org/me/requests/98a9c4f2-e182-4251-9377-6938d400d51e][Zenodo source]] before using the scripts in the repository. This can be done by running the following--assuming that the ~.xz~ files are in the repository root:
+Remember to inflate the data using the [[https://doi.org/10.24435/materialscloud:j6-zz][materialscloud source]] before using the scripts in the repository. This can be done by running the following--assuming that the ~.xz~ files are in ~data/runs~ relative to the repository root:
 #+begin_src bash
-# CGrot + LBFGS Dimer
-mv cg_dimer.tar.xz bench_runs/eon/runs/1e8m/idimer/final_cgrot_lbfgs_dimer
-tar -xf cg_dimer.tar.xz && rm -rf cg_dimer.tar.xz
-# GPR Dimer
-mv final_gprd_wparam.tar.xz bench_runs/eon/runs/1e8m/gprd
-tar -xf final_gprd_wparam.tar.xz && rm -rf final_gprd_wparam.tar.xz
+# EON Dimer runs (w/ & w/o GP)
+cp $GITROOT/data/runs/eon_runs.tar.xz $GITROOT/bench_runs/eon
+cd $GITROOT/bench_runs/eon
+tar -xf eon_runs.tar.xz && rm -rf eon_runs.tar.xz
 # Sella
-mv sella.tar.xz bench_runs/sella
-tar -xf sella.tar.xz && rm -rf sella.tar.xz
+cp $GITROOT/data/runs/sella_runs.tar.xz bench_runs/sella
+cd $GITROOT/bench_runs/sella
+tar -xf sella_runs.tar.xz && rm -rf sella_runs.tar.xz
+#+end_src
+** Structure
+The repository itself is structured into code archives, benchmark runs, and scripts for analysis.
+#+begin_src bash
+➜ tree -L 2
+.
+├── bench_runs
+│   ├── calc_rundata.py
+│   ├── check_dist_sim.py
+│   ├── check_sim.py
+│   ├── eon
+│   ├── gen_allgpdat.sh
+│   ├── gen_paired_res.py
+│   ├── plot_gprdruns.py
+│   ├── profiles
+│   ├── readme.org
+│   ├── rundata
+│   └── sella
+├── data
+│   ├── sella_si
+│   └── sella_si_data.zip
+├── LICENSE
+├── pixi.toml
+├── readme.org
+├── readme.txt
+└── subrepos
+    ├── ase
+    ├── chemparseplot
+    ├── eOn
+    ├── IterativeRotationsAssignments
+    ├── nwchem
+    ├── pychumpchem
+    ├── rgpycrumbs
+    ├── sella
+    └── spack
+#+end_src
+
+Where the data in the archives expands to locations within the benchmarks.
+
+Each of the benchmarks consists of the following structure:
+
+#+begin_src bash
+.
+├── doublets
+│   ├── 000
+# .....
+│   └── 234
+└── singlets
+│   ├── 000
+# .....
+    └── 264
+#+end_src
+
+Comprising of 500 systems.
+
+*** EON Dimer runs with and without GP acceleration
+#+begin_src bash
+# eon_runs.tar.xz
+# $GITROOT/bench_runs/eon/runs
+➜ tree -L 4 .
+.
+└── 1e8m
+    ├── gprd
+    │   └── final_gprd_wparam
+    │       ├── doublets
+    │       └── singlets
+    └── idimer
+        └── final_cgrot_lbfgs_dimer
+            ├── doublets
+            ├── readme.org
+            └── singlets
+#+end_src
+
+*** Sella runs
+#+begin_src bash
+# sella_runs.tar.xz
+# $GITROOT/bench_runs/sella/runs
+➜ tree -L 3 .
+.
+└── 1e8m
+    └── final_sella
+        ├── doublets
+        └── singlets
 #+end_src
 * License
 MIT. Sub-packages have their own licenses.
