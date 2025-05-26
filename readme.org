@@ -9,11 +9,11 @@ If you use this repository or its parts please cite the corresponding publicatio
 A more accessible form of the same publication is:
 
 #+begin_quote
-[1] R. Goswami, M. Masterov, S. Kamath, A. Peña-Torres, and H. Jónsson, “Efficient implementation of gaussian process regression accelerated saddle point searches with application to molecular reactions,” May 18, 2025, arXiv: arXiv:2505.12519. doi: 10.48550/arXiv.2505.12519.
+R. Goswami, M. Masterov, S. Kamath, A. Peña-Torres, and H. Jónsson, “Efficient implementation of gaussian process regression accelerated saddle point searches with application to molecular reactions,” May 18, 2025, arXiv: arXiv:2505.12519. doi: 10.48550/arXiv.2505.12519.
 #+end_quote
 *** Data source
 #+begin_quote
-[1] Rohit Goswami, Maxim Masterov, Satish Kamath, Alejandro Peña-Torres, Hannes Jónsson, Efficient implementation of gaussian process regression accelerated saddle point searches with application to molecular reactions, Materials Cloud Archive 2025.X (2025), https://doi.org/10.24435/materialscloud:j6-zz
+Rohit Goswami, Maxim Masterov, Satish Kamath, Alejandro Peña-Torres, Hannes Jónsson, Efficient implementation of gaussian process regression accelerated saddle point searches with application to molecular reactions, Materials Cloud Archive 2025.87 (2025), https://doi.org/10.24435/materialscloud:j6-zz
 #+end_quote
 * Usage
 Remember to inflate the data using the [[https://doi.org/10.24435/materialscloud:j6-zz][materialscloud source]] before using the scripts in the repository. This can be done by running the following--assuming that the ~.xz~ files are in ~data/runs~ relative to the repository root:
